@@ -96,7 +96,7 @@ export async function editBanner(formData: FormData){
     const json : {banner:string[]} = JSON.parse(homejsonfile)
     const uploadPath = path.join(process.cwd(), 'uploads')
     for(const i of json.banner){
-        const p = path.join(uploadPath, i.split('/')[2])
+        const p = path.join(uploadPath, i.split('/')[3])
         try {
             await fs.promises.access(p, fs.promises.constants.F_OK)
             await fs.promises.unlink(p)

@@ -30,7 +30,7 @@ export async function deleteProduct(id: string) {
     })
     for(const img of product.images){
         const parts = img.url.split('/')
-        const filepath = path.join(process.cwd(),'uploads',parts[2])
+        const filepath = path.join(process.cwd(),'uploads',parts[3])
         await fs.promises.unlink(filepath)
     }
     if (hasProduct(product.id)) {
@@ -178,7 +178,7 @@ export async function editProduct(formData: FormData) {
         })
 
         for(const i of prodImages){
-            const fileName = i.url.split('/')[2]
+            const fileName = i.url.split('/')[3]
             try {
                 await fs.promises.access(fileName, fs.promises.constants.F_OK)
                 await fs.promises.unlink(fileName)
