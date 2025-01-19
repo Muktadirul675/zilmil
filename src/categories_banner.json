@@ -1,0 +1,17 @@
+[
+  {
+    "id": "Men",
+    "logo": "/api/uploads/1736958588072-gadgets.png",
+    "name": "Men"
+  },
+  {
+    "id": "Bike",
+    "logo": "/api/uploads/1736958588081-phone.png",
+    "name": "Bike"
+  },
+  {
+    "id": "New-Arrival",
+    "logo": "/api/uploads/1736958588087-motorcycle.png",
+    "name": "New Arrival"
+  }
+]
