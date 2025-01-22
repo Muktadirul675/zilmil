@@ -66,13 +66,13 @@ export default async function Layout({ children }: { children: React.ReactNode }
                     Orders
                 </span>
             </Link>
-            <Link href="/admin/orders/pending" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">
+            {/* <Link href="/admin/orders/pending" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">
                 <MdPendingActions className="text-xl" />
                 <span className="hidden md:flex">
                     <span className="mx-2"></span>
                     Pending Orders
                 </span>
-            </Link>
+            </Link> */}
             <div className="hidden md:flex transition-all mt-3 mb-0 items-center uppercase text-white p-3 rounded ">
                 <span className="">
                     Customization

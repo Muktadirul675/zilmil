@@ -52,7 +52,11 @@ export default function CustomizeCategorybar({selecteds, categories}:{selecteds:
                 break;
             }
             if(s[i].subs.length){
-                del(s[i].subs, uid)
+                for(const j in s[i].subs){
+                    if(s[i].subs[j].uid == uid){
+                        delete s[i].subs[j]
+                    }
+                }
             }
         }
         setJson(s ?? [])

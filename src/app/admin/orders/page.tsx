@@ -1,7 +1,7 @@
-import OrderManagement from "@/components/orders/OrderManagement";
+import Orders from "@/components/orders/Orders";
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600;
 
 export default async function Page(){
-    return <OrderManagement/>
+    return <Orders/>
 }

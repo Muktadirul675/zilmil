@@ -26,42 +26,50 @@ export default function AddToCartaOrBuy({ product }: { product: Product }) {
     const [addingToCart, setAddingToCart] = useState<boolean>(false)
 
     async function ordernow() {
-        setOrdering(true)
-        let invalid: boolean = false;
-        if (product.colors.length && !color) {
-            invalid = true;
-            toast.error("Please select a color")
-        }
-        if (product.variants.length && !variant) {
-            invalid = true;
-            toast.error("Please select a variant")
-        }
-        if (invalid) {
+        if(count > 0){
+            setOrdering(true)
+            let invalid: boolean = false;
+            if (product.colors.length && !color) {
+                invalid = true;
+                toast.error("Please select a color")
+            }
+            if (product.variants.length && !variant) {
+                invalid = true;
+                toast.error("Please select a variant")
+            }
+            if (invalid) {
+                setOrdering(false)
+                return;
+            }
+            await cart.addItemToCart(product.id, count, { colorId: color?.id ?? null, variantId: variant?.id ?? null })
+            router.push("/checkout")
             setOrdering(false)
-            return;
+        }else{
+            toast.error("Please provide a quantity")
         }
-        await cart.addItemToCart(product.id, 1, { colorId: color?.id ?? null, variantId: variant?.id ?? null })
-        router.push("/checkout")
-        setOrdering(false)
     }
 
     async function add() {
-        setAddingToCart(true)
-        let invalid: boolean = false;
-        if (product.colors.length && !color) {
-            invalid = true;
-            toast.error("Please select a color")
-        }
-        if (product.variants.length && !variant) {
-            invalid = true;
-            toast.error("Please select a variant")
-        }
-        if (invalid) {
+        if(count > 0){
+            setAddingToCart(true)
+            let invalid: boolean = false;
+            if (product.colors.length && !color) {
+                invalid = true;
+                toast.error("Please select a color")
+            }
+            if (product.variants.length && !variant) {
+                invalid = true;
+                toast.error("Please select a variant")
+            }
+            if (invalid) {
+                setAddingToCart(false)
+                return;
+            }
+            await cart.addItemToCart(product.id, count, { variantId: variant?.id ?? null, colorId: color?.id ?? null })
             setAddingToCart(false)
-            return;
+        }else{
+            toast.error("Please provide a quantity")
         }
-        await cart.addItemToCart(product.id, count, { variantId: variant?.id ?? null, colorId: color?.id ?? null })
-        setAddingToCart(false)
     }
 
     return <>

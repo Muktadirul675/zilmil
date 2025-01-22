@@ -10,6 +10,9 @@
 .yarn/install-state.gz
 
 /prisma
+/src/home.json
+/src/categories.json
+/src/categories_banner.json
 
 # testing
 /coverage

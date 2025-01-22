@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic';
-import CustomizeCategorybar from '@/components/customize/categoriesbar/page';
+import CustomizeCategorybar from '@/components/customize/categoriesbar/CustomizeCategoryBar';
 import { prisma } from '@/prisma';
 import fs from 'fs';
 import path from 'path';

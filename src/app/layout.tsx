@@ -46,7 +46,7 @@ export default function RootLayout({
               </div>
               <div className="relative">
                 <div className="w-full min-h-[200px] h-fit flex flex-col items-center bg-base-theme pt-5 text-white absolute top-0 left-0 right-0 border-t">
-                  <div className="w-full md:w-1/2 flex mx-auto flex-wrap my-3 p-3">
+                  <div className="w-full md:w-2/3 flex mx-auto flex-wrap my-3 p-3">
                     <div className="w-full flex flex-col justify-center md:w-1/4 mb-3 md:mb-0">
                       <Image src={'/white_logo.png'} alt="Zilmil" height={100} width={120} className='h-[50px] mb-1' />
                       <b>Got a question? Call us 9AM - 10PM</b>
@@ -70,7 +70,7 @@ export default function RootLayout({
                     </div>
                   </div>
                   <div className="w-full h-[50px] bg-slate-50 p-5">
-                    <div className="w-full md:w-1/2 flex items-center mx-auto flex-wrap flex-cop md:flex-row">
+                    <div className="w-full md:w-2/3 flex items-center mx-auto flex-wrap flex-cop md:flex-row">
                       <span className="text-base-theme font-bold">
                         @Zilmil all right reserved
                       </span>

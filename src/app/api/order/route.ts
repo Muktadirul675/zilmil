@@ -2,10 +2,21 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { OrderPayload } from "@/types";
 import { Order } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+
 export const dynamic = 'force-dynamic'
-export async function GET() {
+export const perPageOrder = 20
+
+export async function GET(request: NextRequest) {
+    const searchParams = request.nextUrl.searchParams
+    const pageStr = searchParams.get('page')
+    const page = parseInt(pageStr ?? '0') === 0 ? 1 : parseInt(pageStr ?? '1')
+    const skip = perPageOrder * (page-1)
+    const take = perPageOrder 
+
     const orders: Order[] = await prisma.order.findMany({
+        skip: skip,
+        take: take,
         include: {
             items: {
                 include: {
@@ -29,6 +40,9 @@ export async function GET() {
                 }
             }
         },
+        orderBy:{
+            created_at: 'desc'
+        }
     })
     return NextResponse.json(orders)
 }
@@ -56,14 +70,16 @@ export async function POST(request: Request) {
             }
         })
         for (const i of payload.items) {
-            await prisma.orderItem.create({
-                data: {
-                    orderId: order.id,
-                    productId: i.product,
-                    variantId: i.variant,
-                    colorId: i.color
-                }
-            })
+            for(let j=0;j<i.count;j++){
+                await prisma.orderItem.create({
+                    data: {
+                        orderId: order.id,
+                        productId: i.product,
+                        variantId: i.variant,
+                        colorId: i.color
+                    }
+                })
+            }
             console.log("created")
         }
         await prisma.cartItem.deleteMany({

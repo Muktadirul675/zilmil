@@ -88,6 +88,7 @@ export interface OrderPayload extends Omit<Order,'created_at'|'updated_at'|'c_id
         product : string,
         variant : string | null,
         color : string | null,
+        count : number
     }[],
 }
 

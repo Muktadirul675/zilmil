@@ -71,7 +71,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     console.log("items", items)
     const payload: OrderPayload = {
       secret: secret, id: '', userId: '', address: address, inside_dhaka: inside_dhaka, phone: phone, order_price: price, name: name, status: "pending",
-      items: items.map((i) => { return { product: i.product.id, variant: i.variant?.id ?? null, color: i.color?.id ?? null } }),
+      items: items.map((i) => { return { product: i.product.id, variant: i.variant?.id ?? null, color: i.color?.id ?? null, count : i.count } }),
 
     }
     try {

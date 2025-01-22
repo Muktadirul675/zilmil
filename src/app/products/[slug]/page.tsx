@@ -114,11 +114,11 @@ export default async function Page({ searchParams, params }: { searchParams: { s
                 </h3>
                 <div className="flex w-full flex-wrap">
                     {relatedProds.map((prod) => {
-                        return <> <div key={prod.id} className='hover:shadow hover:border w-1/2 md:w-1/3 xl:w-1/4 p-1 group flex flex-col mb-2'>
+                        return <> <div key={prod.id} className='hover:shadow hover:border w-1/2 md:w-1/4 xl:w-1/5 p-1 group flex flex-col mb-2'>
                             <div className='w-full h-full'>
                                 <div className="w-full flex justify-center relative">
                                     <Link href={`/products/${prod.slug}`}>
-                                        <Image quality={100} height={200} width={200} src={prod.images[0].url} alt="Image" className='w-full h-52 object-cover aspect-square' />
+                                        <Image quality={100} height={200} width={200} src={prod.images[0].url} alt="Image" className='w-full h-52 object-fill' />
                                     </Link>
                                     <div className="justify-center absolute bottom-0 hidden group-hover:flex h-5 py-2 animate-bottomTopSlide bg-white w-full">
                                         <HomeAddCartButton slug={prod.slug} variants={prod._count.variants} colors={prod._count.colors} id={prod.id} />
