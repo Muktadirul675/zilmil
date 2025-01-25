@@ -24,7 +24,7 @@ export default async function Navbar() {
                 <Link href='/'>
                     <Image src="https://cutcbvajgtehcysiqrlf.supabase.co/storage/v1/object/public/test/logo.png" width={100} height={40} alt="Zilmil" className="h-10" />
                 </Link>
-                <div className="hidden md:flex justify-center flex-grow items-center flex-row ms-auto relative">
+                <div className="hidden md:flex justify-center flex-grow items-center flex-row mx-auto relative">
                     <SearchForm />
                 </div>
                 <div className="ms-auto flex items-center">

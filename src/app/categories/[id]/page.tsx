@@ -45,7 +45,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         return <> <div key={prod.id} className='hover:shadow hover:border w-1/2 md:w-1/3 lg:w-1/5 p-1 group flex flex-col mb-2'>
                             <div className='w-full h-full'>
                                 <div className="w-full flex justify-center relative">
-                                    <Link href={`/products/${prod.slug}`}>
+                                    <Link className="block w-full"  href={`/products/${prod.slug}`}>
                                         <Image quality={100} height={200} width={200} src={prod.images[0].url} alt="Image" className='w-full h-52 object-fill' />
                                     </Link>
                                     <div className="justify-center absolute bottom-0 hidden group-hover:flex h-5 py-2 animate-bottomTopSlide bg-white w-full">
@@ -57,7 +57,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                     </div>
                                 </div>
                                 <div className="p-2">
-                                    <h3 className="md:text-lg md:font-semibold my-1">{prod.name}</h3>
+                                    <h3 className="md:text-lg md:font-semibold my-1 overflow-hidden whitespace-nowrap">{prod.name}</h3>
                                     <h3 className='flex items-center'>
                                         {prod.discounted_price ? <>
                                             <div className="md:text-lg md:font-bold text-base-theme flex items-center"> <TbCurrencyTaka className="inline" />

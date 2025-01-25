@@ -82,7 +82,7 @@ export interface ListedCategory {
     };
 }
 
-export interface OrderPayload extends Omit<Order,'created_at'|'updated_at'|'c_id'|'courier'|'courier_status'>{
+export interface OrderPayload extends Omit<Order,'created_at'|'updated_at'|'c_id'|'courier'|'courier_status'|'note'|'city'|'zone'|'area'>{
     secret : string,
     items: {
         product : string,

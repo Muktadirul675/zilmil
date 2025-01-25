@@ -9,9 +9,9 @@ import { BiChevronDown } from "react-icons/bi";
 function Content({ cont }: { cont: BarContent }) {
     const [display, setDisplay] = useState<boolean>(false)
     if (cont.id !== '') {
-        return <Link className="px-2 py-1.5 border-r-[0.5px] border-gray-100 " href={`/categories/${cont.id}`}>{cont.name}</Link>
+        return <Link className="px-2 py-1.5 border-r-[0.5px] border-gray-200 border-opacity-70" href={`/categories/${cont.id}`}>{cont.name}</Link>
     } else {
-        return <div className="px-2 py-1.5 border-r-[0.5px] border-gray-100  relative">
+        return <div className="px-2 py-1.5 border-r-[0.5px] border-gray-200 border-opacity-70 relative">
             <div className="rotate-180 hidden"></div>
             <h3 className="text-lg text-white flex items-center  cursor-pointer" onClick={()=>setDisplay(!display)}>
                 {cont.name}
@@ -35,7 +35,7 @@ export default function CategoryBar({ selecteds, categories }: { selecteds: BarC
     return <>
         <div className="hidden md:flex bg-base-theme border-b relative">
             <div className="w-2/3 mx-auto flex items-center flex-wrap text-white font-semibold relative">
-                <div onClick={click} className="border-l-[0.5px] border-r-[0.5px] px-2 py-1.5 border-gray-100 cursor-pointer">
+                <div onClick={click} className="border-l-[0.5px] border-r-[0.5px] px-2 py-1.5 border-gray-200 border-opacity-70 cursor-pointer">
                     <div className="flex items-center">
                         All Categories <BiChevronDown className="text-lg ms-1 inline" />
                     </div>

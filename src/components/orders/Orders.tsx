@@ -8,8 +8,9 @@ import { DateRangePicker } from 'react-date-range';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { perPageOrder } from "@/app/api/order/route";
+import Link from "next/link";
 
-export interface Product extends PProduct {
+export interface Product extends Omit<PProduct, 'description'|'created_at'|'updated_at'|'profit'>{
     images: ProdImage[]
 }
 
@@ -73,29 +74,59 @@ function OrderTr({ order }: { order: Order }) {
         return newItems
     }, [order])
     return <tr key={order.id} className="border-b p-3 cursor-pointer odd:bg-gray-100 hover:bg-gray-50 align-top">
-        <td className="px-3 py-2">{order.id.slice(0, 5)}...</td>
-        <td className="px-3 py-2">{`${new Date(order.created_at).getDate()}`}</td>
-        <td className="px-3 py-2">{order.name}</td>
         <td className="px-3 py-2">
-            {items.map((prod) => {
-                return <span className="block">{prod.product.name} X {prod.count}</span>
-            })}
+            <Link href={`/admin/orders/${order.id}`}>
+                {order.id.slice(0, 5)}...
+            </Link>
         </td>
-        <td className="px-3 py-2">{order.order_price}</td>
-        <td className="px-3 py-2">100%</td>
-        <td className="px-3 py-2">{order.status}</td>
-        <td className="px-3 py-2">Facebook</td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                {`${new Date(order.created_at).getDate()}`}
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                {order.name}
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link className="block" href={`/admin/orders/${order.id}`}>
+                {items.map((prod) => {
+                    return <span className="block">{prod.product.name} X {prod.count}</span>
+                })}
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                {order.order_price}
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                100%
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                {order.status}
+            </Link>
+        </td>
+        <td className="px-3 py-2">
+            <Link href={`/admin/orders/${order.id}`}>
+                Facebook
+            </Link>
+        </td>
     </tr>
 }
 
-function PaginationBar({count, set}:{count: number, set: Dispatch<SetStateAction<number>>}) {
+function PaginationBar({ count, set }: { count: number, set: Dispatch<SetStateAction<number>> }) {
     const items = []
     const [active, setActive] = useState<number>(1)
     for (let i = 1; i <= count; i++) {
         items.push(i)
     }
     return items.map((i) => {
-        return <span key={i} onClick={() =>{
+        return <span key={i} onClick={() => {
             setActive(i)
             set(i)
         }} className={`mx-2 px-2 py-1 cursor-pointer rounded hover:bg-red-200 transition-all ${active === i && 'bg-red-400 text-white'}`}>
@@ -224,19 +255,19 @@ export default function Orders() {
             </table>
         </div>
         <div className="flex my-1 justify-between items-center">
-            <div onClick={()=>{
-                    if(!(activePage === 1)){
-                        setActivePage((prev)=>prev-1)
-                    }
-                }}  className="cursor-pointer flex items-center border px-2 py-1">
+            <div onClick={() => {
+                if (!(activePage === 1)) {
+                    setActivePage((prev) => prev - 1)
+                }
+            }} className="cursor-pointer flex items-center border px-2 py-1">
                 <BsArrowLeft /> <div className="mx-1"></div> Previous
             </div>
             <div className="flex items-center justify-center flex-grow">
-                <PaginationBar set={setActivePage} count={totalPages}/>
+                <PaginationBar set={setActivePage} count={totalPages} />
             </div>
-            <div onClick={()=>{
-                if(!(activePage === totalPages)){
-                    setActivePage((prev)=>prev+1)
+            <div onClick={() => {
+                if (!(activePage === totalPages)) {
+                    setActivePage((prev) => prev + 1)
                 }
             }} className="cursor-pointer flex items-center border px-2 py-1">
                 <BsArrowRight /> <div className="mx-1"></div> Next
