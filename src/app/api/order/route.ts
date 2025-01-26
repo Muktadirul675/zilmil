@@ -3,9 +3,9 @@ import { prisma } from "@/prisma";
 import { OrderPayload } from "@/types";
 import { Order } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
+import { perPageOrder } from "../../../types";
 
 export const dynamic = 'force-dynamic'
-export const perPageOrder = 20
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams

@@ -98,3 +98,5 @@ export const ORDER_STATUS = {
     returned : 'returned',
     completed : 'completed'
 }
+
+export const perPageOrder = 20

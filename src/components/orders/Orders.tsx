@@ -7,7 +7,7 @@ import 'react-date-range/dist/theme/default.css';
 import { DateRangePicker } from 'react-date-range';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-import { perPageOrder } from "@/app/api/order/route";
+import { perPageOrder } from "@/types";
 import Link from "next/link";
 
 export interface Product extends Omit<PProduct, 'description'|'created_at'|'updated_at'|'profit'>{
@@ -166,7 +166,10 @@ export default function Orders() {
     }, [activePage])
 
     return <div className="p-3">
-        <h3 className="text-lg font-bold">Orders List</h3>
+        <h3 className="text-lg font-bold flex">
+            Orders List
+            <Link href="/admin/orders/add" className="btn ms-auto"></Link>
+        </h3>
         <div className="flex my-4">
             <div className="w-1/5 p-2 border-r flex justify-center">
                 <div>
