@@ -21,13 +21,13 @@ export default async function Navbar() {
         <div className="flex bg-white w-full p-2 h-[60px] md:h-[80px] sticky top-0 left-0 border-b-2 border-base-theme z-20">
             <div className="flex w-full md:w-2/3 mx-auto items-center">
                 <Sidebar selecteds={selectedCategories} categories={categories}/>
-                <Link href='/'>
+                <Link href='/' className="w-fit md:w-1/3">
                     <Image src="https://cutcbvajgtehcysiqrlf.supabase.co/storage/v1/object/public/test/logo.png" width={100} height={40} alt="Zilmil" className="h-10" />
                 </Link>
-                <div className="hidden md:flex justify-center flex-grow items-center flex-row mx-auto relative">
-                    <SearchForm />
+                <div className="hidden md:flex justify-center w-1/3 flex-grow items-center flex-row mx-auto relative">
+                    <SearchForm forceFull={true}/>
                 </div>
-                <div className="ms-auto flex items-center">
+                <div className="flex items-center ms-auto justify-end w-fit md:w-1/3">
                     <Hotline />
                     <SearchButton/>
                     <div className="mx-3"></div>

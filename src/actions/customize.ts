@@ -52,7 +52,7 @@ export async function saveHomepage(prevState: {message:string, error:string}, fo
 
     for(let i=0;i<json.categories.length;i++){
         for(let j=0;j<json.categories[i].products.length-1;j++){
-            for(let k=j;k<json.categories[i].products.length;k++){
+            for(let k=0;k<json.categories[i].products.length;k++){
                 if((json.categories[i].products[j].index as number) > (json.categories[i].products[k].index as number)){
                     const temp = json.categories[i].products[k]
                     json.categories[i].products[k] = json.categories[i].products[j]

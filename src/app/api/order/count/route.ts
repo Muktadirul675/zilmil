@@ -6,19 +6,22 @@ export const revalidate = 120
 export async function GET(){
     const count = await prisma.order.count()
     const pending = await prisma.order.count({where:{
-        status: 'pending'
+        status: 'Pending'
     }})
     const delivered = await prisma.order.count({where:{
-        status: 'delivered'
+        status: 'Delivered'
     }})
     const returned = await prisma.order.count({where:{
-        status: 'returned'
+        status: 'Returned'
     }})
     const confirmed = await prisma.order.count({where:{
-        status: 'confirmed'
+        status: 'Complete'
     }})
     const dismissed = await prisma.order.count({where:{
-        status: 'dismissed'
+        status: 'Dismissed'
+    }})
+    const hold = await prisma.order.count({where:{
+        status: 'Hold'
     }})
     return NextResponse.json({
         count : count,
@@ -26,6 +29,7 @@ export async function GET(){
         delivered: delivered,
         returned : returned,
         confirmed: confirmed,
-        dismissed:dismissed
+        dismissed:dismissed,
+        hold:hold,
     })
 }

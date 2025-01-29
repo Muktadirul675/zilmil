@@ -1,15 +1,27 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import React from "react";
-import { Area, Zone, usePathao } from "@/stores/pathao";
+import { addOrder, editOrder } from "@/actions/orders";
+import StateButton from "@/components/StateButton";
+import { Area, City, Zone, usePathao } from "@/stores/pathao";
+import { useProducts } from "@/stores/products";
 import Image from "next/image";
+import { Dispatch, FormEvent, SetStateAction, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { BiMinus, BiPlus } from "react-icons/bi";
-import { useProducts } from "@/stores/products";
-import Spinner from "@/components/Spinner";
-import { useRouter } from "next/navigation";
-import { useOrders } from "@/stores/orders";
+import Spinner from "../Spinner";
+
+interface Variant {
+    id: string,
+    name: string,
+    stocks: number
+}
+
+interface Color {
+    id: string,
+    name: string,
+    stocks: number,
+    hex: string
+}
 
 interface Product {
     name: string;
@@ -26,20 +38,11 @@ interface Product {
         index: number;
         caption: string | null;
     }[];
-    variants: {
-        id: string,
-        name: string,
-        stocks: number
-    }[],
-    colors: {
-        id: string,
-        name: string,
-        stocks: number,
-        hex: string
-    }[],
+    variants: Variant[],
+    colors: Color[],
 }[]
 
-interface Item {
+export interface Item {
     uid: number,
     count: number,
     product: Product,
@@ -75,358 +78,316 @@ export interface Order {
     address: string,
     phone: string,
     courier: string | null,
-    items: OrderItem[],
+    items: Item[],
     order_price: number,
-    note: string | null,
+    note?: string | null,
     inside_dhaka: boolean,
     zone?: number | null,
     city?: number | null,
     area?: number | null,
+    status: string
 }
 
-let lastUid = 0;
+let uid = 1000;
 
 function Label({ children, htmlFor }: { children: React.ReactNode, htmlFor: string }) {
     return <label htmlFor={htmlFor} className="text-lg font-bold">{children}</label>
 }
 
-function AddProduct({ product, add }: { product: Product, add: (item: Item) => void }) {
+function AddProduct({ product, items, set }: {
+    items: Item[],
+    product: Product, set: Dispatch<SetStateAction<Item[]>>
+}) {
+    const [color, setColor] = useState<Color | null>(null)
+    const [variant, setVariant] = useState<Variant | null>(null)
     const [count, setCount] = useState<number>(1)
 
-    function inc() {
-        setCount((prev) => prev + 1)
-    }
-    function dec() {
-        if (count > 1) {
-            setCount((prev) => prev - 1)
+    function add() {
+        if (product.variants.length > 0 && variant === null) {
+            toast.error("Select a variant")
+            return
         }
+        if (product.colors.length > 0 && color === null) {
+            toast.error("Select a color")
+            return
+        }
+        const oldItems = [...items];
+        for (const i of oldItems) {
+            if (i.product.id === product.id && i.variant?.id === variant?.id && i.color?.id == color?.id) {
+                i.count = i.count + count;
+                set(oldItems)
+                return
+            }
+        }
+        const newItem: Item = {
+            color: color,
+            count: count,
+            product: product,
+            uid: uid++,
+            variant: variant
+        }
+        oldItems.push(newItem)
+        set(oldItems)
     }
-    const [variant, setVariant] = useState<{ name: string, id: string } | null>(null)
-    const [color, setColor] = useState<{ name: string, id: string } | null>(null)
 
-    function addProduct() {
-        if (product.variants.length && variant === null) {
-            toast.error("Must select a variant")
-            return
-        }
-        if (product.colors.length && color === null) {
-            toast.error("Must select a color")
-            return
-        }
-        if (count <= 0) {
-            toast.error("Must be more than 0")
-            return
-        }
-        const it: Item = { color: color, count: count, product: product, uid: lastUid++, variant: variant }
-        add(it)
-    }
-
-    return <div className="w-full flex flex-wrap my-1">
-        <div className="">
-            <Image alt="Image" src={product.images[0].url} height={100} width={100} className="w-[100px] h-[100px] rounded" />
-        </div>
-        <div className="flex-grow p-3">
-            <h3>{product.name}</h3>
-            {variant && <h3>{variant.name}</h3>}
-            {color && <h3>{color.name}</h3>}
-            {product.variants.length > 0 && <div className="flex items-start w-1/2 my-1">
-                {product.variants.map((va) => {
-                    return <div onClick={() => setVariant({ name: va.name, id: va.id })} className="border p-3 bg-white">{va.name}</div>
-                })}
-            </div>}
-            {product.colors.length > 0 && <div className="flex items-start w-1/2 my-1">
-                {product.colors.map((va) => {
-                    return <div onClick={() => setColor({ name: va.name, id: va.id })} className="border h-[30px] w-[30px] rounded-full" style={{ backgroundColor: va.hex }}></div>
-                })}
-            </div>}
-        </div>
-        <div className="flex-grow flex flex-col items-end">
-            <div className="my-1 flex">
-                <BiMinus onClick={dec} className="text-2xl cursor-pointer border border-r-0" />
-                <input type="number" name="" className="remove-arrow w-10 border text-center border-l-0 border-r-0" value={count} onChange={(e) => setCount(parseInt(e.target.value))} id="" />
-                <BiPlus onClick={inc} className="text-2xl cursor-pointer border border-l-0" />
+    return <>
+        <div className="flex my-1">
+            <Image src={product.images[0].url} alt="Image" width={100} height={100} className="w-[100px] h-[100px]" />
+            <div className="mx-2"></div>
+            <div>
+                {product.name} <br />
+                {variant !== null && <>{variant.name} <br /></>}
+                {color !== null && <>{color.name} <br /></>}
+                <div className="flex">
+                    {product.variants.map((va) => {
+                        return <div className="border m-1 p-2" onClick={() => setVariant(va)}>{va.name}</div>
+                    })}
+                </div>
+                <div className="flex">
+                    {product.colors.map((va) => {
+                        return <div style={{ backgroundColor: `${va.hex}` }} className="border m-1 rounded-full h-[30px] w-[30px]" onClick={() => setColor(va)}></div>
+                    })}
+                </div>
+                <div className="flex items-center">
+                    <BiMinus onClick={() => setCount((prev) => (prev > 1 ? prev - 1 : prev))} className="border border-r-0 text-xl cursor-pointer" />
+                    <input type="number" value={count} onChange={(e) => setCount(parseInt(e.target.value))} className="remove-arrow w-14 border border-r-0 border-l-0 text-center" />
+                    <BiPlus onClick={() => setCount((prev) => prev + 1)} className="border border-l-0 text-xl cursor-pointer" />
+                    <button onClick={add} type="button" className="ms-1 btn">Add</button>
+                </div>
             </div>
-            <button type="button" onClick={addProduct} className="btn">Add</button>
         </div>
-    </div>
+    </>
 }
 
 export default function OrderDetailsForm({ order }: { order: Order }) {
     const [name, setName] = useState<string>(order.name)
     const [address, setAddress] = useState<string>(order.address)
     const [phone, setPhone] = useState<string>(order.phone)
-    const [subTotal, setSubTotal] = useState<number>(0)
-    const products = useProducts()
-    const [courier, setCourier] = useState<string>(order.courier ?? 'pathao')
-    const [insideDhaka, setInsideDhaka] = useState<boolean>(true)
     const [quantity, setQuantity] = useState<number>(0)
     const [weight, setWeight] = useState<string>('0.5')
-    const [items, setItems] = useState<Item[]>([])
-    const [note, setNote] = useState<string>('')
+    const [items, setItems] = useState<Item[]>(order.items)
+    const [subTotal, setSubTotal] = useState<number>(order.order_price - (order.inside_dhaka ? 60 : 110))
+    const [location, setLocation] = useState<string>(order.inside_dhaka ? 'insideDhaka' : 'outsideDhaka')
+    const [note, setNote] = useState<string>(order?.note ?? '')
+    const [courier, setCourier] = useState<string>(order?.courier ?? 'pathao')
+    const [status, setStatus] = useState<string>(order.status)
 
-    const total = useMemo(() => {
-        return subTotal + (insideDhaka ? 60 : 110)
-    }, [insideDhaka, subTotal])
-
-    useEffect(() => {
-        const newItems: Item[] = []
-        for (const c of order.items) {
-            console.log('c', c)
-            let found = false;
-            for (const i of newItems) {
-                if (c.color?.id && c.variant?.id) {
-                    if (c.product.id === i.product.id && c.variant?.id === i.variant?.id && c.color?.id === i.color?.id) {
-                        i.count = i.count + 1;
-                        found = true;
-                        break;
-                    }
-                } else if (c.color?.id) {
-                    if (c.product.id === i.product.id && c.color?.id === i.color?.id) {
-                        i.count = i.count + 1;
-                        found = true;
-                        break;
-                    }
-                } else if (c.variant?.id) {
-                    if (c.product.id === i.product.id && c.variant?.id === i.variant?.id) {
-                        i.count = i.count + 1;
-                        found = true;
-                        break;
-                    }
-                } else {
-                    if (c.product.id === i.product.id) {
-                        i.count = i.count + 1;
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found) {
-                console.log('ni', { uid: lastUid++, product: c.product, count: 1, variant: c.variant, color: c.color })
-                newItems.push({ uid: lastUid++, product: c.product, count: 1, variant: c.variant, color: c.color })
-            }
-        }
-        setItems(newItems)
-    }, [order])
-
-    const addItem = useCallback((item: Item) => {
-        setItems((prev) => [...prev, item])
-    }, [products, items])
-
-    const removeItem = useCallback((item: Item) => {
-        setItems((prev) => prev.filter((p) => p.uid !== item.uid))
-    }, [products, items])
-
-    useEffect(() => {
-        let count = 0;
-        let pri = 0;
-        for (const i of items) {
-            count += i.count
-            pri += i.product.discounted_price ? i.product.discounted_price : i.product.price
-        }
-        setQuantity(count)
-        setSubTotal(pri)
-    }, [items])
-
-    const router = useRouter()
-    const orders = useOrders()
     const pathao = usePathao()
-
     const [zones, setZones] = useState<Zone[]>([])
     const [areas, setAreas] = useState<Area[]>([])
+    const [city, setCity] = useState<number | null>(order.city ?? null)
+    const [zone, setZone] = useState<number | null>(order.zone ?? null)
+    const [area, setArea] = useState<number | null>(order.city ?? null)
 
-    const [city, setCity] = useState<number | null>(null)
-    const [zone, setZone] = useState<number | null>(null)
-    const [area, setArea] = useState<number | null>(null)
-
-    const getZones = useCallback(async () => {
-        if (!city) {
-            setZones([])
-            return
-        }
-        const zs = await pathao.getZones(city)
-        setZones(zs)
-    }, [city])
+    const products = useProducts()
+    const [searchStr, setSearchStr] = useState<string>('')
+    const [filtered, setFiltered] = useState<Product[]>(products.products)
 
     useEffect(() => {
-        getZones()
-    }, [city])
-
-    const getAreas = useCallback(async () => {
-        if (!zone) {
-            setAreas([])
-            return
+        if (searchStr === '') {
+            setFiltered(products.products)
         }
-        const as = await pathao.getAreas(zone)
-        setAreas(as)
-    }, [zone])
+        setFiltered(products.products.filter((prod) => {
+            return prod.name.toLowerCase().includes(searchStr.toLowerCase())
+        }))
+    }, [searchStr, products.products])
 
     useEffect(() => {
-        getAreas()
-    }, [zone])
+        const adrs = address.trim().replace(',', '').replace('-', ' ').replace('/', ' ')
+        const c = pathao.cities.find((ci) => {
+            return adrs.toLowerCase().includes((ci.name.toLowerCase()))
+        })
+        setCity(c?.id ?? null)
+    }, [address])
+
+    async function getZones() {
+        if (city) {
+            const zns = await pathao.getZones(city)
+            setZones(zns)
+        }
+    }
+
+    async function getAreas() {
+        if (zone) {
+            const ars = await pathao.getAreas(zone)
+            setAreas(ars)
+        }
+    }
 
     useEffect(() => {
-        let adrs = address?.replace(',', ' ')
-        adrs = adrs?.replace('-', ' ')
-        for (const c of zones) {
-            if (adrs?.toLowerCase().includes(c.name.toLowerCase())) {
-                setZone(c.id)
-                break;
-            }
+        if (city) {
+            getZones()
         }
-    }, [address, zones])
+        if (zone) {
+            getAreas()
+        }
+    }, [zone, city])
 
     useEffect(() => {
-        let adrs = address?.replace(',', ' ')
-        adrs = adrs?.replace('-', ' ')
-        for (const c of pathao.cities) {
-            if (adrs?.toLowerCase().includes(c.name.toLowerCase())) {
-                setCity(c.id)
-                break;
-            }
-        }
-    }, [address, pathao.cities])
+        const adrs = address.trim().replace(',', '').replace('-', ' ').replace('/', ' ')
+        const c = zones.find((ci) => {
+            return adrs.toLowerCase().includes(ci.name.toLowerCase())
+        })
+        setZone(c?.id ?? null)
+    }, [address, pathao.cities, city, zones])
+
+    useEffect(() => {
+        const adrs = address.trim().replace(',', '').replace('-', ' ').replace('/', ' ')
+        const c = areas.find((ci) => {
+            return adrs.toLowerCase().includes(ci.name.toLowerCase())
+        })
+        setArea(c?.id ?? null)
+    }, [address, zone, areas])
+
+    const total = useMemo(() => {
+        return subTotal + (location === 'insideDhaka' ? 60 : 110);
+    }, [subTotal, location])
+
+    useEffect(() => {
+        let totl = 0;
+        items.forEach((item) => {
+            totl += item.product.discounted_price ? item.product.discounted_price : item.product.price
+        })
+        setSubTotal(totl)
+    }, [items])
+
+    useEffect(() => {
+        let ttl = 0;
+        items.forEach((it) => ttl += it.count)
+        setQuantity(ttl)
+    }, [items])
 
     const [adding, setAdding] = useState<boolean>(false)
-
-    async function addOrder() {
+ 
+    async function submit(e: FormEvent) {
+        e.preventDefault()
         setAdding(true)
-        if (name === '' || address === '' || phone === '') {
-            toast.error("Please provide name, address and phone number")
-            setAdding(false)
-            return
-        }
-        if (items.length === 0) {
-            toast.error("Please select more than 1 item")
-            setAdding(false)
+        const formData = new FormData()
+        if (!name || !address || !phone || !total || !location || !courier || status === '') {
+            toast.error("Provide nanme, address, phone and courier")
             return
         }
         if (courier === 'pathao') {
             if (!city || !zone) {
-                toast.error("Please select both city and zones")
-                setAdding(false)
+                toast.error("Select city and zone")
                 return
             }
         }
-        const payload = {
-            id: order.id,
-            address: address,
-            courier: courier,
-            inside_dhaka: insideDhaka,
-            items: items,
-            name: name,
-            note: note,
-            order_price: total,
-            phone: phone,
-            area: area,
-            city: city,
-            zone: zone
-        }
-        orders.editOrder(order.id,payload)
+        formData.append('id', order.id)
+        formData.append('name', name)
+        formData.append('address', address)
+        formData.append('phone', phone)
+        formData.append('quantity', `${quantity}`)
+        formData.append('weight', weight)
+        formData.append('total', `${total}`)
+        formData.append('location', `${location}`)
+        formData.append('courier', `${courier}`)
+        formData.append('note', `${note}`)
+        formData.append('city', `${city}`)
+        formData.append('area', `${area}`)
+        formData.append('zone', `${zone}`)
+        formData.append('status', `${status}`)
+        await editOrder(items, formData)
         setAdding(false)
-        router.push("/admin/orders")
     }
 
-    return <form className="flex flex-row">
-        <div className="flex flex-col w-1/2">
-            <Label htmlFor="name">Name</Label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} id="" className="form-input my-1" placeholder="Name" /> <br />
+    return <form onSubmit={submit} className="flex flex-col md:flex-row">
+        <div className="flex-grow flex flex-col p-2">
+            <Label htmlFor="name">Name</Label>values
+            <input value={name} onChange={(e) => setName(e.target.value)} type="text" name="name" placeholder="Name" id="" className="form-input" />
             <Label htmlFor="address">Address</Label>
-            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} id="" className="form-input my-1" placeholder="Address" /> <br />
-            <div className="my-1 flex">
-                <input type="radio" name="insideDhaka" id="" checked={insideDhaka} onChange={(e) => {
-                    if (e.target.checked) {
-                        setInsideDhaka(true)
-                    }
-                }} /> Inside Dhaka
-                <div className="mx-2"></div>
-                <input type="radio" name="insideDhaka" id="" checked={!insideDhaka} onChange={(e) => {
-                    if (e.target.checked) {
-                        setInsideDhaka(false)
-                    }
-                }} /> Outside Dhaka
-            </div>
+            <input value={address} onChange={(e) => setAddress(e.target.value)} type="text" name="address" placeholder="Address" id="" className="form-input" />
             <Label htmlFor="phone">Phone</Label>
-            <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} id="" className="form-input my-1" placeholder="Phone" /> <br />
-            <Label htmlFor="price">Sub Total <span className="mx-2"></span>[Total : {total}]</Label>
-            <input type="number" value={subTotal} onChange={(e) => setSubTotal(parseInt(e.target.value))} id="" className="form-input my-1" placeholder="Price" /> <br />
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" name="phone" placeholder="Phone" id="" className="form-input" />
+            <Label htmlFor="weight">Weight (KG)</Label>
+            <input value={weight} onChange={(e) => setWeight(e.target.value)} type="text" name="weight" placeholder="Weight" id="" className="form-input" />
             <Label htmlFor="quantity">Quantity</Label>
-            <input type="number" name="quantity" id="" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} className="form-input" />
-            <Label htmlFor="weight">Weight</Label>
-            <input type="text" name="weight" value={weight} id="" onChange={(e) => setWeight(e.target.value)} className="form-input" />
-            Select Courier : <select onChange={(e) => setCourier(e.target.value)} className="bg-white px-2 py-1 border rounded my-2" name="" id="">
-                {courier === 'pathao' ? <option value="pathao" selected>Pathao</option> : <option value="pathao">Pathao</option>}
-                {courier === 'steadfast' ? <option value="steadfast" selected>Steadfast</option> : <option value="steadfast">Steadfast</option>}
-            </select>
-            {courier === 'pathao' && <div className="flex flex-col">
-                <div>
-                    Select City : <select onChange={(e) => setCity(parseInt(e.target.value))} className="bg-white px-2 py-1 border rounded mx-2" name="" id="">
-                        <option value="">City</option>
-                        {pathao.cities.map((c) => {
-                            if (c.id === city) {
-                                return <option selected value={c.id}>{c.name}</option>
-                            }
-                            return <option value={c.id}>{c.name}</option>
-                        })}
-                    </select>
-                </div>
-                {city !== null && zones.length > 0 && <div className="my-2">
-                    Select zone : <select onChange={(e) => setZone(parseInt(e.target.value))} className="bg-white px-2 py-1 border rounded mx-2" name="" id="">
-                        <option value="">Zone</option>
-                        {zones.map((z) => {
-                            if (z.id === zone) {
-                                return <option selected value={z.id}>{z.name}</option>
-                            }
-                            return <option value={z.id}>{z.name}</option>
+            <input value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} type="number" name="quantity" placeholder="Quantity" id="" className="form-input" />
+            <Label htmlFor="subTotal">Sub Total {`[Total: ${total}]`}</Label>
+            <input value={subTotal} onChange={(e) => setSubTotal(parseInt(e.target.value))} type="number" name="subTotal" placeholder="Quantity" id="" className="form-input" />
+            <div className="my-1">
+                Select Location : <select className="px-2 py-1 rounded border bg-white" value={location} onChange={(e) => setLocation(e.target.value)} name="location" id="">
+                    <option value="">Select Location</option>
+                    <option value="insideDhaka">Inside Dhaka</option>
+                    <option value="outsideDhaka">Outside Dhaka</option>
+                </select>
+            </div>
+            <div className="my-1">
+                Select Courier : <select className="px-2 py-1 rounded border bg-white" value={courier} onChange={(e) => setCourier(e.target.value)} name="location" id="">
+                    <option value="">Select Courier</option>
+                    <option value="pathao">Pathao</option>
+                    <option value="steadfast">Steadfast</option>
+                </select>
+            </div>
+            {courier === 'pathao' && <div className="my-1 flex flex-col items-start">
+                {pathao.cities.length > 0 && <div>
+                    Select City: <select name="city" id="" value={`${city}`} onChange={(e) => setCity(parseInt(e.target.value))} className="px-2 py-1 my-1 rounded bg-white border">
+                        <option value="">Select City</option>
+                        {pathao.cities.map((ci) => {
+                            return <option value={ci.id}>{ci.name}</option>
                         })}
                     </select>
                 </div>}
-                {zone !== null && areas.length > 0 && <div className="my-2">
-                    Select Area : <select onChange={(e) => setArea(parseInt(e.target.value))} className="bg-white px-2 py-1 border rounded mx-2" name="" id="">
-                        <option value="">Area</option>
-                        {areas.map((a) => {
-                            if (a.id === area) {
-                                return <option selected value={a.id}>{a.name}</option>
-                            }
-                            return <option value={a.id}>{a.name}</option>
+                {city !== null && zones.length > 0 && <div>
+                    Select Zone: <select name="zone" id="" value={`${zone}`} onChange={(e) => setZone(parseInt(e.target.value))} className="px-2 py-1 my-1 rounded bg-white border">
+                        <option value="">Select Zone</option>
+                        {zones.map((ci) => {
+                            return <option value={ci.id}>{ci.name}</option>
+                        })}
+                    </select>
+                </div>}
+                {zone !== null && areas.length > 0 && <div>
+                    Select Area: <select name="area" id="" value={`${area}`} onChange={(e) => setArea(parseInt(e.target.value))} className="px-2 py-1 my-1 rounded bg-white border">
+                        <option value="">Select Area</option>
+                        {areas.map((ci) => {
+                            return <option value={ci.id}>{ci.name}</option>
                         })}
                     </select>
                 </div>}
             </div>}
-            <textarea name="" id="" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Notes" rows={5} className="form-input my-1"></textarea>
-            {adding ? <Spinner /> : <button onClick={() => addOrder()} type="button" className="btn my-2">Confirm</button>}
+            {(order.status !== 'Delivered' && order.status !== 'Return' && order.status !== 'Failed') && <div className="my-1">
+                Select status : <select name="status" id="" value={`${status}`} onChange={(e) => setStatus((e.target.value))} className="px-2 py-1 my-1 rounded bg-white border">
+                    <option value="">Select Status</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Return">Return</option>
+                    <option value="Dismiss">Dismiss</option>
+                    <option value="Hold">Hold</option>
+                    <option value="Failed">Failed</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+            </div>}
+            <textarea name="" onChange={(e) => setNote(e.target.value)} value={note} id="" className="form-input w-full my-1" placeholder="Note" rows={5}></textarea>
+            {adding ? <Spinner/> :<StateButton>Save</StateButton>}
         </div>
-        <div className="w-1/2 p-3">
+        <div className="flex-grow flex flex-col p-2">
+            <h3 className="font-bold">Selected Products</h3>
             <div className="my-1">
-                <h3>
-                    Selected Products
-                </h3>
-                {items?.map((prod) => {
-                    return <div className="my-1 flex flex-row">
-                        <Image width={200} height={200} src={prod.product.images[0].url} className="w-[100px] h-[100px] rounded me-3" alt="Image" />
+                {items.map((item) => {
+                    return <div className="my-1 flex">
+                        <Image src={item.product.images[0].url} alt="Image" width={100} height={100} className="w-[100px] h-[100px]" />
+                        <div className="mx-2"></div>
                         <div>
-                            <h3>
-                                {prod.product.name}
-                            </h3>
-                            {prod.variant && <h3>
-                                {prod.variant?.name}
-                            </h3>}
-                            {prod.color && <h3>
-                                {prod.color?.name}
-                            </h3>}
-                            <h3>
-                                X {prod.count}
-                            </h3>
-                            <button className="my-1 btn" onClick={() => removeItem(prod)}>Remove</button>
+                            {item.product.name} X {item.count} <br />
+                            {item.variant !== null && <>{item.variant.name} <br /></>}
+                            {item.color !== null && <>{item.color.name} <br /></>}
+                            <button className="btn" type="button" onClick={() => {
+                                setItems((prev) => prev.filter((it) => it.uid !== item.uid))
+                            }}>Remove</button>
                         </div>
                     </div>
                 })}
-                <div className="my-1 p-3">
-                    <b>Add</b>
-                    {products.products.map((prod) => {
-                        return <AddProduct key={prod.id} add={addItem} product={prod} />
-                    })}
-                </div>
+            </div>
+            <h3 className="font-bold">
+                Add Products
+            </h3>
+            <div className="my-1">
+                <input type="text" value={searchStr} onChange={(e) => setSearchStr(e.target.value)} className="form-input" />
+            </div>
+            <div className="h-[500px] overflow-auto">
+                {filtered.map((prod) => {
+                    return <AddProduct items={items} product={prod} set={setItems} key={prod.id} />
+                })}
             </div>
         </div>
     </form>
-}   
+}

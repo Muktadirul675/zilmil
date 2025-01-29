@@ -118,10 +118,11 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <Label htmlFor="name">Address</Label>
                         <input value={address} onChange={(e) => setAddress(e.target.value)} type="text" placeholder="Write your address" name="address" id="" className="shadow form-input my-3" />
                         <h3 className="text-lg font-bold">Select your area</h3>
-                        <div className="flex items-center p-2">
+                        <div className="flex items-center">
                             <input checked={insideDhaka} onChange={(e) => setInsideDhaka(e.target.checked)} type="radio" name="id_dhaka" id="" /> <div className="mx-2"></div> Inside Dhaka
                         </div>
-                        <div className="flex items-center p-2">
+                        <div className="my-1"></div>
+                        <div className="flex items-center">
                             <input checked={!insideDhaka} onChange={(e) => setInsideDhaka(!e.target.checked)} type="radio" name="id_dhaka" id="" /> <div className="mx-2"></div> Outside Dhaka
                         </div>
                     </div>
@@ -140,10 +141,10 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <div className="ms-3 h-full">
                             <h3 className="font-bold">{item.product.name} <span className="mx-1"></span> <span>X {item.count}</span></h3>
                             {item.variant !== null && <div>
-                                {item.variant.name}    
+                                {item.variant.name}
                             </div>}
                             {item.color !== null && <div>
-                                {item.color.name}    
+                                {item.color.name}
                             </div>}
                         </div>
                         <h3 className="text-lg font-bold ms-auto">{item.product.discounted_price ? item.product.discounted_price : item.product.price} </h3>
@@ -167,9 +168,11 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <br />
                         Pay with cash upon delivery
                     </div>
-                    <button onClick={placeOrder} className="w-full p-3 bg-black text-white">
-                        {placing ? <Spinner/> : <>Complete Order</>}
-                    </button>
+                    <div className="w-full flex justify-center">
+                        {placing ? <Spinner /> : <button onClick={placeOrder} className="w-full p-3 bg-base-theme text-white">
+                            Complete Order
+                        </button>}
+                    </div>
                 </div>
             </div>
         </div>

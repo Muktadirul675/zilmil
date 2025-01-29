@@ -1,6 +1,7 @@
 import { Order } from '@/app/admin/orders/add/page'
 import { prisma } from '@/prisma'
-import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
+import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
     const json: {id:string , payload: Order} = await request.json()
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
             name: data.name,
             zone: data.zone,
             note: data.note,
+            status: data.status,
             items: {
                 create: data.items.map((it) => {
                     return {
@@ -60,5 +62,8 @@ export async function POST(request: Request) {
             }
         },
     })
+
+    revalidatePath("/admin/orders")
+    // redirect("/admin/orders")Hshs
     return NextResponse.json(order)
 }

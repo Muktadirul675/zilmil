@@ -17,7 +17,8 @@ interface CartContextType {
         delivered: number,
         returned: number,
         confirmed: number,
-        dismissed:number
+        dismissed:number,
+        hold:number
     },
     getPage : (page: number) => Promise<Order[]>,
     addOrder: (payload: OrderAddPayload)=>Promise<void>,
@@ -49,14 +50,16 @@ export const OrderProvider = ({ children }: OrderProviderProp) => {
         delivered: number,
         returned: number,
         confirmed: number,
-        dismissed : number
+        dismissed : number,
+        hold: number
     }>({
         count: 0,
         pending: 0,
         delivered: 0,
         returned: 0,
         confirmed: 0,
-        dismissed: 0
+        dismissed: 0,
+        hold:0
     })
     const [isLoading] = useState<boolean>(false)
     const [fetching, setFetching] = useState<boolean>(false)
@@ -69,7 +72,8 @@ export const OrderProvider = ({ children }: OrderProviderProp) => {
             delivered: number,
             returned: number,
             confirmed: number,
-            dismissed:number
+            dismissed:number,
+            hold:number
         } = await res.json()
         setCounts(json)
     }
@@ -112,6 +116,7 @@ export const OrderProvider = ({ children }: OrderProviderProp) => {
                 prev[0] = first;
                 return prev;
             })
+            getCount()
             toast.success("Order added")
         }catch(e){
             toast.error(JSON.stringify(e))
@@ -140,6 +145,7 @@ export const OrderProvider = ({ children }: OrderProviderProp) => {
                     }
                 })
             })
+            getCount()
             toast.success("Order Saved")
         }catch(e){
             toast.error(JSON.stringify(e))

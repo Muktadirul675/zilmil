@@ -28,3 +28,6 @@ export function hasProduct(id: string){
     }
     return false;
 }
+
+
+  
