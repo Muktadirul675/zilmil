@@ -1,0 +1,6 @@
+SSH Access Information
+=============================
+Main IP Address: 103.169.160.194
+Server Name: server.zilmil.com.bd
+Root Password: Zilmilvps123**
+0L6XAYHDHc&S

@@ -39,7 +39,6 @@ export async function POST(req: Request){
         order = await prisma.order.update({
             where:{
                 id:id,
-                c_id:c_id,
             },
             data:{
                 status: newStatus,
@@ -53,7 +52,6 @@ export async function POST(req: Request){
         order = await prisma.order.update({
             where:{
                 id:id,
-                c_id:c_id,
             },
             data:{
                 courier_status: status,
