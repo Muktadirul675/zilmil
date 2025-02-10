@@ -3,7 +3,7 @@ import { prisma } from '@/prisma';
 import { NextResponse } from 'next/server';
 
 
-export async function GET() {
+export async function GET(req: Request) {
   const last30Days = new Date();
   last30Days.setDate(last30Days.getDate() - 30);
 

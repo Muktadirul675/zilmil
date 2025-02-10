@@ -1,4 +1,6 @@
 import { prisma } from "@/prisma"
+import { checkProductAvailability } from "@/utils/orders"
+import { revalidatePath } from "next/cache"
 // X-Pathao-Merchant-Webhook-Integration-Secret
 export async function POST(req: Request){
     const zilmil_secret = process.env.ZILMIL_SECRET
@@ -80,6 +82,12 @@ export async function POST(req: Request){
             }
         })
     }
+
+    checkProductAvailability(order.items.map((o)=>o.productId))
+    revalidatePath('/')
+    revalidatePath('/admin')
+    revalidatePath('/admin/orders')
+    revalidatePath('/admin/products')
 
     return new Response(JSON.stringify(order),{
         status: 200,

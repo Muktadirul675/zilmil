@@ -1,7 +1,9 @@
 import { prisma } from "@/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(){
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request){
     const products = await prisma.product.findMany({
         where: {is_available:true},
         select:{

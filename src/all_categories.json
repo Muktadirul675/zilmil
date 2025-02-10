@@ -1,0 +1,50 @@
+[
+  {
+    "uid": 3,
+    "name": "Mens",
+    "subs": [
+      {
+        "uid": 1,
+        "id": "Men",
+        "name": "Men"
+      },
+      {
+        "uid": 2,
+        "id": "Gadgets",
+        "name": "Gadgets"
+      }
+    ]
+  },
+  {
+    "uid": 2,
+    "name": "New",
+    "subs": [
+      {
+        "uid": 3,
+        "name": "Mens",
+        "subs": [
+          {
+            "uid": 1,
+            "id": "Men",
+            "name": "Men"
+          },
+          {
+            "uid": 2,
+            "id": "Gadgets",
+            "name": "Gadgets"
+          }
+        ]
+      },
+      {
+        "uid": 0,
+        "id": "Men",
+        "name": "Men"
+      },
+      {
+        "uid": 1,
+        "id": "Gadgets",
+        "name": "Gadgets"
+      }
+    ]
+  }
+]

@@ -136,16 +136,17 @@ function AddProduct({ product, items, set }: {
             <div className="mx-2"></div>
             <div>
                 {product.name} <br />
+                Stocks: {product.stocks} <br />
                 {variant !== null && <>{variant.name} <br /></>}
                 {color !== null && <>{color.name} <br /></>}
                 <div className="flex">
                     {product.variants.map((va) => {
-                        return <div className="border m-1 p-2" onClick={() => setVariant(va)}>{va.name}</div>
+                        return <div className="border cursor-pointer m-1 p-2" onClick={() => setVariant(va)}>{va.name}</div>
                     })}
                 </div>
                 <div className="flex">
                     {product.colors.map((va) => {
-                        return <div style={{ backgroundColor: `${va.hex}` }} className="border m-1 rounded-full h-[30px] w-[30px]" onClick={() => setColor(va)}></div>
+                        return <div style={{ backgroundColor: `${va.hex}` }} className="border cursor-pointer m-1 rounded-full h-[30px] w-[30px]" onClick={() => setColor(va)}></div>
                     })}
                 </div>
                 <div className="flex items-center">

@@ -5,9 +5,8 @@ import fs from 'fs';
 import path from 'path';
 
 export interface BarContent{
-    id?: string,
-    name?: string,
-    subs : BarContent[]
+    name: string,
+    id: string
 }
 
 export default async function Page() {

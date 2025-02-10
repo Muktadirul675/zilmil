@@ -2,7 +2,9 @@
 
 import { Item } from "@/app/admin/orders/add/page";
 import { revalidate } from "@/app/page";
+import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { checkProductAvailability } from "@/utils/orders";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -31,7 +33,42 @@ import { redirect } from "next/navigation";
 //    item_description     <nullable, string>
 //  */
 
-export async function addOrder(items: Item[], formData: FormData){
+async function stableStocks(id: string, oldStatus: string, newStatus: string) {
+    if (oldStatus === newStatus) {
+        return;
+    }
+    const negative = ['Failed', 'Dismiss', 'Return']
+    const positive = ['Complete', 'Hold', 'Pending']
+    let transition = 0
+    if (oldStatus in negative && newStatus in positive) {
+        transition = -1
+    }
+    if (oldStatus in positive && newStatus in negative) {
+        transition = 1
+    }
+    if (transition === 1) {
+        await prisma.product.update({
+            where: { id: id },
+            data: {
+                stocks: {
+                    increment: 1
+                }
+            }
+        })
+    }
+    // if(transition === -1){
+    //     await prisma.product.update({
+    //         where:{id:id},
+    //         data:{
+    //             stocks:{
+    //                 decrement: 1
+    //             }
+    //         }
+    //     })
+    // }
+}
+
+export async function addOrder(items: Item[], formData: FormData) {
     const name = formData.get('name')
     const address = formData.get('address')
     const phone = formData.get('phone')
@@ -45,22 +82,22 @@ export async function addOrder(items: Item[], formData: FormData){
     const area = formData.get('area')
     const zone = formData.get('zone')
     const status = formData.get('status')
-    if(!name || !address || !phone || !total || !location || !courier){
+    if (!name || !address || !phone || !total || !location || !courier) {
         return
     }
-    if(courier.toString() === 'pathao'){
-        if(!city || !zone){
+    if (courier.toString() === 'pathao') {
+        if (!city || !zone) {
             return
         }
     }
-    let ordItems : {productId: string, colorId: string | null, variantId: string | null}[] = []
-    items.forEach((it)=>{
-        for(let i=0;i<it.count;i++){
-            ordItems.push({productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null})
+    let ordItems: { productId: string, colorId: string | null, variantId: string | null }[] = []
+    items.forEach((it) => {
+        for (let i = 0; i < it.count; i++) {
+            ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
         }
     })
     const order = await prisma.order.create({
-        data:{
+        data: {
             address: address.toString(),
             inside_dhaka: location.toString() === 'insideDhaka' ? true : false,
             order_price: parseInt(total.toString()),
@@ -78,28 +115,44 @@ export async function addOrder(items: Item[], formData: FormData){
 
         }
     })
-    for(const p of ordItems){
+    for (const p of ordItems) {
         const prodId = p.productId
         await prisma.product.update({
-            where:{id:prodId},
-            data:{
+            where: { id: prodId },
+            data: {
                 stocks: {
                     decrement: 1
                 }
             }
         })
     }
-    
+
+    await checkProductAvailability(ordItems.map((o) => o.productId))
+
     revalidatePath("/admin/orders")
     revalidatePath("/admin/products")
     revalidatePath("/admin/stocks")
-    redirect("/admin/orders")
+    const session = await auth()
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session?.user?.email ?? ''
+        }
+    })
+    if (user) {
+        if (user.is_admin) {
+            redirect("/admin/orders")
+        }
+        if(user.is_staff){
+            redirect("/staff")
+        }
+    }
+    redirect("/unauthorized")
 }
 
-export async function editOrder(items: Item[], formData: FormData){
+export async function editOrder(items: Item[], formData: FormData) {
     console.log('saving')
     const id = formData.get('id')
-    if(!id) return;
+    if (!id) return;
     const name = formData.get('name')
     const address = formData.get('address')
     const phone = formData.get('phone')
@@ -113,26 +166,46 @@ export async function editOrder(items: Item[], formData: FormData){
     const area = formData.get('area')
     const zone = formData.get('zone')
     const status = formData.get('status')
-    if(!name || !address || !phone || !total || !location || !courier){
+    if (!name || !address || !phone || !total || !location || !courier) {
         return
     }
-    if(courier.toString() === 'pathao'){
-        if(!city || !zone){
+    if (courier.toString() === 'pathao') {
+        if (!city || !zone) {
             return
         }
     }
-    await prisma.orderItem.deleteMany({
-        where:{orderId: id.toString()}
+    const oldOrderItems = await prisma.orderItem.findMany({ where: { id: id.toString() } });
+    await prisma.product.updateMany({
+        where: {
+            id: {
+                in: oldOrderItems.map((ooit) => ooit.productId)
+            }
+        },
+        data: {
+            stocks: {
+                increment: 1
+            }
+        }
     })
-    let ordItems : {productId: string, colorId: string | null, variantId: string | null}[] = []
-    items.forEach((it)=>{
-        for(let i=0;i<it.count;i++){
-            ordItems.push({productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null})
+
+    await prisma.orderItem.deleteMany({
+        where: { orderId: id.toString() }
+    })
+    let ordItems: { productId: string, colorId: string | null, variantId: string | null }[] = []
+    items.forEach((it) => {
+        for (let i = 0; i < it.count; i++) {
+            ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
+        }
+    })
+    const oldOrder = await prisma.order.findUnique({
+        where: { id: id.toString() },
+        select: {
+            status: true
         }
     })
     const order = await prisma.order.update({
-        where:{id:id.toString()},
-        data:{
+        where: { id: id.toString() },
+        data: {
             address: address.toString(),
             inside_dhaka: location.toString() === 'insideDhaka' ? true : false,
             order_price: parseInt(total.toString()),
@@ -144,30 +217,47 @@ export async function editOrder(items: Item[], formData: FormData){
             note: note?.toString(),
             status: status?.toString(),
             zone: parseInt(zone?.toString() ?? '0'),
-            items:{
+            items: {
                 create: ordItems
             }
-
+        },
+        select: {
+            status: true,
+            items: true
         }
     })
-    if(!(status?.toString() === 'Complete' || status?.toString() === 'Hold' || status?.toString() === 'Pending')){
-        for(const p of ordItems){
-            const prodId = p.productId
-            await prisma.product.update({
-                where:{id:prodId},
-                data:{
-                    stocks: {
-                        increment: 1
-                    }
+    for (const p of order.items) {
+        const prodId = p.productId
+        await prisma.product.update({
+            where: { id: prodId },
+            data: {
+                stocks: {
+                    decrement: 1
                 }
-            })
-        }
-        
+            }
+        })
+        await stableStocks(prodId, oldOrder?.status ?? order.status, order.status)
     }
+    await checkProductAvailability(order.items.map((o) => o.productId))
     revalidatePath("/admin/orders")
     revalidatePath("/admin/products")
     revalidatePath("/admin/stocks")
-    redirect("/admin/orders")
+    
+    const session = await auth()
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session?.user?.email ?? ''
+        }
+    })
+    if (user) {
+        if (user.is_admin) {
+            redirect("/admin/orders")
+        }
+        if(user.is_staff){
+            redirect("/staff")
+        }
+    }
+    redirect("/unauthorized")
 }
 
 export async function placeOrder(formData: FormData) {
@@ -204,7 +294,7 @@ export async function placeOrder(formData: FormData) {
         item_weight: weight,
         amount_to_collect: amount
     }
-    await fetch(`${process.env.PATHAO_URL}/create_order`,{
+    await fetch(`${process.env.PATHAO_URL}/create_order`, {
         method: 'POST',
         body: JSON.stringify(payload)
     })

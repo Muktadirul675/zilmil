@@ -257,29 +257,6 @@ export default function Page() {
                         })}
                     </div>}
                     <div className="my-2 flex items-center">
-                        {/* Here are the hex codes for the Tailwind CSS colors you listed:
-
-                        1. bg-black: #000000
-
-
-                        2. bg-white: #FFFFFF
-
-
-                        3. bg-red-500: #EF4444
-
-
-                        4. bg-green-500: #22C55E
-
-
-                        5. bg-blue-500: #3B82F6
-
-
-                        6. bg-yellow-500: #EAB308
-
-
-                        7. bg-emerald-500: #10B981 */}
-
-                        {/* Color- Black,Red,White,Blue,Olive,Green, Yellow,Orange */}
                         <div onClick={()=>{
                             colors.setHex("#000000")
                             colors.setName("Black")

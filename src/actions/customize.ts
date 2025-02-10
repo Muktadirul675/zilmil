@@ -125,7 +125,15 @@ export async function editBanner(formData: FormData){
 export async function editCategoryBar(formData: FormData){
     const categories = formData.get('categories')
     const categoriesJson = path.join(process.cwd(), 'src', 'categories.json')
-    fs.writeFileSync(categoriesJson, categories?.toString() ?? '[]')
+    fs.writeFileSync(categoriesJson, categories?.toString() ?? '{}')
+    revalidatePath("/")
+    return
+}
+
+export async function editAllCategories(formData: FormData){
+    const categories = formData.get('categories')
+    const categoriesJson = path.join(process.cwd(), 'src', 'all_categories.json')
+    fs.writeFileSync(categoriesJson, categories?.toString() ?? '{}')
     revalidatePath("/")
     return
 }

@@ -9,18 +9,19 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { Content } from "./Navbar";
 
-function ShowSelected({ selected, setParentDisplay }: { selected: BarContent, setParentDisplay : Dispatch<SetStateAction<string>>}) {
+function ShowSelected({ selected, setParentDisplay }: { selected: Content, setParentDisplay : Dispatch<SetStateAction<string>>}) {
     const [display, setDisplay] = useState<boolean>(false)
     if (selected.id === '') {
         return <>
             <div className="hidden rotate-180"></div>
             <h3 className="text-lg font-bold flex items-center w-full">
                 {selected.name}
-                {selected.subs.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
+                {selected.subs?.length && selected.subs?.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
             </h3>
             <div className="h-fit hidden"></div>
-            {selected.subs.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
+            {selected.subs?.length && selected.subs?.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
                 {selected.subs.map((s) => <ShowSelected key={s.id} setParentDisplay={setParentDisplay}  selected={s} />)}
             </div>}
         </>
@@ -30,17 +31,17 @@ function ShowSelected({ selected, setParentDisplay }: { selected: BarContent, se
                 <Link onClick={()=>setParentDisplay('hidden')} href={`/categories/${selected.id}`}>
                     {selected.name}
                 </Link>
-                {selected.subs.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
+                {selected.subs?.length && selected.subs?.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
             </h3>
             <div className="h-fit hidden"></div>
-            {selected.subs.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
-                {selected.subs.map((s) => <ShowSelected key={s.id} setParentDisplay={setParentDisplay} selected={s} />)}
+            {selected.subs?.length && selected.subs?.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
+                {selected.subs?.map((s) => <ShowSelected key={s.id} setParentDisplay={setParentDisplay} selected={s} />)}
             </div>}
         </>
     }
 }
 
-export default function Sidebar({ selecteds, categories }: { selecteds: BarContent[], categories: Category[] }) {
+export default function Sidebar({ selecteds }: { selecteds: Content[] }) {
     const [display, setDisplay] = useState<string>('hidden')
     const router = useRouter()
     function toggle() {

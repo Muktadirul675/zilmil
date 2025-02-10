@@ -1,6 +1,8 @@
 'use client';
 
-import { addOrder, editOrder } from "@/actions/orders";
+import React from "react";
+import { addOrder } from "@/actions/orders";
+import Spinner from "@/components/Spinner";
 import StateButton from "@/components/StateButton";
 import { Area, City, Zone, usePathao } from "@/stores/pathao";
 import { useProducts } from "@/stores/products";
@@ -8,7 +10,6 @@ import Image from "next/image";
 import { Dispatch, FormEvent, SetStateAction, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { BiMinus, BiPlus } from "react-icons/bi";
-import Spinner from "../Spinner";
 
 interface Variant {
     id: string,
@@ -88,7 +89,7 @@ export interface Order {
     status: string
 }
 
-let uid = 1000;
+let uid = 0;
 
 function Label({ children, htmlFor }: { children: React.ReactNode, htmlFor: string }) {
     return <label htmlFor={htmlFor} className="text-lg font-bold">{children}</label>
@@ -141,7 +142,7 @@ function AddProduct({ product, items, set }: {
                 {color !== null && <>{color.name} <br /></>}
                 <div className="flex">
                     {product.variants.map((va) => {
-                        return <div className="border m-1 p-2 cursor-pointer" onClick={() => setVariant(va)}>{va.name}</div>
+                        return <div className="border cursor-pointer m-1 p-2" onClick={() => setVariant(va)}>{va.name}</div>
                     })}
                 </div>
                 <div className="flex">
@@ -160,25 +161,25 @@ function AddProduct({ product, items, set }: {
     </>
 }
 
-export default function OrderDetailsForm({ order }: { order: Order }) {
-    const [name, setName] = useState<string>(order.name)
-    const [address, setAddress] = useState<string>(order.address)
-    const [phone, setPhone] = useState<string>(order.phone)
+export default function Page() {
+    const [name, setName] = useState<string>('')
+    const [address, setAddress] = useState<string>('')
+    const [phone, setPhone] = useState<string>('')
     const [quantity, setQuantity] = useState<number>(0)
     const [weight, setWeight] = useState<string>('0.5')
-    const [items, setItems] = useState<Item[]>(order.items)
-    const [subTotal, setSubTotal] = useState<number>(order.order_price - (order.inside_dhaka ? 60 : 110))
-    const [location, setLocation] = useState<string>(order.inside_dhaka ? 'insideDhaka' : 'outsideDhaka')
-    const [note, setNote] = useState<string>(order?.note ?? '')
-    const [courier, setCourier] = useState<string>(order?.courier ?? 'pathao')
-    const [status, setStatus] = useState<string>(order.status)
+    const [items, setItems] = useState<Item[]>([])
+    const [subTotal, setSubTotal] = useState<number>(0)
+    const [location, setLocation] = useState<string>('insideDhaka')
+    const [note, setNote] = useState<string>('')
+    const [courier, setCourier] = useState<string>('pathao')
+    const [status, setStatus] = useState<string>('')
 
     const pathao = usePathao()
     const [zones, setZones] = useState<Zone[]>([])
     const [areas, setAreas] = useState<Area[]>([])
-    const [city, setCity] = useState<number | null>(order.city ?? null)
-    const [zone, setZone] = useState<number | null>(order.zone ?? null)
-    const [area, setArea] = useState<number | null>(order.city ?? null)
+    const [city, setCity] = useState<number | null>(null)
+    const [zone, setZone] = useState<number | null>(null)
+    const [area, setArea] = useState<number | null>(null)
 
     const products = useProducts()
     const [searchStr, setSearchStr] = useState<string>('')
@@ -227,18 +228,18 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
     useEffect(() => {
         const adrs = address.trim().replace(',', '').replace('-', ' ').replace('/', ' ')
         const c = zones.find((ci) => {
-            return adrs.toLowerCase().includes(ci.name.toLowerCase())
+            return adrs.toLowerCase().includes((ci.name.toLowerCase()))
         })
         setZone(c?.id ?? null)
-    }, [address, pathao.cities, city, zones])
+    }, [address, pathao.cities, city])
 
     useEffect(() => {
         const adrs = address.trim().replace(',', '').replace('-', ' ').replace('/', ' ')
         const c = areas.find((ci) => {
-            return adrs.toLowerCase().includes(ci.name.toLowerCase())
+            return adrs.toLowerCase().includes((ci.name.toLowerCase()))
         })
         setArea(c?.id ?? null)
-    }, [address, zone, areas])
+    }, [address, zone])
 
     const total = useMemo(() => {
         return subTotal + (location === 'insideDhaka' ? 60 : 110);
@@ -259,7 +260,7 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
     }, [items])
 
     const [adding, setAdding] = useState<boolean>(false)
- 
+
     async function submit(e: FormEvent) {
         e.preventDefault()
         setAdding(true)
@@ -274,7 +275,6 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
                 return
             }
         }
-        formData.append('id', order.id)
         formData.append('name', name)
         formData.append('address', address)
         formData.append('phone', phone)
@@ -288,7 +288,7 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
         formData.append('area', `${area}`)
         formData.append('zone', `${zone}`)
         formData.append('status', `${status}`)
-        await editOrder(items, formData)
+        await addOrder(items, formData)
         setAdding(false)
     }
 
@@ -346,20 +346,17 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
                     </select>
                 </div>}
             </div>}
-            {(order.status !== 'Delivered' && order.status !== 'Return' && order.status !== 'Failed') && <div className="my-1">
+            <div className="my-1">
                 Select status : <select name="status" id="" value={`${status}`} onChange={(e) => setStatus((e.target.value))} className="px-2 py-1 my-1 rounded bg-white border">
                     <option value="">Select Status</option>
+                    <option value="Pending">New</option>
                     <option value="Complete">Complete</option>
-                    <option value="Return">Return</option>
-                    <option value="Dismiss">Dismiss</option>
                     <option value="Hold">Hold</option>
-                    <option value="Failed">Failed</option>
-                    <option value="Delivered">Delivered</option>
                 </select>
-            </div>}
+            </div>
             <textarea name="" onChange={(e) => setNote(e.target.value)} value={note} id="" className="form-input w-full my-1" placeholder="Note" rows={5}></textarea>
-            {adding ? <Spinner/> :<StateButton>Save</StateButton>}
-        </div>
+            {adding ? <Spinner/> :<StateButton>Add</StateButton>}
+        </div> 
         <div className="flex-grow flex flex-col p-2">
             <h3 className="font-bold">Selected Products</h3>
             <div className="my-1">

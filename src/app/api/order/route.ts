@@ -5,6 +5,7 @@ import { Order } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import { perPageOrder } from "../../../types";
 import { revalidatePath } from "next/cache";
+import { checkProductAvailability } from "@/utils/orders";
 
 export const dynamic = 'force-dynamic'
 
@@ -94,6 +95,7 @@ export async function POST(request: Request) {
         await prisma.cartItem.deleteMany({
             where: { userId: user?.id }
         })
+        await checkProductAvailability(payload.items.map((o)=>o.product))
         revalidatePath("/admin/orders")
         return NextResponse.json(order)
     } else {
@@ -122,6 +124,8 @@ export async function POST(request: Request) {
             })
             console.log("created")
         }
+
+        await checkProductAvailability(payload.items.map((o)=>o.product))
         revalidatePath("/admin/orders")
         revalidatePath("/admin/products")
         revalidatePath("/admin/stocks")

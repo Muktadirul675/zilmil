@@ -264,7 +264,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                                 } else {
                                     setSelectedCategories((prev) => [...prev, cat])
                                 }
-                            }} className={`p-2 border-b cursor-pointer ${isSelected ? 'bg-blue-400 border-blue-600 border' : 'bg-white border-b border-gray-400'}`}>
+                            }} className={`p-2 border-b cursor-pointer ${isSelected ? 'bg-blue-400 border-blue-600 border text-white' : 'bg-white border-b border-gray-400'}`}>
                                 <div className="bg-blue-400 border border-blue-600" hidden></div>
                                 {cat.name}
                             </div>
@@ -310,6 +310,37 @@ export default function EditProductForm({ product }: { product: Product }) {
                             )
                         })}
                     </div>}
+
+                    <div className="my-2 flex items-center">
+                        <div onClick={() => {
+                            colors.setHex("#000000")
+                            colors.setName("Black")
+                        }} className="w-10 h-10 rounded-full border bg-black me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#ffffff")
+                            colors.setName("White")
+                        }} className="w-10 h-10 rounded-full border bg-white me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#EF4444")
+                            colors.setName("Red")
+                        }} className="w-10 h-10 rounded-full border bg-red-500 me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#22C55E")
+                            colors.setName("Green")
+                        }} className="w-10 h-10 rounded-full border bg-green-500 me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#3B82F6")
+                            colors.setName("Blue")
+                        }} className="w-10 h-10 rounded-full border bg-blue-500 me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#EAB308")
+                            colors.setName("Yellow")
+                        }} className="w-10 h-10 rounded-full border bg-yellow-500 me-2"></div>
+                        <div onClick={() => {
+                            colors.setHex("#10B981")
+                            colors.setName("Olive")
+                        }} className="w-10 h-10 rounded-full border bg-emerald-500 me-2"></div>
+                    </div>
                     <input value={colors.name ?? ''} onChange={(e) => colors.setName(e.target.value)} type="text" name="" id="" placeholder="Color Name" className="form-input my-1" />
                     <input value={colors.stocks ?? ''} onChange={(e) => colors.setStocks(parseInt(e.target.value))} type="number" min={1} name="" id="" placeholder="Color Stocks" className="form-input my-1" />
                     <HexColorPicker className="my-1 w-full" color={colors.hex ?? ''} onChange={colors.setHex} />

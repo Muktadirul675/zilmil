@@ -49,9 +49,7 @@ export default async function Page() {
         {outOfStocks.length > 0 && <> <h3 className="text-2xl mt-3">Out Of Stocks</h3>
         <ProductTable products={outOfStocks} /></>}
         {lowStocks.length > 0 && <> <h3 className="text-2xl mt-3">Low Stocks</h3>
-        <ProductTable products={outOfStocks} /></>}
-        {notAvailables.length > 0 && <> <h3 className="text-2xl mt-3">Not available</h3>
-        <ProductTable products={outOfStocks} /></>}
+        <ProductTable products={lowStocks} /></>}
         <h3 className="text-2xl mt-3">All products</h3>
         <ProductTable products={products} />
     </>

@@ -66,13 +66,6 @@ export default async function Layout({ children }: { children: React.ReactNode }
                     Orders
                 </span>
             </Link>
-            <Link href="/admin/courier" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">
-                <GrOrderedList className="text-xl" />
-                <span className="hidden md:flex">
-                    <span className="mx-2"></span>
-                    Courier
-                </span>
-            </Link>
             {/* <Link href="/admin/orders/pending" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">
                 <MdPendingActions className="text-xl" />
                 <span className="hidden md:flex">
@@ -111,6 +104,13 @@ export default async function Layout({ children }: { children: React.ReactNode }
                 <span className="hidden md:flex">
                     <span className="mx-2"></span>
                     Categories 
+                </span>
+            </Link>
+            <Link href="/admin/customize/allcategories" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">
+                <TbCategory className="text-xl" />
+                <span className="hidden md:flex">
+                    <span className="mx-2"></span>
+                    All Categories 
                 </span>
             </Link>
             <Link href="/admin/customize/categorybanner" className="flex transition-all my-3 items-center  text-white p-3 rounded hover:bg-base-theme-dark">

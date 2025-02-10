@@ -5,6 +5,7 @@ import { Item, Order } from "./Orders";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrismaDate } from '@/utils/date/format'
+import { DateRangePicker } from "react-date-range";
 
 function SuccessRate({ phone }: { phone: string }) {
     const [isLoading, setLoading] = useState<boolean>(true)
@@ -194,6 +195,11 @@ export default function OrderTable({ orders }: { orders: Order[] }) {
     const [status, setStatus] = useState<string>('All')
     const [search, setSearch] = useState<string>('')
 
+    const [showDates, setShowDates] = useState<boolean>(false)
+
+    const [start, seStart] = useState<Date|null>(null)
+    const [end, setEnd] = useState<Date|null>(null)
+
     useEffect(() => {
         const statusOrders = status === 'All' ? orders : orders.filter((ord) => ord.status === status)
         if (search.trim() === '') {
@@ -203,17 +209,30 @@ export default function OrderTable({ orders }: { orders: Order[] }) {
         }
     }, [search, orders, status])
 
+    const range = {
+        start: new Date(),
+        end: new Date(),
+        key: 'selection'
+    }
+
     return <div className="rounded border">
         <div className="p-3 flex items-center">
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or order id" className="form-input" />
-            <div className="ms-auto">
-                <select name="" id="" onChange={(e) => setStatus(e.target.value)} value={status} className="p-3 rounded border bg-white">
+            <div className="ms-auto flex items-center relative">
+                <select name="" id="" onChange={(e) => setStatus(e.target.value)} value={status} className="px-2 py-1 cursor-pointer rounded border bg-white">
                     <option value="All">All</option>
                     <option value="Complete">Complete</option>
                     <option value="Return">Return</option>
                     <option value="Hold">Hold</option>
                     <option value="Dismiss">Dismiss</option>
                 </select>
+                <div className="mx-2">  </div>
+                <div onClick={()=>setShowDates(!showDates)} className="px-2 py-1 rounded border cursor-pointer">
+                    Filter Date
+                </div>
+                {showDates && <div onMouseLeave={()=>setShowDates(false)} className="absolute right-0 top-[100%] m-2">
+                    <DateRangePicker ranges={[range]}/>
+                </div>}
             </div>
         </div>
         <table className="p-3 w-full">

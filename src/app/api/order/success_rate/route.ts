@@ -14,7 +14,7 @@ export async function GET(req: Request) {
         where:{
             phone: phone,
             status :{
-                in: ['Failed','Delivered','Return','Dismiss']
+                in: ['Failed','Return','Dismiss']
             }
         }
     })

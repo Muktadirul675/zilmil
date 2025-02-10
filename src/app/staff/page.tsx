@@ -233,7 +233,7 @@ export default async function Order({ searchParams }: { searchParams: { page: st
         <div className="flex w-full items-center">
             <h3 className="text-xl font-bold">Orders List</h3>
             <div className="ms-auto flex items-center">
-                <Link className="btn me-2" href="/admin/orders/add">Add Order</Link>
+                <Link className="btn me-2" href="/staff/add">Add Order</Link>
                 <form action={sendToCourier}>
                     <StateButton>Send To Courier</StateButton>
                 </form>
@@ -278,19 +278,19 @@ export default async function Order({ searchParams }: { searchParams: { page: st
         <div className="flex justify-between my-2">
             {page === 1 ? <div className="border px-1 5 py-1 rounded bg-white font-bold flex items-center">
                 <BiLeftArrow className="text-lg" /> <div className="mx-1"></div> Previous
-            </div> : <Link href={`/admin/orders${prev()}`} className="border px-1 5 py-1 rounded cursor-pointer bg-white font-bold flex items-center">
+            </div> : <Link href={`/staff${prev()}`} className="border px-1 5 py-1 rounded cursor-pointer bg-white font-bold flex items-center">
                 <BiLeftArrow className="text-lg" /> <div className="mx-1"></div> Previous
             </Link>
             }
             <div className="flex items-center justify-center">
                 <div className="bg-red-300 hidden"></div>
                 {range(1, totalPages + 2).map((p) => {
-                    return <Link href={`/admin/orders?page=${p}`} className={`p-1 px-2 block ${p === page ? 'bg-red-500' : null} bg-red-400 mx-2 text-white cursor-pointer rounded hover:bg-red-600`}>{p}</Link>
+                    return <Link href={`/staff?page=${p}`} className={`p-1 px-2 block ${p === page ? 'bg-red-500' : null} bg-red-400 mx-2 text-white cursor-pointer rounded hover:bg-red-600`}>{p}</Link>
                 })}
             </div>
             {page === totalPages ? <div className="border px-1 5 py-1 rounded bg-white font-bold flex items-center">
                 <BiRightArrow className="text-lg" /> <div className="mx-1"></div> Next
-            </div> : <Link href={`/admin/orders${next()}`} className="border px-1 5 py-1 rounded cursor-pointer bg-white font-bold flex items-center">
+            </div> : <Link href={`/staff${next()}`} className="border px-1 5 py-1 rounded cursor-pointer bg-white font-bold flex items-center">
                 Next <div className="mx-1"></div> <BiRightArrow className="text-lg" />
             </Link>}
         </div>
