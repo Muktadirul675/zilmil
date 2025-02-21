@@ -121,7 +121,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <div className="flex items-center">
                             <input checked={insideDhaka} onChange={(e) => setInsideDhaka(e.target.checked)} type="radio" name="id_dhaka" id="" /> <div className="mx-2"></div> Inside Dhaka
                         </div>
-                        <div className="my-1"></div>
+                        <div className="my-[2px]"></div>
                         <div className="flex items-center">
                             <input checked={!insideDhaka} onChange={(e) => setInsideDhaka(!e.target.checked)} type="radio" name="id_dhaka" id="" /> <div className="mx-2"></div> Outside Dhaka
                         </div>
@@ -169,7 +169,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                         Pay with cash upon delivery
                     </div>
                     <div className="w-full flex justify-center">
-                        {placing ? <Spinner /> : <button onClick={placeOrder} className="w-full p-3 bg-base-theme text-white">
+                        {placing ? <Spinner /> : <button onClick={placeOrder} className="w-full p-1.5 bg-base-theme text-white">
                             Complete Order
                         </button>}
                     </div>

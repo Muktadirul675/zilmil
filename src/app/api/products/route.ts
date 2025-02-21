@@ -16,7 +16,8 @@ export async function GET(req: Request){
             },
             stocks: true,
             variants: true,
-            colors: true
+            colors: true,
+            slug: true
         }
     })
     return NextResponse.json(products)

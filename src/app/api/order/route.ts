@@ -81,12 +81,16 @@ export async function POST(request: Request) {
                         colorId: i.color
                     }
                 })
-                await prisma.product.update({
+                const product = await prisma.product.update({
                     where:{id:i.product},
                     data:{
                         stocks:{
                             decrement: 1
                         }
+                    },
+                    select:{
+                        id: true,
+                        stocks: true
                     }
                 })
             }
@@ -96,7 +100,10 @@ export async function POST(request: Request) {
             where: { userId: user?.id }
         })
         await checkProductAvailability(payload.items.map((o)=>o.product))
+        revalidatePath("/")
         revalidatePath("/admin/orders")
+        revalidatePath("/admin/products")
+        revalidatePath("/admin/categories")
         return NextResponse.json(order)
     } else {
         const order = await prisma.order.create({

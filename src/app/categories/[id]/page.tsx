@@ -16,6 +16,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         where: { id: id },
         include: {
             products: {
+                where: {is_available: true},
                 select: {
                     id: true,
                     slug: true,

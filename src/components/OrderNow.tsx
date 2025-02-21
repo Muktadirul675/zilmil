@@ -33,17 +33,17 @@ export default function OrderNow({ id, stocks, variants, colors, slug }: { id: s
 
     if (stocks) {
         if (vc === '') {
-            return <div onClick={add} className="btn rounded-none my-1 flex items-center justify-center cursor-pointer">
+            return <div onClick={add} className="bg-base-theme px-2 py-1.5 text-white rounded my-1 flex items-center justify-center cursor-pointer">
                 {adding ? <div className="border-gray-300 h-4 w-4 transition-all animate-spin rounded-full border-2 border-t-blue-600" /> : <><BsBagCheck /> <div className="mx-1"></div> Order Now</>}
                 <div className="hidden">{id}</div>
             </div>
         }
-        return <Link href={`/products/${slug}?select=${vc}`} className="btn rounded-none my-1 flex items-center justify-center cursor-pointer">
+        return <Link href={`/products/${slug}?select=${vc}`} className="bg-base-theme px-2 py-1.5 text-white rounded my-1 flex items-center justify-center cursor-pointer">
             {adding ? <div className="border-gray-300 h-4 w-4 transition-all animate-spin rounded-full border-2 border-t-blue-600" /> : <><BsBagCheck /> <div className="mx-1"></div> Order Now</>}
             <div className="hidden">{id}</div>
         </Link>
     }
-    return <div className="btn rounded-none my-1 flex items-center justify-center">
+    return <div className="bg-base-theme px-2 py-1.5 text-white rounded my-1 flex items-center justify-center">
         Out of stock
     </div>
 }

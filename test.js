@@ -24,3 +24,6 @@ fetch(`${baseUrl}/stores`, {
     })
     .then(data => console.log('Stores Response:', data))
     .catch(error => console.error('Error:', error));
+
+
+[1,2,3].map((number)=>number*2)

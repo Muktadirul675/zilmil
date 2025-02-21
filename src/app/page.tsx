@@ -113,7 +113,7 @@ export default async function Home() {
             {result.map((category) => {
               return <div key={category.id} className='my-1 rounded p-1 md:p-3 shadow-slate-100'>
                 <div className="flex items-center">
-                  <div className="mx-2 text-lg font-bold flex-grow border-b border-base-theme my-2">{category.name}</div>
+                  <div className="mx-2 text-2xl font-bold flex-grow border-b border-base-theme my-2">{category.name}</div>
                   <Link href={`/categories/${category.id}`} className='text-white ms-auto rounded-sm px-2 py-1.5 bg-red-500'>See all</Link>
                 </div>
                 <div className="flex flex-wrap">

@@ -8,6 +8,7 @@ interface Product {
     stocks: number;
     price: number;
     discounted_price: number | null;
+    slug : string,
     images: {
         id: string;
         created_at: Date;

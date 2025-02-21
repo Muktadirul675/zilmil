@@ -17,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: { query: st
     const products = await prisma.product.findMany({
         where: {
             name: {
-                contains: searchParams.query
+                contains: searchParams.query,
             }
         },
         select:{
