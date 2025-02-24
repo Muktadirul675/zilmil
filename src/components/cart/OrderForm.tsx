@@ -9,6 +9,7 @@ import Spinner from "../Spinner";
 import { useErrors } from '@/hooks/errors'
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { TbCurrencyTaka } from "react-icons/tb";
 
 function Label({ children, htmlFor }: { children: React.ReactNode, htmlFor: string }) {
     return <label htmlFor={htmlFor} className="text-lg font-bold">{children}</label>
@@ -136,18 +137,27 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <h3 className="font-bold ms-auto">Subtotal</h3>
                     </div>
                     <hr />
-                    {cart.items.map((item) => <div className="flex p-2 items-center">
+                    {cart.items.map((item) => <div className="flex p-2 items-start">
                         <Image quality={100} src={item.product.images[0].url} alt="Image" height={80} width={80} className="w-[80px] h-[80px]" />
-                        <div className="ms-3 h-full">
-                            <h3 className="font-bold">{item.product.name} <span className="mx-1"></span> <span>X {item.count}</span></h3>
+                        <div className="ms-3 flex flex-col">
+                            <h3 className="font-bold">{item.product.name}</h3>
                             {item.variant !== null && <div>
                                 {item.variant.name}
                             </div>}
                             {item.color !== null && <div>
                                 {item.color.name}
                             </div>}
+                            <div className="flex justify-start items-center">
+                                <TbCurrencyTaka /> 
+                                <div className="my-1 text-sm font-bold">
+                                    {item.product.discounted_price ? item.product.discounted_price : item.product.price}
+                                </div>
+                            </div>
+                            <div className="flex w-full justify-end items-center flex-wrap">
+                                <RemoveFullItem prodId={item.product.id} variantId={item.variant?.id ?? null} colorId={item.color?.id ?? null} remove={cart.removeItemFull} />
+                                <ItemIncDec removeItemFromCart={cart.removeItemFromCart} addItemToCart={cart.addItemToCart} item={item} />
+                            </div>
                         </div>
-                        <h3 className="text-lg font-bold ms-auto">{item.product.discounted_price ? item.product.discounted_price : item.product.price} </h3>
                     </div>)}
                     <hr />
                     <div className="flex items-center">
@@ -169,7 +179,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                         Pay with cash upon delivery
                     </div>
                     <div className="w-full flex justify-center">
-                        {placing ? <Spinner /> : <button onClick={placeOrder} className="w-full p-1.5 bg-base-theme text-white">
+                        {placing ? <Spinner /> : <button onClick={placeOrder} className="w-3/4 md:w-full p-1.5 bg-base-theme text-white rounded">
                             Complete Order
                         </button>}
                     </div>

@@ -70,8 +70,6 @@
 
 #topSearchForm{
   animation: topDownSlide 0.1s ease;
-  overflow: hidden;
-  max-height: 70px;
   transition: all 0.1s ease;
 }
 

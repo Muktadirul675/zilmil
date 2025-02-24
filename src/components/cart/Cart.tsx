@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { BiMinus, BiPlus, BiTrash } from "react-icons/bi";
 import Spinner from "../Spinner";
+
 function ItemIncDec({ addItemToCart, item, removeItemFromCart }: { removeItemFromCart: (itemId: string) => Promise<void>, addItemToCart: (id: string, count: number, selection: { variantId: string | null, colorId: string | null }) => Promise<void>, item: Item }) {
     const [updating, setUpdating] = useState<boolean>(false)
     async function inc() {

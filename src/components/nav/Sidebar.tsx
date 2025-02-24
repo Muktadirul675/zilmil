@@ -6,38 +6,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
-import { BiChevronDown } from "react-icons/bi";
+import { BiChevronDown, BiChevronRight } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Content } from "./Navbar";
 
-function ShowSelected({ selected, setParentDisplay }: { selected: Content, setParentDisplay : Dispatch<SetStateAction<string>>}) {
-    const [display, setDisplay] = useState<boolean>(false)
-    if (selected.id === '') {
-        return <>
-            <div className="hidden rotate-180"></div>
-            <h3 className="text-lg font-bold flex items-center w-full">
-                {selected.name}
-                {selected.subs?.length && selected.subs?.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
-            </h3>
-            <div className="h-fit hidden"></div>
-            {selected.subs?.length && selected.subs?.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
-                {selected.subs.map((s) => <ShowSelected key={s.id} setParentDisplay={setParentDisplay}  selected={s} />)}
+function  ShowContent({content}:{content: Content}){
+    const [show, setShow] = useState<boolean>(false)
+    if(content.id){
+        return <Link href={`/categories/${content.id}`} className="p-3 font-bold border-b flex items-center last:border-b-0">
+            {content.name}
+        </Link>
+    }else{
+        return <div className="border-b flex flex-col">
+            <div onClick={()=>setShow((prev)=>!prev)} className={`p-3 ${show && 'pb-1.5'} flex font-bold items-center last:border-b-0 rounded hover:bg-slate-50`}>
+                {content.name}
+                <BiChevronRight className={`text-xl ms-auto ${show ? 'rotate-90 text-base-theme' : 'rotate-0'}`}/>
+            </div>
+            <div className="p-3 ps-5 pb-1.5 rotate-90 md:rotate-0 hidden h-0"></div>
+            {content.subs && <div style={{height: show ? `${12 + (20+4)*content.subs?.length}px` : '0px'}} className={`flex flex-col transition-all overflow-hidden ${show ? 'ps-5' : 'h-0'}`}>
+                {content.subs?.map((sub)=>{
+                    return <Link href={`/categories/${sub.id}`} className="my-1 text-sm flex items-center">
+                        <div className="w-[10px] h-[1px] bg-black me-2"></div> {sub.name}
+                    </Link>
+                })}
             </div>}
-        </>
-    } else {
-        return <>
-            <h3 className="text-lg font-bold flex items-center w-full">
-                <Link onClick={()=>setParentDisplay('hidden')} href={`/categories/${selected.id}`}>
-                    {selected.name}
-                </Link>
-                {selected.subs?.length && selected.subs?.length > 0 && <BiChevronDown className={`ms-auto ${display ? 'rotate-180' : null} transition-all`} onClick={() => setDisplay(!display)} />}
-            </h3>
-            <div className="h-fit hidden"></div>
-            {selected.subs?.length && selected.subs?.length > 0 && <div className={`ps-3 h-0 overflow-hidden transition-all`} style={{height: (display ? `${selected.subs.length * 20 + 10}px` : '0px')}}>
-                {selected.subs?.map((s) => <ShowSelected key={s.id} setParentDisplay={setParentDisplay} selected={s} />)}
-            </div>}
-        </>
+        </div>
     }
 }
 
@@ -51,7 +45,7 @@ export default function Sidebar({ selecteds }: { selecteds: Content[] }) {
         <div className="block md:hidden">
             <GiHamburgerMenu onClick={toggle} className="text-2xl me-2 cursor-pointer hover:text-base-theme" />
         </div>
-        <div id="sidebar" className={`${display} fixed w-full top-0 left-0 bottom-0 z-25 bg-slate-50 p-3`}>
+        <div id="sidebar" className={`${display} fixed w-full top-0 overflow-x-hidden left-0 bottom-0 z-25 bg-slate-50 p-3 border rounded`}>
             <div className="flex w-[285px] border-b justify-center p-2 flex-col">
                 <Image src="/logo.png" height={120} width={120} className="w-1/2" alt="Zilmil" />
                 <h3 className="text-lg font-extrabold">zilmil.com.bd</h3>
@@ -60,10 +54,8 @@ export default function Sidebar({ selecteds }: { selecteds: Content[] }) {
                 {selecteds.map((s) => JSON.stringify(s))}
             </div>
             <CgClose onClick={toggle} className="text-2xl cursor-pointer hover:text-base-theme absolute top-4 right-4" />
-            {selecteds.map((s) => {
-                return <div className="my-1">
-                    <ShowSelected key={s.id} setParentDisplay={setDisplay} selected={s} />
-                </div>
+            {selecteds.map((s, index)=>{
+                return <ShowContent content={s} key={index}/>
             })}
         </div>
     </>

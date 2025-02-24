@@ -100,13 +100,13 @@ export default function AddToCartaOrBuy({ product }: { product: Product }) {
             </div>
             <div className="w-2/4 p-1">
                 {product.stocks > 0 ?
-                    <div onClick={ordernow} className="w-full flex items-center justify-center bg-red-500 text-white p-2 cursor-pointer">
+                    <div onClick={ordernow} className="w-full flex items-center justify-center bg-base-theme text-white p-2 cursor-pointer">
                         {ordering ? <div className="border-gray-300 h-4 w-4 transition-all animate-spin rounded-full border-2 border-t-blue-600" /> : <>
                             <BsBagPlus /> <div className="mx-1"></div> <span className="">Order Now</span>
                         </>
                         }
                     </div>
-                    : <div className="w-full flex items-center justify-center bg-red-500 text-white p-2">
+                    : <div className="w-full flex items-center justify-center bg-base-theme text-white p-2">
                         <span className="">Out of stock</span>
                     </div>}
             </div>

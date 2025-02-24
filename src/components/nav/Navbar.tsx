@@ -12,6 +12,7 @@ import path from "path";
 import { prisma } from "@/prisma";
 import CategoryBar from "./CategoryBar";
 import { BarContent } from "@/app/admin/customize/categorybar/page";
+import Logo from "../Logo";
 
 export interface Content {
     uid: number,
@@ -23,14 +24,15 @@ export interface Content {
 export default async function Navbar() {
     const selectedCategories : BarContent[] = JSON.parse(fs.readFileSync(`${path.join(process.cwd(),'src','categories.json')}`,'utf-8'))
     const categories : Content[] = JSON.parse(fs.readFileSync(`${path.join(process.cwd(),'src','all_categories.json')}`,'utf-8'));
+    const homejsonpath = path.join(process.cwd(), 'src', 'home.json')
+    const homejsonfile = fs.readFileSync(homejsonpath, 'utf-8')
+    const json = JSON.parse(homejsonfile)
     return <>
-        <Notice />
+        <Notice notice={json.notice}/>
         <div className="flex bg-white w-full p-2 h-[60px] md:h-[80px] sticky top-0 left-0 border-b-2 border-base-theme z-20">
             <div className="flex w-full md:w-2/3 mx-auto items-center">
                 <Sidebar selecteds={categories}/>
-                <Link href='/' className="w-fit md:w-1/3">
-                    <Image src="https://cutcbvajgtehcysiqrlf.supabase.co/storage/v1/object/public/test/logo.png" width={100} height={40} alt="Zilmil" className="h-10" />
-                </Link>
+                <Logo/>
                 <div className="hidden md:flex justify-center w-1/3 flex-grow items-center flex-row mx-auto relative">
                     <SearchForm forceFull={true}/>
                 </div>
