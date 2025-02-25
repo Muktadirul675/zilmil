@@ -142,7 +142,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                         <Image quality={100} src={item.product.images[0].url} alt="Image" height={80} width={80} className="w-[80px] h-[80px]" />
                         <div className="ms-3 flex flex-col">
                             <div className="flex flex-row items-start">
-                                <div className="w-4/5 flex flex-col">
+                                <div className="flex flex-col">
                                     <h3 className="font-bold">{item.product.name}</h3>
                                     {item.variant !== null && <div>
                                         {item.variant.name}
@@ -151,7 +151,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                                         {item.color.name}
                                     </div>}
                                 </div>
-                                <div className="w-1/5 flex items-center justify-end text-base-theme">
+                                <div className="ms-auto flex items-center justify-end text-base-theme">
                                     <TbCurrencyTaka />
                                     <div className="my-1 text-sm font-bold">
                                         {item.product.discounted_price ? item.product.discounted_price : item.product.price}
