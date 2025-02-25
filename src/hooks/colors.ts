@@ -31,9 +31,7 @@ export function useColors() {
     }
 
     function remove(key: number) {
-        if (colors.length) {
-            setColors((prev) => prev.filter((color) => color.key === key))
-        }
+        setColors((prev)=>prev.filter((c)=>c.key !== key))
     }
 
     return { colors, add, remove, setName, setHex, setStocks, errors, name, hex, stocks, addObj }

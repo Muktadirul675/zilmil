@@ -23,7 +23,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
            <AdminRoutes/>
         </div>
         <div className="flex-grow p-3 flex justify-center">
-            <div className="w-full">
+            <div className="w-full md:w-2/3">
                 {children}
             </div>
         </div>
