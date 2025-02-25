@@ -151,7 +151,7 @@ export default function OrderForm({ user }: { user: User | null }) {
                                         {item.color.name}
                                     </div>}
                                 </div>
-                                <div className="w-1/5 flex items-center text-base-theme">
+                                <div className="w-1/5 flex items-center justify-end text-base-theme">
                                     <TbCurrencyTaka />
                                     <div className="my-1 text-sm font-bold">
                                         {item.product.discounted_price ? item.product.discounted_price : item.product.price}
