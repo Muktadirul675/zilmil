@@ -103,29 +103,31 @@ function OrderTr({ order }: { order: Order }) {
     for (const c of order.items) {
         let found = false;
         for (const i of items) {
-            if (c.colorId && c.variantId) {
-                if (c.product.id === i.product.id && c.variantId === i.variant?.id && c.colorId === i.color?.id) {
-                    i.count = i.count + 1;
-                    found = true;
-                    break;
-                }
-            } else if (c.colorId) {
-                if (c.product.id === i.product.id && c.colorId === i.color?.id) {
-                    i.count = i.count + 1;
-                    found = true;
-                    break;
-                }
-            } else if (c.variantId) {
-                if (c.product.id === i.product.id && c.variantId === i.variant?.id) {
-                    i.count = i.count + 1;
-                    found = true;
-                    break;
-                }
-            } else {
-                if (c.product.id === i.product.id) {
-                    i.count = i.count + 1;
-                    found = true;
-                    break;
+            if(c.product && i.product){
+                if (c.colorId && c.variantId) {
+                    if (c.product.id === i.product.id && c.variantId === i.variant?.id && c.colorId === i.color?.id) {
+                        i.count = i.count + 1;
+                        found = true;
+                        break;
+                    }
+                } else if (c.colorId) {
+                    if (c.product.id === i.product.id && c.colorId === i.color?.id) {
+                        i.count = i.count + 1;
+                        found = true;
+                        break;
+                    }
+                } else if (c.variantId) {
+                    if (c.product.id === i.product.id && c.variantId === i.variant?.id) {
+                        i.count = i.count + 1;
+                        found = true;
+                        break;
+                    }
+                } else {
+                    if (c.product.id === i.product.id) {
+                        i.count = i.count + 1;
+                        found = true;
+                        break;
+                    }
                 }
             }
         }
@@ -153,7 +155,9 @@ function OrderTr({ order }: { order: Order }) {
         <td className="px-3 py-2">
             <Link className="block" href={`/admin/orders/${order.id}`}>
                 {items.map((prod) => {
-                    return <span className="block">{prod.product.name.length < 30 ? prod.product.name : prod.product.name.slice(0, 30)} X {prod.count}</span>
+                    if(prod.product){
+                        return <span className="block">{prod.product.name.length < 30 ? prod.product.name : prod.product.name.slice(0, 30)} X {prod.count}</span>
+                    }
                 })}
             </Link>
         </td>

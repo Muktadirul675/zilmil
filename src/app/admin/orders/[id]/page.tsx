@@ -36,12 +36,18 @@ export default async function Page({ params }: { params: { id: string } }) {
     const items : Item[] = []
     let uid = 0
     selOrder.items.forEach((it)=>{
-        const fit = items.find((i)=>(i.product.id === it.productId && (i.variant?.id ?? null) === it.variantId && (i.color?.id ?? null) === it.colorId))
+        const fit = items.find((i)=>{
+            if(i.product){
+                return (i.product.id === it.productId && (i.variant?.id ?? null) === it.variantId && (i.color?.id ?? null) === it.colorId)
+            }
+        })
         if(fit){
             fit.count = fit.count + 1
             return
         }
-        items.push({...it, count: 1, uid: uid++})
+        if(it.product !== null){
+            items.push({...it, count:1, uid:uid++})
+        }
     })
     const order = {...selOrder, items: items}
     return <div className="w-full mx-auto p-3">

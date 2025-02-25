@@ -7,7 +7,7 @@ export interface Product extends Omit<PProduct, 'description' | 'created_at' | '
 }
 
 export interface OrderItem extends POrderItem {
-    product: Product,
+    product: Product | null,
     variant: Variant | null,
     color: Color | null
 }
@@ -17,7 +17,7 @@ export interface Order extends POrder {
 }
 
 export interface Item {
-    product: Product,
+    product: Product| null,
     count: number,
     variant: Variant | null,
     color: Color | null,

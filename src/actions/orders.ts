@@ -93,7 +93,9 @@ export async function addOrder(items: Item[], formData: FormData) {
     let ordItems: { productId: string, colorId: string | null, variantId: string | null }[] = []
     items.forEach((it) => {
         for (let i = 0; i < it.count; i++) {
-            ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
+            if(it.product){
+                ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
+            }
         }
     })
     const order = await prisma.order.create({
@@ -178,7 +180,7 @@ export async function editOrder(items: Item[], formData: FormData) {
     await prisma.product.updateMany({
         where: {
             id: {
-                in: oldOrderItems.map((ooit) => ooit.productId)
+                in: oldOrderItems.map((ooit) => ooit.productId ?? '')
             }
         },
         data: {
@@ -194,7 +196,9 @@ export async function editOrder(items: Item[], formData: FormData) {
     let ordItems: { productId: string, colorId: string | null, variantId: string | null }[] = []
     items.forEach((it) => {
         for (let i = 0; i < it.count; i++) {
-            ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
+            if(it.product){
+                ordItems.push({ productId: it.product.id, colorId: it.color?.id ?? null, variantId: it.variant?.id ?? null })
+            }
         }
     })
     const oldOrder = await prisma.order.findUnique({
@@ -229,16 +233,16 @@ export async function editOrder(items: Item[], formData: FormData) {
     for (const p of order.items) {
         const prodId = p.productId
         await prisma.product.update({
-            where: { id: prodId },
+            where: { id: prodId ?? '' },
             data: {
                 stocks: {
                     decrement: 1
                 }
             }
         })
-        await stableStocks(prodId, oldOrder?.status ?? order.status, order.status)
+        await stableStocks(prodId ?? '', oldOrder?.status ?? order.status, order.status)
     }
-    await checkProductAvailability(order.items.map((o) => o.productId))
+    await checkProductAvailability(order.items.map((o) => o.productId ?? ''))
     revalidatePath("/admin/orders")
     revalidatePath("/admin/products")
     revalidatePath("/admin/stocks")

@@ -45,7 +45,7 @@ interface Product {
 export interface Item {
     uid: number,
     count: number,
-    product: Product,
+    product: Product | null,
     variant: {
         id: string,
         name: string
@@ -113,10 +113,12 @@ function AddProduct({ product, items, set }: {
         }
         const oldItems = [...items];
         for (const i of oldItems) {
-            if (i.product.id === product.id && i.variant?.id === variant?.id && i.color?.id == color?.id) {
-                i.count = i.count + count;
-                set(oldItems)
-                return
+            if(i.product){
+                if (i.product.id === product.id && i.variant?.id === variant?.id && i.color?.id == color?.id) {
+                    i.count = i.count + count;
+                    set(oldItems)
+                    return
+                }
             }
         }
         const newItem: Item = {
@@ -247,7 +249,9 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
     useEffect(() => {
         let totl = 0;
         items.forEach((item) => {
-            totl += item.product.discounted_price ? item.product.discounted_price : item.product.price
+            if(item.product){
+                totl += item.product.discounted_price ? item.product.discounted_price : item.product.price
+            }
         })
         setSubTotal(totl)
     }, [items])
@@ -365,10 +369,10 @@ export default function OrderDetailsForm({ order }: { order: Order }) {
             <div className="my-1">
                 {items.map((item) => {
                     return <div className="my-1 flex">
-                        <Image src={item.product.images[0].url} alt="Image" width={100} height={100} className="w-[100px] h-[100px]" />
+                        <Image src={item.product ? item.product.images[0].url : ''} alt="Image" width={100} height={100} className="w-[100px] h-[100px]" />
                         <div className="mx-2"></div>
                         <div>
-                            {item.product.name} X {item.count} <br />
+                            {item.product && item.product.name} X {item.count} <br />
                             {item.variant !== null && <>{item.variant.name} <br /></>}
                             {item.color !== null && <>{item.color.name} <br /></>}
                             <button className="btn" type="button" onClick={() => {

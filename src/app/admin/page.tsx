@@ -92,8 +92,11 @@ export default async function Page() {
         },
     });
 
-    const todaysSoldItemsPrice = todaysSoldItem.reduce((sum, item) => sum + (item.product.discounted_price ? item.product.discounted_price : item.product.price), 0)
-
+    const todaysSoldItemsPrice = todaysSoldItem.reduce((sum, item) => {
+        if(item.product){
+            return sum + (item.product.discounted_price ? item.product.discounted_price : item.product.price)
+        }return sum+0;
+    }, 0)
     const mostSoldProducts = await prisma.orderItem.groupBy({
         by: ['productId'], // Group by productId
         _count: {
@@ -107,13 +110,18 @@ export default async function Page() {
         take: 5, // Get the top 5 most sold products
     });
 
-    const productIds = mostSoldProducts.map(item => item.productId);
-
+    const productIds = mostSoldProducts.map(item => item.productId).filter(productId => productId !== null && productId !== undefined); // Filter out null/undefined
+    const ids : string[] = []
+    for(const id of productIds){
+        if(id !== null && id !== undefined){
+            ids.push(id)
+        }
+    }
     // Fetch the product details for the top 5 most sold products
     const products = await prisma.product.findMany({
         where: {
             id: {
-                in: productIds, // Filter by the productIds from the aggregated results
+                in: ids // Filter by the productIds from the aggregated results
             },
         },
         include: {
