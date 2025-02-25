@@ -39,11 +39,11 @@ export default function CategoryBar({ selecteds, categories }: { selecteds: BarC
                             <div className="bg-white min-w-[200px] flex-grow border rounded flex flex-col">
                                 {categories.map((c, index) => {
                                     if(c.id){
-                                        return <Link key={index} onMouseEnter={()=>setActiveSub(index)} href={`/categories/${c.id}`} className="text-lg h-[52px] flex justify-start items-center px-3 border-b">
+                                        return <Link key={index} onMouseEnter={()=>setActiveSub(index)} href={`/categories/${c.id}`} className="hover:bg-slate-50 text-lg h-[52px] flex justify-start items-center px-3 border-b">
                                             {c.name}
                                         </Link>
                                     }
-                                    return <div key={index} onMouseEnter={() => setActiveSub(index)} className=" text-lg h-[52px] flex justify-start items-center px-3 border-b">
+                                    return <div key={index} onMouseEnter={() => setActiveSub(index)} className="hover:bg-slate-50 text-lg h-[52px] flex justify-start items-center px-3 border-b">
                                         {c.name}
                                         <BiChevronRight className="text-xl ms-auto"/>
                                     </div>
@@ -56,7 +56,7 @@ export default function CategoryBar({ selecteds, categories }: { selecteds: BarC
                             {categories.map((c, index) => {
                                 return <div style={{marginTop: `${52*index}px`}} key={index} className={`bg-white font-normal border flex flex-col w-full rounded ${activeSub !== index ? 'hidden' : 'block'}`}>
                                     {c.subs?.map((s)=>{
-                                        return <Link key={s.id} href={`/categories/${s.id}`} className="p-3 border-b last:border-b-0">
+                                        return <Link key={s.id} href={`/categories/${s.id}`} className="hover:bg-slate-50 p-3 border-b last:border-b-0">
                                             {s.name}
                                         </Link>
                                     })}
