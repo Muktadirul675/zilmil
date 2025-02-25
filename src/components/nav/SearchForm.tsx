@@ -55,13 +55,16 @@ export default function SearchForm({ forceFull = false }: { forceFull?: boolean 
     }, [query])
 
     return <form onSubmit={submit} className={`w-full ${forceFull ? 'md:w-full' : 'md:w-1/2'} flex relative items-center`}>
-        <input onChange={(e) => setQuery(e.target.value)} placeholder="Search Products" className="px-2 border-2 text-lg flex-grow border-base-theme mx-0 h-[40px] focus:outline-none focus:border-base-theme" type="text" name="" id="" required />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search Products" className="px-2 border-2 text-lg flex-grow border-base-theme mx-0 h-[40px] focus:outline-none focus:border-base-theme" type="text" name="" id="" required />
         <button className="bg-base-theme text-white h-[40px] px-2 rounded-tr-sm rounded-br-sm">
             Search
         </button>
         {filtered.length > 0 && <div className="rounded shadow absolute top-[100%] mt-2 w-full flex flex-col border bg-white left-0">
             {filtered.map((product) => {
-                return <Link href={`/products/${product.slug}`} className="p-3 border flex hover:bg-slate-50 transition-all first:rounded-tr rounded-tl items-center">
+                return <div onClick={()=>{
+                    router.push(`/products/${product.slug}`)
+                    setQuery('')
+                }} className="p-3 border cursor-pointer flex hover:bg-slate-50 transition-all first:rounded-tr rounded-tl items-center">
                     <Image quality={100} src={product.images[0].url} alt={product.name} width={80} height={80} className="w-[80px] h-[80px] rounded me-3" />
                     <div className="font-bold">
                         <div>
@@ -77,7 +80,7 @@ export default function SearchForm({ forceFull = false }: { forceFull?: boolean 
                             {product.price}
                         </div>}
                     </div>
-                </Link>
+                </div>
             })}
         </div>}
     </form>

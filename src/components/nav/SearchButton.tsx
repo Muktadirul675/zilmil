@@ -66,7 +66,7 @@ export default function SearchButton() {
         </div>
         <form onSubmit={submit} className={`${display} flex-col items-center absolute top-full left-0 right-0 bg-white p-3`} id="topSearchForm">
             <div className="flex items-center">
-                <input onChange={(e) => setQuery(e.target.value)} placeholder="Search Products" className="border-2 px-2 text-lg w-1/2 border-base-theme mx-0 h-[40px] focus:outline-none focus:border-base-theme flex-grow" type="text" name="" id="" required />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search Products" className="border-2 px-2 text-lg w-1/2 border-base-theme mx-0 h-[40px] focus:outline-none focus:border-base-theme flex-grow" type="text" name="" id="" required />
                 <button className="bg-base-theme flex items-center justify-center text-white h-[40px] px-2 rounded-tr-sm rounded-br-sm">
                     Search
                 </button>
@@ -74,7 +74,11 @@ export default function SearchButton() {
             </div>
             {filtered.length > 0 && <div className="rounded shadow absolute top-[100%] w-full flex flex-col border bg-white left-0">
                 {filtered.map((product) => {
-                    return <Link href={`/products/${product.slug}`} className="p-3 border flex hover:bg-slate-50 transition-all first:rounded-tr rounded-tl items-center">
+                    return <div onClick={() => {
+                        router.push(`/products/${product.slug}`)
+                        setQuery('')
+                        setDisplay('hidden')
+                    }} className="p-3 border flex hover:bg-slate-50 transition-all first:rounded-tr rounded-tl items-center">
                         <Image quality={100} src={product.images[0].url} alt={product.name} width={80} height={80} className="w-[80px] h-[80px] rounded me-3" />
                         <div className="font-bold">
                             <div>
@@ -90,7 +94,7 @@ export default function SearchButton() {
                                 {product.price}
                             </div>}
                         </div>
-                    </Link>
+                    </div>
                 })}
             </div>}
         </form>

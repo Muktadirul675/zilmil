@@ -200,11 +200,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const addItemToCart = async (id: string, count: number = 1, selection: { variantId: string | null, colorId: string | null }) => {
     setCartFetching(true)
     console.log(selection)
+    const res1 = await fetch("/api/products/" + id, {
+      cache: 'no-store'
+    })
+    const product: Product = await res1.json()
+    if(product.stocks < count){
+      toast.error("Not enough stocks!")
+      return
+    }
     if (!(session.status === 'authenticated')) {
-      const res1 = await fetch("/api/products/" + id, {
-        cache: 'no-store'
-      })
-      const product: Product = await res1.json()
       let variant: Variant | null = null;
       let color: Color | null = null;
       if (selection.variantId) {

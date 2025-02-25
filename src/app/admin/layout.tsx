@@ -22,7 +22,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <div className="w-fit min-h-[calc(100vh-60px)] md:min-h-[calc(100vh-80px)] sticky top-[60px] md:top-[80px] p-1 md:p-3 flex flex-col bg-base-theme">
            <AdminRoutes/>
         </div>
-        <div className="flex-grow p-1 flex justify-center">
+        <div className="flex-grow p-3 flex justify-center">
             <div className="w-full">
                 {children}
             </div>

@@ -132,12 +132,13 @@ export default function OrderForm({ user }: { user: User | null }) {
             <div className="w-full md:w-3/5 p-2">
                 <div className="w-full border-2 border-black p-3 my-4">
                     <h3 className="text-lg font-bold">Your Order</h3>
+                    <hr />
                     <div className="flex flex-row my-2">
                         <h3 className="font-bold">Products</h3>
                         <h3 className="font-bold ms-auto">Subtotal</h3>
                     </div>
                     <hr />
-                    {cart.items.map((item) => <div className="flex p-2 items-start">
+                    {cart.items.map((item) => <div className="flex p-2">
                         <Image quality={100} src={item.product.images[0].url} alt="Image" height={80} width={80} className="w-[80px] h-[80px]" />
                         <div className="ms-3 flex flex-col">
                             <h3 className="font-bold">{item.product.name}</h3>
@@ -147,13 +148,13 @@ export default function OrderForm({ user }: { user: User | null }) {
                             {item.color !== null && <div>
                                 {item.color.name}
                             </div>}
-                            <div className="flex justify-start items-center">
+                            <div className="flex items-center text-base-theme">
                                 <TbCurrencyTaka /> 
                                 <div className="my-1 text-sm font-bold">
                                     {item.product.discounted_price ? item.product.discounted_price : item.product.price}
                                 </div>
                             </div>
-                            <div className="flex w-full justify-end items-center flex-wrap">
+                            <div className="flex w-full items-center flex-wrap">
                                 <RemoveFullItem prodId={item.product.id} variantId={item.variant?.id ?? null} colorId={item.color?.id ?? null} remove={cart.removeItemFull} />
                                 <ItemIncDec removeItemFromCart={cart.removeItemFromCart} addItemToCart={cart.addItemToCart} item={item} />
                             </div>
