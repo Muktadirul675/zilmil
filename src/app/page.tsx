@@ -122,7 +122,7 @@ export default async function Home() {
                       <div className='w-full h-full'>
                         <div className="w-full flex justify-center relative">
                           <Link className="block w-full"  href={`/products/${prod.slug}`}>
-                            <Image quality={100} height={200} width={200} src={prod.images[0].url} alt="Image" className='w-full h-52 object-fill' />
+                            <Image quality={100} height={200} width={200} src={prod.images[0].url} alt="Image" className='w-full aspect-auto object-contain' />
                           </Link>
                           <div className="justify-center absolute bottom-0 hidden group-hover:flex h-5 py-2 animate-bottomTopSlide bg-white w-full">
                             <HomeAddCartButton slug={prod.slug} variants={prod._count.variants} colors={prod._count.colors} id={prod.id} />

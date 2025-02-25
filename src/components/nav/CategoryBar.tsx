@@ -36,7 +36,7 @@ export default function CategoryBar({ selecteds, categories }: { selecteds: BarC
                         setShow(false)
                     }} className={`flex w-[620px] animate-topDownSlide transition-all rounded text-black absolute left-0 top-[100%] z-20 `}>
                         <div className="my-2">
-                            <div onMouseLeave={()=>setShow(false)} className="bg-white min-w-[200px] flex-grow border rounded flex flex-col">
+                            <div className="bg-white min-w-[200px] flex-grow border rounded flex flex-col">
                                 {categories.map((c, index) => {
                                     if(c.id){
                                         return <Link key={index} onMouseEnter={()=>setActiveSub(index)} href={`/categories/${c.id}`} className="text-lg h-[52px] flex justify-start items-center px-3 border-b">

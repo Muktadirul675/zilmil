@@ -141,17 +141,21 @@ export default function OrderForm({ user }: { user: User | null }) {
                     {cart.items.map((item) => <div className="flex p-2">
                         <Image quality={100} src={item.product.images[0].url} alt="Image" height={80} width={80} className="w-[80px] h-[80px]" />
                         <div className="ms-3 flex flex-col">
-                            <h3 className="font-bold">{item.product.name}</h3>
-                            {item.variant !== null && <div>
-                                {item.variant.name}
-                            </div>}
-                            {item.color !== null && <div>
-                                {item.color.name}
-                            </div>}
-                            <div className="flex items-center text-base-theme">
-                                <TbCurrencyTaka /> 
-                                <div className="my-1 text-sm font-bold">
-                                    {item.product.discounted_price ? item.product.discounted_price : item.product.price}
+                            <div className="flex flex-row items-start">
+                                <div className="w-4/5 flex flex-col">
+                                    <h3 className="font-bold">{item.product.name}</h3>
+                                    {item.variant !== null && <div>
+                                        {item.variant.name}
+                                    </div>}
+                                    {item.color !== null && <div>
+                                        {item.color.name}
+                                    </div>}
+                                </div>
+                                <div className="w-1/5 flex items-center text-base-theme">
+                                    <TbCurrencyTaka />
+                                    <div className="my-1 text-sm font-bold">
+                                        {item.product.discounted_price ? item.product.discounted_price : item.product.price}
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex w-full items-center flex-wrap">

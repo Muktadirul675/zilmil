@@ -1,4 +1,5 @@
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function checkProductAvailability(ids: string[]){
     for(const id of ids){
@@ -23,4 +24,7 @@ export async function checkProductAvailability(ids: string[]){
             }
         }
     }
+    revalidatePath("/")
+    revalidatePath("/admin/products")
+    revalidatePath("/admin/categories")
 }

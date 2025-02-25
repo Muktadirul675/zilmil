@@ -51,8 +51,8 @@ export default function Sidebar({ selecteds }: { selecteds: Content[] }) {
         </div>
         <div id="sidebar" className={`${display} fixed w-full top-0 overflow-x-hidden left-0 bottom-0 z-25 bg-slate-50 p-3 border rounded`}>
             <div className="flex w-[285px] border-b justify-center p-2 flex-col">
-                <Image src="/logo.png" height={120} width={120} className="w-1/2" alt="Zilmil" />
-                <h3 className="text-lg font-extrabold">zilmil.com.bd</h3>
+                <Image src="/logo.png" height={120} width={120} className="w-1/2 mx-auto" alt="Zilmil" />
+                <h3 className="text-lg font-extrabold mx-auto">zilmil.com.bd</h3>
             </div>
             <div className="hidden">
                 {selecteds.map((s) => JSON.stringify(s))}

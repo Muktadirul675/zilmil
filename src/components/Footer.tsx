@@ -19,16 +19,16 @@ export default function Footer() {
                     <b className="my-2">01301871077</b>
                     <b className="my-2">Follow us</b>
                     <div className="flex">
-                        <a target="_blank" href="https://www.facebook.com/share/1B6xYeJGSD/">
+                        <a target="_blank" className="shadow" href="https://www.facebook.com/share/1B6xYeJGSD/">
                             <Image height={80} width={80} src="/facebook.png" alt="Facebook" className="w-[30px] h-[30px] me-2" />
                         </a>
-                        <a target="_blank" href="https://www.instagram.com/zilmil.com.bd/">
+                        <a target="_blank" className="shadow" href="https://www.instagram.com/zilmil.com.bd/">
                             <Image height={80} width={80} src="/instagram.png" alt="instagram" className="w-[30px] h-[30px] me-2" />
                         </a>
-                        <a target="_blank" href="https://wa.me/8801331094992">
+                        <a target="_blank" className="shadow" href="https://wa.me/8801331094992">
                             <Image height={80} width={80} src="/whatsapp.png" alt="whatsapp" className="w-[30px] h-[30px] me-2" />
                         </a>
-                        <a target="_blank" href="https://www.youtube.com/@ZilmilOnlineShop">
+                        <a target="_blank" className="shadow" href="https://www.youtube.com/@ZilmilOnlineShop">
                             <Image height={80} width={80} src="/youtube.png" alt="youtube" className="w-[30px] h-[30px] me-2" />
                         </a>
                     </div>

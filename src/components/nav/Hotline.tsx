@@ -1,9 +1,10 @@
+import Image from "next/image";
 import { BiHeadphone } from "react-icons/bi";
 
 export default function Hotline() {
     return <div className="hidden md:flex items-center flex-row">
         <div>
-            <BiHeadphone className="text-[40px] font-bold"/>
+            <Image alt="Hotline" src="/hotline.png" height={40} width={40} className="h-[40px]"/>
         </div>
         <div className="mx-1"></div>
         <div>
