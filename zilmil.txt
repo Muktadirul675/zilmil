@@ -5,6 +5,11 @@ Server Name: server.zilmil.com.bd
 Root Password: Zilmilvps123**
 0L6XAYHDHc&
 
+IP: 103.174.51.84
+Port: 22
+Username: root
+Password: gbaXeUGnPk33AlSMlPTl
+
 Pathao API-
 Client ID- JxboV5Nagw
 Client Secret- J5Nnm9TjdqWOhm5jttHOErXR18SEx6HbAvZHUag9
