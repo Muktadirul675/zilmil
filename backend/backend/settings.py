@@ -116,6 +116,10 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:4173"
+    "https://zilmil.com.bd",
+    "http://zilmil.com.bd",
+    "https://admin.zilmil.com.bd",
+    "http://admin.zilmil.com.bd", 
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
