@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.input{
+    @apply border border-gray-300 rounded px-2 py-1 bg-white
+}
+
+.btn{
+    @apply px-2 bg-blue-500 hover:bg-blue-600 rounded text-white py-1.5 cursor-pointer
+}
+
+.label{
+    @apply text-gray-800 font-semibold
+}
+
+ul, ol{
+    padding-left: 20px;
+}
+
+ul li{
+    list-style: disc;
+}
+
+ol li{
+    list-style: decimal;
+}
