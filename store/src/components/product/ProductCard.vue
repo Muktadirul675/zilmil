@@ -1,6 +1,6 @@
 <script setup>
-import BDT from '@/components/ui/BDT.vue';
 import { computed } from 'vue';
+import BDT from '../ui/BDT.vue';
 
 const { product: prod } = defineProps({
     product: Object
@@ -15,7 +15,7 @@ const product = computed(() => {
 </script>
 
 <template>
-    <div class="w-1/2 @lg:w-1/4 p-1 hover:shadow transition-all cursor-pointer">
+    <div class="w-1/2 lg:w-1/4 p-1 hover:shadow transition-all cursor-pointer">
         <div class="relative group">
             <img :src="product.image.image" class="aspect-auto w-full" alt="">
             <div
