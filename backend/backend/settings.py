@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!ae_bdv_=7st!4pq)gk=kal!2vymwqw%)=v!h24cj!f#qo00xs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -57,6 +57,12 @@ INSTALLED_APPS = [
     'site_settings',
     'courier'
 ]
+
+# SSL Setup
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Pathao API credentials
 PATHAO_CLIENT_ID = "JxboV5Nagw"
