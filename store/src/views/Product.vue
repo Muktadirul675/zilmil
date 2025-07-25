@@ -165,8 +165,8 @@ const similars = ref([])
 
 const maxStock = computed(() => {
   if (product.value) {
-    const variant = null;
-    const color = null;
+    let variant = null;
+    let color = null;
     if (product.value.variants && selectedVariant.value) {
       variant = product.value.variants.find((v) => v.id === selectedVariant.value)
     }
