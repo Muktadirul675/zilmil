@@ -1,7 +1,7 @@
 <template>
   <button
     @click="handleBack"
-    class="flex items-center cursor-pointer text-gray-700 hover:text-black transition-colors"
+    class="flex items-center cursor-pointer text-blue-500 hover:text-black transition-colors"
     aria-label="Back"
   >
     <i class="pi pi-arrow-left text-lg"></i>

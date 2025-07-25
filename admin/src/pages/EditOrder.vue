@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-[90%] mx-auto mt-10">
     <div class="bg-white p-6 rounded shadow-md">
-      <div class="mb-6 flex items-center justify-start">
+      <div class="mb-6 flex items-center justify-start gap-2">
         <BackButton/>
         <h2 class="text-2xl font-semibold">Edit Order</h2>
       </div>

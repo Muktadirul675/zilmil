@@ -7,8 +7,8 @@ const { product: prod } = defineProps({
 })
 const product = computed(() => {
     let p = prod
-    if (!(String(p.image.image).startsWith("http://localhost:8000"))) {
-        p.image.image = "http://localhost:8000" + p.image.image
+    if (!(String(p.image.image).startsWith(import.meta.env.VITE_BACKEND_URL))) {
+        p.image.image = import.meta.env.VITE_BACKEND_URL + p.image.image
     }
     return p;
 })
@@ -16,7 +16,7 @@ const product = computed(() => {
 
 <template>
     <div class="w-1/2 lg:w-1/4 p-1 hover:shadow transition-all cursor-pointer">
-        <div class="relative group">
+        <RouterLink class="relative block group" :to="`/${product.slug}`">
             <img :src="product.image.image" class="aspect-auto w-full" alt="">
             <div
                 :class="`absolute overflow-hidden h-0 group-hover:h-[32px] transition-all flex bg-white justify-center bottom-0 w-full`">
@@ -25,12 +25,12 @@ const product = computed(() => {
                     <i class="pi pi-eye text-xl cursor-pointer hover:text-red-500 p-1 rounded"></i>
                 </div>
             </div>
-        </div>
+        </RouterLink>
         <div class="w-full">
             <div class="text-lg font-semibold my-2 truncate w-full">
                 {{ product.name }}
             </div>
-            <div class="text-lg font-semibold my-2 truncate w-full flex items-center">
+            <div class="text-lg font-semibold my-2 truncate w-full flex flex-col lg:flex-row lg:items-center">
                 <span class="text-red-500">
                     <BDT :amount="parseFloat(product.net_price ?? product.price)"/>
                 </span>
