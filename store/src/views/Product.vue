@@ -189,7 +189,7 @@ const fetchProduct = async () => {
     loading.value = true
     const { data } = await api.get(`/products/${route.params.slug}/`)
     product.value = data
-    fetchSimilars()
+    fetchSimilars(data.id)
   } catch (e) {
     error.value = 'Failed to load product'
   } finally {
