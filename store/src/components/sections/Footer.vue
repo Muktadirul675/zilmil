@@ -3,7 +3,7 @@
     <div class="w-full lg:w-[80%] mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-6">
       <!-- Left Side: Logo + Info -->
       <div class="flex flex-col items-start gap-2 w-full md:w-1/2 text-left">
-        <img v-if="section.args?.logo" :src="`${import.meta.env.VITE_BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-12 w-auto mb-2" />
+        <img v-if="section.args?.logo" :src="`${BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-12 w-auto mb-2" />
         <p v-if="section.args?.description" class="text-sm">
           {{ section.args.description }}
         </p>
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Right Side: Facebook Page Button -->
-      <!-- 
+      
       <div class="flex flex-col items-start md:items-end w-full md:w-1/2 text-left md:text-right gap-2">
         <div class="text-lg font-semibold">Follow us on Facebook</div>
         <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1E8jUYbdar%2F&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
@@ -43,7 +43,7 @@
           Visit Facebook Page
         </a> 
       </div>
-      -->
+     
     </div>
   </div>
 </template>
@@ -52,6 +52,8 @@
 import { computed, onMounted, watch } from 'vue';
 import { useFeedStore } from '@/stores/feed';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const props = defineProps({
   id: Number
 })
@@ -59,9 +61,9 @@ const props = defineProps({
 const feedStore = useFeedStore()
 const section = computed(() => feedStore.feed.find(s => s.id === props.id) || { args: {} })
 
-// watch(section, () => {
-//   if (window.FB) {
-//     window.FB.XFBML.parse() // Parse new Facebook elements
-//   }
-// }, { deep: true, immediate: true })
+watch(section, () => {
+  if (window.FB) {
+    window.FB.XFBML.parse() // Parse new Facebook elements
+  }
+}, { deep: true, immediate: true })
 </script>

@@ -1,17 +1,43 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import BDT from '../ui/BDT.vue';
+import { useCartStore } from '@/stores/cart'; // adjust path if needed
 
-const { product: prod } = defineProps({
-    product: Object
-})
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const { product: prod } = defineProps({ product: Object });
+
+const router = useRouter();
+const cartStore = useCartStore();
+
+const loading = ref(false);
+
 const product = computed(() => {
-    let p = prod
-    if (!(String(p.image.image).startsWith(import.meta.env.VITE_BACKEND_URL))) {
-        p.image.image = import.meta.env.VITE_BACKEND_URL + p.image.image
+    let p = prod;
+    if (!String(p.image.image).startsWith(BACKEND_URL)) {
+        p.image.image = BACKEND_URL + p.image.image;
     }
     return p;
-})
+});
+
+const handleAddToCart = async () => {
+    if (product.value.variants?.length || product.value.colors?.length) {
+        router.push(`/${product.value.slug}`);
+        return;
+    }
+
+    loading.value = true;
+    try {
+        await cartStore.addToCart({
+            product: product.value.id,
+            quantity: 1,
+        });
+    } catch (e) {
+        alert('Failed to add to cart.');
+    } finally {
+        loading.value = false;
+    }
+};
 </script>
 
 <template>
@@ -32,7 +58,7 @@ const product = computed(() => {
             </div>
             <div class="text-lg font-semibold my-2 truncate w-full flex flex-col lg:flex-row lg:items-center">
                 <span class="text-red-500">
-                    <BDT :amount="parseFloat(product.net_price ?? product.price)"/>
+                    <BDT :amount="parseFloat(product.net_price ?? product.price)" />
                 </span>
                 <span v-if="product.net_price" class="text-sm line-through text-gray-500 ml-2">
                     {{ product.price }}
@@ -41,11 +67,13 @@ const product = computed(() => {
                     {{ product.compared_price }}
                 </span>
             </div>
-            <button
-                class="cursor-pointer text-white rounded px-2 py-1.5 justify-center flex items-center w-full hover:bg-red-600 transition-all bg-red-500">
-                <i class="pi pi-shopping-cart"></i>
+            <button @click="handleAddToCart" :disabled="loading"
+                class="cursor-pointer text-white rounded px-2 py-1.5 justify-center flex items-center w-full transition-all"
+                :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
+                <i v-if="loading" class="pi pi-spinner pi-spin"></i>
+                <i v-else class="pi pi-shopping-cart"></i>
                 <div class="mx-1"></div>
-                Add To Cart
+                <span>{{ loading ? 'Adding...' : 'Add To Cart' }}</span>
             </button>
         </div>
     </div>

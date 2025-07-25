@@ -1,13 +1,18 @@
 <script setup>
+import { useCartStore } from '@/stores/cart';
 import { useFeedStore } from '@/stores/feed'
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import CartIcon from '../cart/CartIcon.vue';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const props = defineProps({
   id: Number
 })
 
 const feedStore = useFeedStore()
+const cart = useCartStore()
 const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
 </script>
 
@@ -18,18 +23,14 @@ const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
         <RouterLink to="/">
           <img
             v-if="section?.args"
-            :src="section.args.preview || `${import.meta.env.VITE_BACKEND_URL}${section.args.logo}`"
+            :src="section.args.preview || `${BACKEND_URL}${section.args.logo}`"
             alt="Logo"
             class="h-8 w-auto"
           />
         </RouterLink>
         <span class="text-xl font-semibold text-gray-800"></span>
       </div>
-      <ul class="flex gap-6 text-gray-700 font-medium">
-        <a href="#" class="hover:text-red-500">
-          <i class="pi pi-shopping-cart text-2xl"></i>
-        </a>
-      </ul>
+      <CartIcon/>
     </div>
   </nav>
 </template>

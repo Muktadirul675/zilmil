@@ -27,7 +27,7 @@ class Cart(models.Model):
             if variant and (variant.product_id != product.id or variant.stock == 0):
                 continue
 
-            price = product.discounted_price or product.price
+            price = product.net_price or product.price
             total += price * item.quantity
 
         return total

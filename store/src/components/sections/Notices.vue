@@ -39,24 +39,24 @@ setInterval(() => {
 
 <template>
     <template v-if="!section?.notices?.length">
-      <div class="w-full p-3 bg-slate-50">No Notice</div>
+      <div class="w-full px-2 py-1 lg:py-2 bg-slate-50">No Notice</div>
     </template>
 
     <template v-else-if="section.notices.length === 1">
-      <div class="w-full flex flex-row justify-around p-3 bg-red-500 text-white">
+      <div class="w-full flex flex-row justify-around px-2 py-1 lg:py-2 bg-red-500 text-white">
         {{ section.notices[0].text }}
       </div>
     </template>
 
     <template v-else>
-      <div class="p-2 w-full flex flex-row justify-around bg-red-500 text-white">
-        <div click="left" class="p-1 hover:bg-red-700 transition-all cursor-pointer">
+      <div class="px-2 py-1 lg:py-2 w-full flex flex-row justify-around bg-red-500 text-white">
+        <div @click="left" class="p-1 hover:bg-red-700 transition-all cursor-pointer">
           <i class="pi pi-angle-left"></i>
         </div>
         <div class="flex-grow text-center">
           {{ section.notices[active].text }}
         </div>
-        <div click="right" class="p-1 hover:bg-red-700 transition-all cursor-pointer">
+        <div @click="right" class="p-1 hover:bg-red-700 transition-all cursor-pointer">
           <i class="pi pi-angle-right"></i>
         </div>
       </div>

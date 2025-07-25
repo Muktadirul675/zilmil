@@ -183,3 +183,16 @@ class ProductViewSet(viewsets.ModelViewSet):
                 'products': ProductListSerializer(out_of_stock_qs, many=True).data
             }
         })
+    @action(detail=True, methods=['get'], url_path='suggestions')
+    def suggest_products(self, request, pk=None):
+        product = self.get_object()
+        product_categories = product.categories.all()
+
+        suggestions = Product.objects.filter(
+            categories__in=product_categories,
+            is_active=True,
+            is_deleted=False
+        ).exclude(id=product.id).distinct()[:10]  # Avoid duplicates
+
+        serializer = ProductListSerializer(suggestions, many=True)
+        return Response(serializer.data)

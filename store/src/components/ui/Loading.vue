@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-[200px] space-y-4 text-gray-600">
-    <div class="loader w-12 h-12 border-4 border-dashed rounded-full animate-spin border-red-500"></div>
+    <img class="w-[70px] h-[70px]" :src="randomGif" alt="">
     <div class="text-center text-sm italic">{{ randomMessage }}</div>
   </div>
 </template>
@@ -17,11 +17,20 @@ const messages = [
   'Generating awesomeness...',
 ];
 
+const gifs = [
+  '/loading.gif',
+  '/loading1.gif',
+  '/loading2.gif',
+]
+
 const randomMessage = ref('');
+const randomGif = ref('')
 
 onMounted(() => {
   const index = Math.floor(Math.random() * messages.length);
+  const gifIndex = Math.floor(Math.random() * gifs.length);
   randomMessage.value = messages[index];
+  randomGif.value = gifs[gifIndex]
 });
 </script>
 

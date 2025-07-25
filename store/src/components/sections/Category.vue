@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useFeedStore } from '@/stores/feed'
 import ProductCard from '../product/ProductCard.vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   id: Number
@@ -17,9 +18,9 @@ const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
       <div class="p-2">
         <div class="flex flex-row flex-wrap justify-between">
           <h3 class="font-semibold text-xl">{{ section.title }}</h3>
-          <button class="text-white rounded cursor-pointer px-2 py-1 bg-red-500 hover:bg-red-600 transition-all">
+          <RouterLink :to="`/category/${section.category.slug}`" class="text-white rounded cursor-pointer px-2 py-1 bg-red-500 hover:bg-red-600 transition-all">
             See All
-          </button>
+          </RouterLink>
         </div>
 
         <div class="flex flex-start flex-row flex-wrap justify-start">

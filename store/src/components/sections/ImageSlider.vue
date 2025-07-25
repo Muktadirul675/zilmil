@@ -20,6 +20,8 @@ function prev() {
   if (!section.value?.images?.length) return
   current.value = (current.value - 1 + section.value.images.length) % section.value.images.length
 }
+
+setInterval(next, 5000)
 </script>
 
 <template>
@@ -43,14 +45,14 @@ function prev() {
 
       <!-- Prev / Next buttons -->
       <button
-        click="prev"
+        @click="prev"
         class="absolute cursor-pointer top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
         v-if="section?.images?.length > 1"
       >
         <i class="pi pi-angle-left"></i>
       </button>
       <button
-        click="next"
+        @click="next"
         class="absolute cursor-pointer top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
         v-if="section?.images?.length > 1"
       >

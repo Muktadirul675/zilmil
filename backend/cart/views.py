@@ -4,8 +4,8 @@ from .models import Cart, CartItem
 from .serializers import CartSerializer, CartItemSerializer
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
-
-
+from rest_framework.decorators import action
+from orders.models import Order, OrderItem
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -66,12 +66,29 @@ class CartViewSet(viewsets.ViewSet):
             cart_item = cart_item_qs.first()
             new_quantity = cart_item.quantity + quantity
 
-            stock_limit = variant.stock if variant else product.stock
-            if new_quantity > stock_limit:
-                return Response(
-                    {"detail": f"Cannot add {quantity} items. Only {stock_limit - cart_item.quantity} more available."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            # Determine applicable stock limits
+            stock_sources = []
+
+            if variant and variant.stock is not None:
+                stock_sources.append(("Variant", variant.stock))
+            if color and color.stock is not None:
+                stock_sources.append(("Color", color.stock))
+            if product.stock is not None:
+                stock_sources.append(("Product", product.stock))
+
+            # Find the lowest stock constraint
+            if stock_sources:
+                limiting_stock_label, limiting_stock = min(stock_sources, key=lambda x: x[1])
+                if new_quantity > limiting_stock:
+                    available = limiting_stock - cart_item.quantity
+                    return Response(
+                        {
+                            "detail": f"Cannot add {quantity} items. Only {available} more available based on {limiting_stock_label} stock."
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            # All good, update the quantity
             cart_item.quantity = new_quantity
             cart_item.save()
         else:
@@ -95,3 +112,85 @@ class CartViewSet(viewsets.ViewSet):
         cart_item.delete()
         cart.refresh_from_db()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=False, methods=['post'])
+    def checkout(self, request):
+        cart = self.get_cart(request)
+
+        if not cart.items.exists():
+            return Response({"detail": "Cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        full_name = data.get("full_name")
+        phone = data.get("phone")
+        shipping_address = data.get("shipping_address")
+        note = data.get("note", "")
+
+        if not all([full_name, phone, shipping_address]):
+            return Response(
+                {"detail": "Missing required fields: full_name, phone, or shipping_address"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Validate stock and compute total
+        items = []
+
+        for item in cart.items.all():
+            product = item.product
+            variant = item.variant
+            color = item.color
+            quantity = item.quantity
+
+            # Stock check
+            stock_sources = []
+
+            if variant and variant.stock is not None:
+                stock_sources.append(("Variant", variant.stock))
+            if color and color.stock is not None:
+                stock_sources.append(("Color", color.stock))
+            if product.stock is not None:
+                stock_sources.append(("Product", product.stock))
+
+            limiting_label, limiting_stock = min(stock_sources, key=lambda x: x[1]) if stock_sources else ("Product", 0)
+
+            if quantity > limiting_stock:
+                return Response(
+                    {"detail": f"Not enough stock for {product.name}. Limited by {limiting_label} stock."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            items.append({
+                "product": product,
+                "variant": variant,
+                "color": color,
+                "quantity": quantity
+            })
+
+        # Create order
+        order = Order.objects.create(
+            full_name=full_name,
+            phone=phone,
+            shipping_address=shipping_address,
+            note=note,
+            session_id=cart.session_id
+        )
+
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=item["product"],
+                variant=item["variant"],
+                color=item["color"],
+                quantity=item["quantity"]
+            )
+
+        # Clear the cart
+        cart.items.all().delete()
+
+        return Response({
+            "success": True,
+            "message": "Order created successfully.",
+            "order_id": order.id
+        }, status=status.HTTP_201_CREATED)
+
+

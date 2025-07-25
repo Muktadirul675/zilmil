@@ -17,7 +17,8 @@ const sections = computed(() =>
     (section) =>
       section.type !== 'notice' &&
       section.type !== 'navbar' &&
-      section.type !== 'categories_bar'
+      section.type !== 'categories_bar' &&
+      section.type !== 'footer' 
   )
 )
 </script>
