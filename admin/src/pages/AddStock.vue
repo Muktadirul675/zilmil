@@ -3,26 +3,19 @@
     <!-- Header Row -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <h2 class="text-2xl font-semibold flex items-center gap-2">
-        <BackButton/>
+        <BackButton />
         Add Stocks to Products
       </h2>
 
       <div class="flex gap-3 flex-1 justify-end md:justify-end">
         <div class="relative w-full md:w-64">
           <i class="pi pi-search absolute left-3 top-3 text-gray-400" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search products..."
-            class="pl-10 border border-gray-300 px-4 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+          <input v-model="searchQuery" type="text" placeholder="Search products..."
+            class="pl-10 border border-gray-300 px-4 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
-        <button
-          type="button"
-          @click="submitStocks"
+        <button type="button" @click="submitStocks"
           class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
-          :disabled="loading"
-        >
+          :disabled="loading">
           <i class="pi pi-send mr-1" />
           {{ loading ? 'Submitting...' : 'Submit' }}
         </button>
@@ -31,30 +24,19 @@
 
     <!-- Stock Form -->
     <form @submit.prevent="submitStocks" class="space-y-6">
-      <div
-        v-for="(product, pIndex) in filteredProducts"
-        :key="product.id"
-        class="border border-gray-300 rounded p-4 bg-gray-50"
-      >
+      <div v-for="(product, pIndex) in filteredProducts" :key="product.id"
+        class="border border-gray-300 rounded p-4 bg-gray-50">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Product Info -->
           <div class="flex gap-4 items-start">
-            <img
-              :src="'http://localhost:8000' + product.image.image"
-              alt="Product"
-              class="w-20 h-20 object-cover rounded"
-            />
+            <img :src="BACKEND_URL + product.image.image" alt="Product"
+              class="w-20 h-20 object-cover rounded" />
             <div class="flex-1">
               <p class="font-semibold">{{ product.name }}</p>
               <div class="relative mt-2">
                 <i class="pi pi-box absolute left-3 top-2.5 text-gray-400" />
-                <input
-                  type="number"
-                  min="0"
-                  v-model.number="productStocks[pIndex].quantity"
-                  placeholder="Add stock"
-                  class="pl-8 w-full border border-gray-300 px-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
+                <input type="number" min="0" v-model.number="productStocks[pIndex].quantity" placeholder="Add stock"
+                  class="pl-8 w-full border border-gray-300 px-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" />
               </div>
             </div>
           </div>
@@ -65,19 +47,11 @@
               <i class="pi pi-tags text-indigo-600" /> Variants
             </p>
             <div v-if="product.variants?.length" class="flex flex-col gap-2">
-              <div
-                v-for="(variant, vIndex) in product.variants"
-                :key="variant.id"
-                class="flex items-center gap-2"
-              >
+              <div v-for="(variant, vIndex) in product.variants" :key="variant.id" class="flex items-center gap-2">
                 <span class="text-sm flex-1">{{ variant.name }}</span>
-                <input
-                  type="number"
-                  min="0"
-                  v-model.number="productStocks[pIndex].variants[vIndex].quantity"
+                <input type="number" min="0" v-model.number="productStocks[pIndex].variants[vIndex].quantity"
                   class="w-24 border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Qty"
-                />
+                  placeholder="Qty" />
               </div>
             </div>
             <p v-else class="text-sm text-gray-500">No Variant</p>
@@ -89,19 +63,11 @@
               <i class="pi pi-palette text-indigo-600" /> Colors
             </p>
             <div v-if="product.colors?.length" class="flex flex-col gap-2">
-              <div
-                v-for="(color, cIndex) in product.colors"
-                :key="color.id"
-                class="flex items-center gap-2"
-              >
+              <div v-for="(color, cIndex) in product.colors" :key="color.id" class="flex items-center gap-2">
                 <span class="text-sm flex-1">{{ color.name }}</span>
-                <input
-                  type="number"
-                  min="0"
-                  v-model.number="productStocks[pIndex].colors[cIndex].quantity"
+                <input type="number" min="0" v-model.number="productStocks[pIndex].colors[cIndex].quantity"
                   class="w-24 border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Qty"
-                />
+                  placeholder="Qty" />
               </div>
             </div>
             <p v-else class="text-sm text-gray-500">No Color</p>
@@ -119,52 +85,53 @@
     </form>
   </div>
 </template>
-  
-  <script setup>
-  import { ref, onMounted, computed } from 'vue'
 
-  import api from '@/services/api'
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+
+import api from '@/services/api'
 import BackButton from '@/components/ui/BackButton.vue'
-  
-  const products = ref([])
-  const productStocks = ref([])
-  const loading = ref(false)
-  const error = ref('')
-  const success = ref(false)
-  const searchQuery = ref('')
-  
-  onMounted(async () => {
-    const res = await api.get('/products/all')
-    products.value = res.data
-    productStocks.value = res.data.map(p => ({
-      id: p.id,
-      quantity: 0,
-      variants: p.variants?.map(v => ({ id: v.id, quantity: 0 })) || [],
-      colors: p.colors?.map(c => ({ id: c.id, quantity: 0 })) || [],
-    }))
-  })
-  
-  const filteredProducts = computed(() => {
-    if (!searchQuery.value) return products.value
-    return products.value.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (product.sku && product.sku.toLowerCase().includes(searchQuery.value.toLowerCase()))
-    )
-  })
-  
-  async function submitStocks() {
-    loading.value = true
-    error.value = ''
-    success.value = false
-  
-    try {
-        console.log(JSON.stringify(productStocks.value,null,2))
-      await api.post('/products/stocks/add/', productStocks.value)
-      success.value = true
-    } catch (err) {
-      error.value = err.response?.data?.detail || 'Failed to update stocks.'
-    } finally {
-      loading.value = false
-    }
+
+const products = ref([])
+const productStocks = ref([])
+const loading = ref(false)
+const error = ref('')
+const success = ref(false)
+const searchQuery = ref('')
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
+onMounted(async () => {
+  const res = await api.get('/products/all')
+  products.value = res.data
+  productStocks.value = res.data.map(p => ({
+    id: p.id,
+    quantity: 0,
+    variants: p.variants?.map(v => ({ id: v.id, quantity: 0 })) || [],
+    colors: p.colors?.map(c => ({ id: c.id, quantity: 0 })) || [],
+  }))
+})
+
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) return products.value
+  return products.value.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    (product.sku && product.sku.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  )
+})
+
+async function submitStocks() {
+  loading.value = true
+  error.value = ''
+  success.value = false
+
+  try {
+    console.log(JSON.stringify(productStocks.value, null, 2))
+    await api.post('/products/stocks/add/', productStocks.value)
+    success.value = true
+  } catch (err) {
+    error.value = err.response?.data?.detail || 'Failed to update stocks.'
+  } finally {
+    loading.value = false
   }
-  </script>
+}
+</script>

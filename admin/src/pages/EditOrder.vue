@@ -234,8 +234,8 @@ const submitOrder = async () => {
   }
 }
 
-onMounted(async () => {
-  await fetchCities()
-  await fetchOrder()
+onMounted(() => {
+  fetchCities()
+  fetchOrder()
 })
 </script>

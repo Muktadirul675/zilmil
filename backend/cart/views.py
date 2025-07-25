@@ -167,16 +167,16 @@ class CartViewSet(viewsets.ViewSet):
             })
 
         # Create order
-        order = Order.objects.create(
+        order = Order(
             full_name=full_name,
             phone=phone,
             shipping_address=shipping_address,
             note=note,
             session_id=cart.session_id
         )
-
+        order.save()
         for item in items:
-            item = OrderItem.objects.create(
+            item = OrderItem(
                 order=order,
                 product=item["product"],
                 variant=item["variant"],

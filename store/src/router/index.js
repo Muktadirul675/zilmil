@@ -1,9 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Product from '@/views/Product.vue'
-import Cart from '@/views/Cart.vue'
-import Checkout from '@/views/Checkout.vue'
-import Category from '@/views/Category.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,27 +6,27 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('@/views/HomeView.vue'), // lazy load
     },
     {
-      path:'/category/:slug',
-      name:'category',
-      component: Category
+      path: '/category/:slug',
+      name: 'category',
+      component: () => import('@/views/Category.vue'), // lazy load
     },
     {
-      path:'/cart',
-      name:'cart',
-      component: Cart
+      path: '/cart',
+      name: 'cart',
+      component: () => import('@/views/Cart.vue'), // lazy load
     },
     {
-      path:'/checkout',
-      name:'checkout',
-      component: Checkout
+      path: '/checkout',
+      name: 'checkout',
+      component: () => import('@/views/Checkout.vue'), // lazy load
     },
     {
-      path:'/:slug',
-      name:'product',
-      component: Product
+      path: '/:slug',
+      name: 'product',
+      component: () => import('@/views/Product.vue'), // lazy load
     },
   ],
 })

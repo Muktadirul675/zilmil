@@ -1,23 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-
-import Dashboard from '@/pages/Dashboard.vue'
-import Users from '@/pages/Users.vue'
-import Products from '@/pages/Products.vue'
-import Logs from '@/pages/Logs.vue'
-import AddProduct from '@/pages/AddProduct.vue'
-import Orders from '@/pages/Orders.vue'
-import AddOrder from '@/pages/AddOrder.vue'
-import Login from '@/pages/Login.vue'
-import AddStock from '@/pages/AddStock.vue'
-import Notice from '@/pages/Notice.vue'
-import FeedBuilder from '@/pages/FeedBuilder.vue'
-
 import { useAuthStore } from '@/stores/auth'
-import EditProduct from '@/pages/EditProduct.vue'
-import EditOrder from '@/pages/EditOrder.vue'
-import Settings from '@/pages/Settings.vue'
-import ReadyForCourier from '@/pages/ReadyForCourier.vue'
+
+// â Lazy-load layouts
+const DefaultLayout = () => import('@/layouts/DefaultLayout.vue')
+
+// â Lazy-load pages
+const Login = () => import('@/pages/Login.vue')
+const Dashboard = () => import('@/pages/Dashboard.vue')
+const Users = () => import('@/pages/Users.vue')
+const Products = () => import('@/pages/Products.vue')
+const AddProduct = () => import('@/pages/AddProduct.vue')
+const EditProduct = () => import('@/pages/EditProduct.vue')
+const Orders = () => import('@/pages/Orders.vue')
+const AddOrder = () => import('@/pages/AddOrder.vue')
+const EditOrder = () => import('@/pages/EditOrder.vue')
+const Logs = () => import('@/pages/Logs.vue')
+const Settings = () => import('@/pages/Settings.vue')
+const AddStock = () => import('@/pages/AddStock.vue')
+const ReadyForCourier = () => import('@/pages/ReadyForCourier.vue')
+const Notice = () => import('@/pages/Notice.vue')
+const FeedBuilder = () => import('@/pages/FeedBuilder.vue')
 
 const routes = [
   {
@@ -33,21 +35,14 @@ const routes = [
       { path: 'users', component: Users },
       { path: 'products', component: Products },
       { path: 'products/add', component: AddProduct },
-      {
-        path: '/products/:id',
-        name: 'ProductEdit',
-        component: EditProduct,
-      },{
-        path: '/orders/:id',
-        name: 'OrdersEdit',
-        component: EditOrder,
-      },
+      { path: 'products/stocks/add', component: AddStock },
+      { path: 'products/:id', name: 'ProductEdit', component: EditProduct },
       { path: 'orders', component: Orders },
       { path: 'orders/add', component: AddOrder },
+      { path: 'orders/:id', name: 'OrdersEdit', component: EditOrder },
       { path: 'logs', component: Logs },
       { path: 'settings', component: Settings },
       { path: 'builder', component: FeedBuilder },
-      { path: 'products/stocks/add', component: AddStock },
       { path: 'couriers', component: ReadyForCourier },
     ]
   }
@@ -59,7 +54,6 @@ const router = createRouter({
 })
 
 // â Global Navigation Guard
-// router/index.js
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
 
@@ -76,4 +70,4 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-export default router;
+export default 
