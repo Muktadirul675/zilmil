@@ -1,12 +1,16 @@
 <template>
   <div class="max-w-[90%] mx-auto mt-10">
     <div class="bg-white p-6 rounded shadow-md">
-      <div class="mb-6 flex items-center justify-start gap-2">
-        <BackButton/>
+      <div v-if="isFetchingOrder" class="text-center py-10">
+        <i class="pi pi-spin pi-spinner text-2xl text-indigo-600" />
+        <p class="text-sm text-gray-500 mt-2">Loading order...</p>
+      </div>
+      <div v-if="!isFetchingOrder" class="mb-6 flex items-center justify-start gap-2">
+        <BackButton />
         <h2 class="text-2xl font-semibold">Edit Order</h2>
       </div>
 
-      <form @submit.prevent="submitOrder">
+      <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
           <!-- Left (Compact Inputs) -->
           <div class="md:col-span-2 space-y-4">
@@ -89,6 +93,7 @@ import SearchSelect from '@/components/ui/SearchSelect.vue'
 import FraudChecker from '@/components/FraudChecker.vue'
 import BDT from '@/components/ui/BDT.vue'
 import BackButton from '@/components/ui/BackButton.vue'
+import { debounce } from 'lodash'
 
 const router = useRouter()
 const route = useRoute()
@@ -107,7 +112,7 @@ const order = ref({
   area_id: null,
   items: [],
 })
-
+const isFetchingOrder = ref(true)
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
 const success = ref(false)
 const error = ref('')
@@ -140,6 +145,7 @@ const fetchAreas = async () => {
 
 const fetchOrder = async () => {
   try {
+    isFetchingOrder.value = true
     const res = await api.get(`/orders/${orderId}/`)
     const data = res.data
     order.value = {
@@ -156,32 +162,35 @@ const fetchOrder = async () => {
       items: data.items || [],
     }
 
-    await fetchZones()
-    await fetchAreas()
+    fetchZones()
+    fetchAreas()
   } catch (err) {
     error.value = 'Failed to load order data.'
     console.error(err)
+  }finally{
+    isFetchingOrder.value = false
   }
 }
 
+const fetchDeliveryCharge = debounce(async (cityId, zoneId) => {
+  isCalculatingDelivery.value = true
+  try {
+    const res = await api.get('/courier/delivery-charge/', {
+      params: { city_id: cityId, zone_id: zoneId },
+    })
+    order.value.delivery_charge = res.data?.price || 0
+  } catch (err) {
+    console.error('Failed to fetch delivery charge:', err)
+  } finally {
+    isCalculatingDelivery.value = false
+  }
+}, 500)
+
 watch(
   () => [order.value.city_id, order.value.zone_id],
-  async ([cityId, zoneId]) => {
+  ([cityId, zoneId]) => {
     if (cityId && zoneId) {
-      isCalculatingDelivery.value = true
-      try {
-        const res = await api.get('/courier/delivery-charge/', {
-          params: {
-            city_id: cityId,
-            zone_id: zoneId,
-          },
-        })
-        order.value.delivery_charge = res.data?.price || 0
-      } catch (err) {
-        console.error('Failed to fetch delivery charge:', err)
-      } finally {
-        isCalculatingDelivery.value = false
-      }
+      fetchDeliveryCharge(cityId, zoneId)
     }
   }
 )
@@ -235,7 +244,6 @@ const submitOrder = async () => {
 }
 
 onMounted(() => {
-  fetchCities()
   fetchOrder()
 })
 </script>

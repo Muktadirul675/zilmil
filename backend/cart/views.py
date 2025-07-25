@@ -174,7 +174,6 @@ class CartViewSet(viewsets.ViewSet):
             note=note,
             session_id=cart.session_id
         )
-        order.save()
         for item in items:
             item = OrderItem(
                 order=order,

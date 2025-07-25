@@ -178,15 +178,18 @@ const maxStock = computed(() => {
   return 0
 })
 
+async function fetchSimilars(id){
+    // Fetch suggestions based on the product ID
+    const suggestionsRes = await api.get(`/products/${id}/suggestions`)
+    similars.value = suggestionsRes.data
+}
+
 const fetchProduct = async () => {
   try {
     loading.value = true
     const { data } = await api.get(`/products/${route.params.slug}/`)
     product.value = data
-
-    // Fetch suggestions based on the product ID
-    const suggestionsRes = await api.get(`/products/${data.id}/suggestions`)
-    similars.value = suggestionsRes.data
+    fetchSimilars()
   } catch (e) {
     error.value = 'Failed to load product'
   } finally {
