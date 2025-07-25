@@ -176,7 +176,7 @@ class CartViewSet(viewsets.ViewSet):
         )
 
         for item in items:
-            OrderItem.objects.create(
+            item = OrderItem.objects.create(
                 order=order,
                 product=item["product"],
                 variant=item["variant"],
@@ -184,6 +184,9 @@ class CartViewSet(viewsets.ViewSet):
                 quantity=item["quantity"],
                 price_at_purchase=item['product'].net_price if item['product'].net_price else item['product'].price
             )
+            item.save()
+
+        order.save()
 
         # Clear the cart
         cart.items.all().delete()

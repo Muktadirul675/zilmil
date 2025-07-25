@@ -1,7 +1,7 @@
 <script setup>
 import 'primeicons/primeicons.css'
 import { computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/lib/api' // assuming your axios instance is here
 import { useFeedStore } from '@/stores/feed'
 import { useCartStore } from '@/stores/cart'
@@ -18,25 +18,11 @@ const cart = useCartStore()
 onMounted(() => {
   feed.fetchFeed()
   cart.fetchCart()
-})
-
-// ð¢ Send heartbeat to `/active` every 170 sec
-onMounted(() => {
+  api.get('/visits/active')
   setInterval(() => {
     api.get('/visits/active')
   }, 170000)
 })
-
-// ð¢ Watch route change and send visit report (except /cart, /checkout)
-watch(
-  () => route.path,
-  (newPath) => {
-    if (!['/cart', '/checkout'].includes(newPath)) {
-      api.post('/visits/', { path: newPath })
-    }
-  },
-  { immediate: true }
-)
 
 const noticeSection = computed(() =>
   feed.feed.find((section) => section.type === 'notice')
@@ -53,6 +39,14 @@ const footerSection = computed(() =>
 const categoriesBarSection = computed(() =>
   feed.feed.find((section) => section.type === 'categories_bar')
 )
+
+const router = useRouter()
+
+router.afterEach((to) => {
+  if (!['/cart', '/checkout'].includes(to.path)) {
+    api.post('/visits', { path: to.path })
+  }
+})
 </script>
 
 <template>
