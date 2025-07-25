@@ -70,4 +70,4 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-export default 
+export default router
