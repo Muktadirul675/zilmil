@@ -181,7 +181,8 @@ class CartViewSet(viewsets.ViewSet):
                 product=item["product"],
                 variant=item["variant"],
                 color=item["color"],
-                quantity=item["quantity"]
+                quantity=item["quantity"],
+                price_at_purchase=item['product'].net_price if item['product'].net_price else item['product'].price
             )
 
         # Clear the cart

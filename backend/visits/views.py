@@ -32,7 +32,7 @@ class ActiveUsersView(APIView):
     def get(self, request):
         ip = get_client_ip(request)
         key = f"active_user:{ip}"
-        cache.set(key, int(time.time()), timeout=120)
+        cache.set(key, int(time.time()), timeout=180)
 
         keys = cache.keys("active_user:*")
         active_count = len(keys)
