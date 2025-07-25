@@ -12,7 +12,7 @@
           class="flex flex-col items-center justify-center min-w-[80px] snap-start"
         >
           <img
-            :src="slide.preview || `http://localhost:8000${slide.image}`"
+            :src="slide.preview || `${import.meta.env.VITE_BACKEND_URL}${slide.image}`"
             class="w-12 h-12 object-contain"
             alt="category"
           />

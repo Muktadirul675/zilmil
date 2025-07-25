@@ -18,7 +18,7 @@ const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
         <RouterLink to="/">
           <img
             v-if="section?.args"
-            :src="section.args.preview || `http://localhost:8000${section.args.logo}`"
+            :src="section.args.preview || `${import.meta.env.VITE_BACKEND_URL}${section.args.logo}`"
             alt="Logo"
             class="h-8 w-auto"
           />
