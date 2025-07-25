@@ -8,7 +8,7 @@
           class="bg-white rounded-xl shadow-md border border-gray-200 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 transition hover:shadow-lg"
         >
           <img
-            :src="'http://localhost:8000'+item.product.image.image"
+            :src="BACKEND_URL+item.product.image.image"
             alt="Product"
             class="w-20 h-20 object-cover rounded-md border border-gray-100"
           />
@@ -40,4 +40,5 @@
   <script setup>
   defineProps(['items'])
   defineEmits(['remove'])
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   </script>

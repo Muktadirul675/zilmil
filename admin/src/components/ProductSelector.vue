@@ -23,7 +23,7 @@
         <tbody>
           <tr v-for="product in filteredProducts" :key="product.id" class="border-t hover:bg-gray-50 transition">
             <td class="px-4 py-2">
-              <img :src="'http://localhost:8000'+product.image.image" alt="product image" class="w-12 h-12 object-cover rounded" />
+              <img :src="`${BACKEND_URL}${product.image.image}`" alt="product image" class="w-12 h-12 object-cover rounded" />
             </td>
             <td class="px-4 py-2">
               <div class="font-medium">{{ product.name }}</div>
@@ -82,6 +82,8 @@ const productStore = useProductStore()
 const searchTerm = ref('')
 const allProducts = ref([])
 const productInputs = reactive({})
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 onMounted(async () => {
   const products = await productStore.fetchAllProducts()

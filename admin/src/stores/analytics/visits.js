@@ -40,9 +40,9 @@ export const useVisitsAnalyticsStore = defineStore('visitsAnalytics', {
     async fetchAll() {
       this.loading = true
       const [todayRes, activeRes, sourcesRes] = await Promise.all([
-        api.get('/visits/today'),
-        api.get('/visits/active'),
-        api.get('/visits/sources'),
+        api.get('/visits/today/'),
+        api.get('/visits/active/'),
+        api.get('/visits/sources/'),
       ])
       this.today = todayRes.data
       this.active = activeRes.data

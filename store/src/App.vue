@@ -15,14 +15,6 @@ const feed = useFeedStore()
 const cart = useCartStore()
 
 // ð¢ Fetch feed and cart
-onMounted(() => {
-  feed.fetchFeed()
-  cart.fetchCart()
-  api.get('/visits/active')
-  setInterval(() => {
-    api.get('/visits/active')
-  }, 170000)
-})
 
 const noticeSection = computed(() =>
   feed.feed.find((section) => section.type === 'notice')
@@ -42,10 +34,29 @@ const categoriesBarSection = computed(() =>
 
 const router = useRouter()
 
+async function visit(path) {
+  try{
+    console.log('visiting')
+    await api.post('/visits/', { path: path })
+    console.log('visited')
+  }catch(e){
+    console.log(`Visiting ERROR: ${e.message}`)
+  }
+}
+
 router.afterEach((to) => {
   if (!['/cart', '/checkout'].includes(to.path)) {
-    api.post('/visits', { path: to.path })
+    visit(to.path)
   }
+})
+
+onMounted(() => {
+  feed.fetchFeed()
+  cart.fetchCart()
+  api.get('/visits/active')
+  setInterval(() => {
+    api.get('/visits/active')
+  }, 170000)
 })
 </script>
 
