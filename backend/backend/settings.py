@@ -59,10 +59,11 @@ INSTALLED_APPS = [
 ]
 
 # SSL Setup
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Pathao API credentials
 PATHAO_CLIENT_ID = "JxboV5Nagw"
@@ -121,7 +122,6 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://localhost:5174",
     "http://localhost:4173"
     "https://zilmil.com.bd/",
     "https://zilmil.com.bd",

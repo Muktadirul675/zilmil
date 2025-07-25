@@ -5,10 +5,11 @@ import { computed } from 'vue';
 const { product: prod } = defineProps({
     product: Object
 })
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const product = computed(() => {
     let p = prod
-    if (!(String(p.image.image).startsWith("http://localhost:8000"))) {
-        p.image.image = "http://localhost:8000" + p.image.image
+    if (!(String(p.image.image).startsWith(BACKEND_URL))) {
+        p.image.image = BACKEND_URL + p.image.image
     }
     return p;
 })

@@ -5,12 +5,22 @@
         <i class="pi pi-spin pi-spinner text-2xl text-indigo-600" />
         <p class="text-sm text-gray-500 mt-2">Loading order...</p>
       </div>
-      <div v-if="!isFetchingOrder" class="mb-6 flex items-center justify-start gap-2">
-        <BackButton />
-        <h2 class="text-2xl font-semibold">Edit Order</h2>
-      </div>
 
       <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
+        <div class="flex items-center justify-between my-2">
+          <div class="flex flex-row items-center gap-2">
+            <BackButton />
+            <h2 class="text-2xl font-semibold">Edit Order</h2>
+          </div>
+          <div class="mt-6">
+            <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
+              <i class="pi pi-check mr-1" /> Update Order
+            </button>
+            <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
+            <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
+          </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
           <!-- Left (Compact Inputs) -->
           <div class="md:col-span-2 space-y-4">
@@ -47,11 +57,22 @@
             <!-- Location Selects -->
             <SearchSelect label="City" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
               v-model="order.city_id" @change="fetchZones" />
-            <SearchSelect label="Zone" icon="globe" :items="zones" itemKey="zone_id" itemLabel="zone_name"
-              v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
-            <SearchSelect label="Area" icon="location-arrow" :items="areas" itemKey="area_id" itemLabel="area_name"
-              v-model="order.area_id" :disabled="!order.zone_id" />
-
+            <div v-if="fetchingCities" class="text-slate-800">
+              <i class="pi pi-spin pi-spinner me-2"></i>
+              Fetching cities
+            </div>
+            <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
+              itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
+            <div v-if="fetchingZones" class="text-slate-800">
+              <i class="pi pi-spin pi-spinner me-2"></i>
+              Fetching zones
+            </div>
+            <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
+              itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
+            <div v-if="fetchingAreas" class="text-slate-800">
+              <i class="pi pi-spin pi-spinner me-2"></i>
+              Fetching areas
+            </div>
             <!-- Total Price -->
             <div class="text-sm font-medium pt-2 flex items-center">
               Total Price:
@@ -65,16 +86,6 @@
             <OrderItemPreview :items="order.items" @remove="i => order.items.splice(i, 1)" />
             <ProductSelector @add="item => order.items.push(item)" />
           </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="mt-6">
-          <button type="submit"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
-            <i class="pi pi-check mr-1" /> Update Order
-          </button>
-          <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
-          <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
         </div>
       </form>
     </div>
@@ -123,24 +134,34 @@ const cities = ref([])
 const zones = ref([])
 const areas = ref([])
 
+const fetchingCities = ref(false)
+const fetchingZones = ref(false)
+const fetchingAreas = ref(false)
+
 const fetchCities = async () => {
+  fetchingCities.value = true
   const res = await api.get('/courier/cities/')
   cities.value = res.data?.data || []
+  fetchingCities.value = false
 }
 
 const fetchZones = async () => {
+  fetchingZones.value = true
   order.value.zone_id = null
   order.value.area_id = null
   if (!order.value.city_id) return
   const res = await api.get(`/courier/zones/?city_id=${order.value.city_id}`)
   zones.value = res.data?.data || []
+  fetchingZones.value = false
 }
 
 const fetchAreas = async () => {
+  fetchingAreas.value = true
   order.value.area_id = null
   if (!order.value.zone_id) return
   const res = await api.get(`/courier/areas/?zone_id=${order.value.zone_id}`)
   areas.value = res.data?.data || []
+  fetchingAreas.value = false
 }
 
 const fetchOrder = async () => {
@@ -161,13 +182,11 @@ const fetchOrder = async () => {
       area_id: data.area_id,
       items: data.items || [],
     }
-
-    fetchZones()
-    fetchAreas()
+    fetchCities()
   } catch (err) {
     error.value = 'Failed to load order data.'
     console.error(err)
-  }finally{
+  } finally {
     isFetchingOrder.value = false
   }
 }

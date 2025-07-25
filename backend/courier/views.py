@@ -13,7 +13,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.core.cache import cache
 
 client = get_pathao_client()
 
@@ -77,8 +77,14 @@ def create_dummy_order(request):
 
 class CityListAPIView(APIView):
     def get(self, request):
+        pathao_courier_cache_key = 'courier:pathao:cities'
+        timeout = 3600
         try:
+            cached_cities = cache.get(pathao_courier_cache_key)
+            if cached_cities:
+                return Response(cached_cities, status=status.HTTP_200_OK)
             cities = client.get_city_list()
+            cache.set(pathao_courier_cache_key, cities, timeout=timeout)
             return Response(cities, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -88,8 +94,15 @@ class ZoneListAPIView(APIView):
         city_id = request.query_params.get('city_id')
         if not city_id:
             return Response({'error': 'city_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        pathao_courier_cache_key = f'courier:pathao:{city_id}:zones'
+        timeout = 3500
         try:
+            cached_zones = cache.get(pathao_courier_cache_key)
+            if cached_zones:
+                return Response(cached_zones, status=status.HTTP_200_OK)
             zones = client.get_zone_list(city_id=int(city_id))
+            cache.set(pathao_courier_cache_key, zones, timeout=timeout)
             return Response(zones, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -99,8 +112,14 @@ class AreaListAPIView(APIView):
         zone_id = request.query_params.get('zone_id')
         if not zone_id:
             return Response({'error': 'zone_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        pathao_courier_cache_key = f'courier:pathao:{zone_id}:zones'
+        timeout = 3400
         try:
+            cached_areas = cache.get(pathao_courier_cache_key)
+            if cached_areas:
+                return Response(cached_areas, status=status.HTTP_200_OK)
             areas = client.get_area_list(zone_id=int(zone_id))
+            cache.set(pathao_courier_cache_key, areas, timeout=timeout)
             return Response(areas, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

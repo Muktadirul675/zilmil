@@ -53,7 +53,7 @@
           </tr>
 
           <tr v-if="!store.loading && !store.couriers.length">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">Nothing to stop``</td>
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">Nothing to ship</td>
           </tr>
 
           <tr v-for="item in store.couriers" :key="item.id" class="hover:bg-gray-50 cursor-pointer"

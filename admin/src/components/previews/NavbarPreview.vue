@@ -6,6 +6,7 @@ import Preview from '../Preview.vue';
 const props = defineProps({
     uid: Number
 })
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const builder = useBuilderStore()
 const section = computed(() => builder.feed.find((s) => s.uid === props.uid))
 </script>
@@ -16,7 +17,7 @@ const section = computed(() => builder.feed.find((s) => s.uid === props.uid))
             <div class="flex w-full @lg:w-[80%] justify-between">
                 <div class="flex items-center gap-3">
                     <!-- {{ section.args.preview || `http://localhost:8000${section.args.logo}` }} -->
-                    <img :src="section.args.preview || `http://localhost:8000${section.args.logo}`" alt="Logo" class="h-8 w-auto" />
+                    <img :src="section.args.preview || `${BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-8 w-auto" />
                     <span class="text-xl font-semibold text-gray-800"></span>
                 </div>
                 <ul class="flex gap-6 text-gray-700 font-medium">
