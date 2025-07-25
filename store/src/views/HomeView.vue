@@ -12,20 +12,11 @@ import Footer from '@/components/sections/Footer.vue';
 
 const feedStore = useFeedStore()
 
-const sections = computed(() =>
-  feedStore.feed.filter(
-    (section) =>
-      section.type !== 'notice' &&
-      section.type !== 'navbar' &&
-      section.type !== 'categories_bar' &&
-      section.type !== 'footer' 
-  )
-)
 </script>
 
 <template>
   <!-- You can use the filtered sections here -->
-  <div v-for="section in sections" :key="section.id">
+  <div v-for="section in feedStore.sections" :key="section.id">
     <Notices :id="section.id" v-if="section.type === 'notice'" />
     <Navbar :id="section.id" v-if="section.type === 'navbar'" />
     <CategoriesBar :id="section.id" v-if="section.type === 'categories_bar'" />
