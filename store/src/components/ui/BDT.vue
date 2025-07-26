@@ -5,6 +5,8 @@
       src="/bdt.png"
       alt="BDT"
       class="w-6 h-6 object-contain"
+      loading="lazy"
+      decoding="async"
     />
     <span>{{ formatted }}</span>
   </span>

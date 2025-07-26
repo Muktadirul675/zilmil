@@ -1,3 +1,15 @@
+<!-- <script setup>
+const props = defineProps({
+  product: {
+    type: Object,
+    required: true
+  }
+})
+
+</script>
+<template>
+  {{ product.name }}
+</template> -->
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
@@ -58,7 +70,7 @@ const handleAddToCart = async () => {
 <template>
   <div class="w-1/2 md:w-1/3 lg:w-1/4 p-1">
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
-      <RouterLink :to="`/${product.slug}`" class="block relative group">
+      <div :to="`/${product.slug}`" class="block relative group cursor-pointer">
         <img
           :src="imageUrl"
           alt="Product"
@@ -72,7 +84,7 @@ const handleAddToCart = async () => {
           <i class="pi pi-shopping-cart text-xl cursor-pointer hover:text-red-500"></i>
           <i class="pi pi-eye text-xl cursor-pointer hover:text-red-500"></i>
         </div>
-      </RouterLink>
+      </div>
 
       <div class="p-2">
         <div class="text-sm font-medium truncate mb-1">

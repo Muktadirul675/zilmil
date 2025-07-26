@@ -3,36 +3,38 @@
     <Loading v-if="loading" />
     <div v-else-if="product" class="flex flex-col md:flex-row gap-4" :key="product.id">
       <!-- Left: Carousel -->
-      <div class="w-full md:w-[70%]">
-        <h1 class="text-xl font-semibold my-1 p-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
-        <div class="relative overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
-          <div class="flex transition-transform duration-500 ease-in-out"
-            :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-            <img decoding="async" v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
-              :alt="img.alt_text || `Image ${index + 1}`" class="min-w-full object-cover max-h-[50vh]" />
+      <KeepAlive>
+        <div class="w-full md:w-[70%]">
+          <h1 class="text-xl font-semibold my-1 p-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
+          <div class="relative overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
+            <div class="flex transition-transform duration-500 ease-in-out"
+              :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+              <img decoding="async" v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
+                :alt="img.alt_text || `Image ${index + 1}`" class="min-w-full object-cover max-h-[50vh]" />
+            </div>
+
+            <!-- Controls -->
+            <button class="absolute cursor-pointer left-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
+              @click="prevSlide">
+              <i class="pi pi-chevron-left"></i>
+            </button>
+            <button class="absolute cursor-pointer right-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
+              @click="nextSlide">
+              <i class="pi pi-chevron-right"></i>
+            </button>
           </div>
 
-          <!-- Controls -->
-          <button class="absolute cursor-pointer left-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
-            @click="prevSlide">
-            <i class="pi pi-chevron-left"></i>
-          </button>
-          <button class="absolute cursor-pointer right-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
-            @click="nextSlide">
-            <i class="pi pi-chevron-right"></i>
-          </button>
+          <!-- Thumbnails -->
+          <div class="flex justify-center gap-2 mt-2">
+            <img v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
+              class="h-16 w-16 object-cover border-2 cursor-pointer rounded-md" :class="{
+                'border-black': currentIndex === index,
+                'border-gray-300': currentIndex !== index,
+                'opacity-70': currentIndex !== index,
+              }" @click="goToSlide(index)" />
+          </div>
         </div>
-
-        <!-- Thumbnails -->
-        <div class="flex justify-center gap-2 mt-2">
-          <img v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
-            class="h-16 w-16 object-cover border-2 cursor-pointer rounded-md" :class="{
-              'border-black': currentIndex === index,
-              'border-gray-300': currentIndex !== index,
-              'opacity-70': currentIndex !== index,
-            }" @click="goToSlide(index)" />
-        </div>
-      </div>
+      </KeepAlive>
 
       <!-- Right: Selections -->
       <div class="w-full md:w-[30%] flex flex-col gap-2 lg:gap-4">
@@ -149,6 +151,7 @@ import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import BDT from '@/components/ui/BDT.vue'
 import { useCartStore } from '@/stores/cart'
 import ProductCard from '@/components/product/ProductCard.vue'
+import { KeepAlive } from 'vue'
 
 const route = useRoute()
 const cart = useCartStore()

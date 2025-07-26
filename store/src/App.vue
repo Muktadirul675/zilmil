@@ -34,11 +34,11 @@ const categoriesBarSection = computed(() =>
 const router = useRouter()
 
 async function visit(path) {
-  try{
+  try {
     console.log('visiting')
     await api.post('/visits/', { path: path })
     console.log('visited')
-  }catch(e){
+  } catch (e) {
     console.log(`Visiting ERROR: ${e.message}`)
   }
 }
@@ -49,7 +49,7 @@ router.afterEach((to) => {
   }
 })
 
-onMounted(async() => {
+onMounted(async () => {
   await feed.fetchFeed()
   cart.fetchCart()
   api.get('/visits/active')
@@ -72,9 +72,11 @@ onMounted(async() => {
         <CategoriesBar :section="categoriesBarSection" />
       </template>
 
-      <KeepAlive include="HomeView">
-        <RouterView />
-      </KeepAlive>
+      <RouterView v-slot="{ Component }">
+        <KeepAlive include="HomeView">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </div>
 
     <template v-if="footerSection">
