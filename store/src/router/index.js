@@ -5,8 +5,9 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue'), // lazy load
+      name: 'HomeView',
+      component: () => import('@/views/HomeView.vue'),
+      meta:{keepAlive: true},
     },
     {
       path: '/category/:slug',

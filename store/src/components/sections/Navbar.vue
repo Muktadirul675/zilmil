@@ -1,19 +1,12 @@
 <script setup>
-import { useCartStore } from '@/stores/cart';
-import { useFeedStore } from '@/stores/feed'
-import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 import CartIcon from '../cart/CartIcon.vue';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const props = defineProps({
-  id: Number
+const { section } = defineProps({
+  section: Object
 })
-
-const feedStore = useFeedStore()
-const cart = useCartStore()
-const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
 </script>
 
 <template>

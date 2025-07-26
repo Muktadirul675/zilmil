@@ -1,16 +1,15 @@
 <script setup>
-import 'primeicons/primeicons.css'
-import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '@/lib/api' // assuming your axios instance is here
-import { useFeedStore } from '@/stores/feed'
-import { useCartStore } from '@/stores/cart'
-import Notices from './components/sections/Notices.vue'
-import Navbar from './components/sections/Navbar.vue'
-import CategoriesBar from './components/sections/CategoriesBar.vue'
-import Footer from './components/sections/Footer.vue'
+import api from '@/lib/api'; // assuming your axios instance is here
+import { useCartStore } from '@/stores/cart';
+import { useFeedStore } from '@/stores/feed';
+import 'primeicons/primeicons.css';
+import { computed, KeepAlive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import CategoriesBar from './components/sections/CategoriesBar.vue';
+import Footer from './components/sections/Footer.vue';
+import Navbar from './components/sections/Navbar.vue';
+import Notices from './components/sections/Notices.vue';
 
-const route = useRoute()
 const feed = useFeedStore()
 const cart = useCartStore()
 
@@ -50,8 +49,8 @@ router.afterEach((to) => {
   }
 })
 
-onMounted(() => {
-  feed.fetchFeed()
+onMounted(async() => {
+  await feed.fetchFeed()
   cart.fetchCart()
   api.get('/visits/active')
   setInterval(() => {
@@ -64,18 +63,26 @@ onMounted(() => {
   <div class="min-h-screen flex flex-col">
     <div class="flex-1">
       <template v-if="noticeSection">
-        <Notices :id="noticeSection.id" />
+        <Notices :section="noticeSection" />
       </template>
       <template v-if="navbarSection">
-        <Navbar :id="navbarSection.id" />
+        <Navbar :section="navbarSection" />
       </template>
       <template v-if="categoriesBarSection">
-        <CategoriesBar :id="categoriesBarSection.id" />
+        <CategoriesBar :section="categoriesBarSection" />
       </template>
-      <RouterView />
+
+      <KeepAlive include="HomeView">
+        <RouterView />
+      </KeepAlive>
     </div>
+
     <template v-if="footerSection">
-      <Footer :id="footerSection.id" />
+      <Suspense>
+        <template #default>
+          <Footer :section="footerSection" />
+        </template>
+      </Suspense>
     </template>
   </div>
 </template>

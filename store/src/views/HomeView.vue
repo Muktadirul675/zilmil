@@ -1,29 +1,40 @@
 <script setup>
-import { computed } from 'vue';
-import { useFeedStore } from '@/stores/feed';
-import Notices from '@/components/sections/Notices.vue';
-import Navbar from '@/components/sections/Navbar.vue';
-import CategoriesBar from '@/components/sections/CategoriesBar.vue';
-import ImageSlider from '@/components/sections/ImageSlider.vue';
-import Products from '@/components/sections/Products.vue';
-import Category from '@/components/sections/Category.vue';
-import CategorySlider from '@/components/sections/CategorySlider.vue';
-import Footer from '@/components/sections/Footer.vue';
+defineOptions({ name: 'HomeView' })
+
+import Loading from '@/components/ui/Loading.vue'
+import ProductGridSkeleton from '@/components/ui/ProductGridSkeleton.vue'
+import { useFeedStore } from '@/stores/feed'
+import { computed, defineAsyncComponent } from 'vue'
+
+const ImageSlider = defineAsyncComponent(() => import('@/components/sections/ImageSlider.vue'))
+const Products = defineAsyncComponent(() => import('@/components/sections/Products.vue'))
+const Category = defineAsyncComponent(() => import('@/components/sections/Category.vue'))
+const CategorySlider = defineAsyncComponent(() => import('@/components/sections/CategorySlider.vue'))
 
 const feedStore = useFeedStore()
+const feedSections = computed(() => feedStore.sections)
+
+const componentMap = {
+  image_slider: ImageSlider,
+  products: Products,
+  category: Category,
+  categories_slider: CategorySlider,
+}
 
 </script>
 
 <template>
-  <!-- You can use the filtered sections here -->
-  <div v-for="section in feedStore.sections" :key="section.id">
-    <Notices :id="section.id" v-if="section.type === 'notice'" />
-    <Navbar :id="section.id" v-if="section.type === 'navbar'" />
-    <CategoriesBar :id="section.id" v-if="section.type === 'categories_bar'" />
-    <ImageSlider :id="section.id" v-if="section.type === 'image_slider'" />
-    <Products :id="section.id" v-if="section.type === 'products'" />
-    <Category :id="section.id" v-if="section.type === 'category'" />
-    <CategorySlider :id="section.id" v-if="section.type === 'categories_slider'" />
-    <Footer :id="section.id" v-if="section.type === 'footer'" />
+  <div v-show="feedSections.length">
+    <div v-for="section in feedSections" :key="section.id" v-memo="[section.id, section.updated_at]">
+      <Suspense>
+        <template #default>
+          <component :is="componentMap[section.type]" :section="section" />
+        </template>
+        <template #fallback>
+          <ProductGridSkeleton v-if="section.type === 'category' || section.type==='products'"/>
+        </template>
+      </Suspense>
+    </div>
   </div>
+  <Loading v-show="!feedSections.length" />
 </template>

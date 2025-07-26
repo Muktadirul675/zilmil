@@ -1,14 +1,14 @@
 <template>
   <div class="w-full lg:w-[70%] mx-auto">
     <Loading v-if="loading" />
-    <div v-else-if="product" class="flex flex-col md:flex-row gap-4">
+    <div v-else-if="product" class="flex flex-col md:flex-row gap-4" :key="product.id">
       <!-- Left: Carousel -->
       <div class="w-full md:w-[70%]">
         <h1 class="text-xl font-semibold my-1 p-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
         <div class="relative overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
           <div class="flex transition-transform duration-500 ease-in-out"
             :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-            <img v-for="(img, index) in product.images" :key="img.id" :src="img.image"
+            <img decoding="async" v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
               :alt="img.alt_text || `Image ${index + 1}`" class="min-w-full object-cover max-h-[50vh]" />
           </div>
 
@@ -25,7 +25,7 @@
 
         <!-- Thumbnails -->
         <div class="flex justify-center gap-2 mt-2">
-          <img v-for="(img, index) in product.images" :key="img.id" :src="img.image"
+          <img v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
             class="h-16 w-16 object-cover border-2 cursor-pointer rounded-md" :class="{
               'border-black': currentIndex === index,
               'border-gray-300': currentIndex !== index,
@@ -142,10 +142,10 @@
 
 <script setup>
 import { Phone, MessageSquare, FacebookIcon } from 'lucide-vue-next'
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import api from '@/lib/api'
 import Loading from '@/components/ui/Loading.vue'
-import { useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import BDT from '@/components/ui/BDT.vue'
 import { useCartStore } from '@/stores/cart'
 import ProductCard from '@/components/product/ProductCard.vue'
@@ -164,30 +164,33 @@ const addingToCart = ref(false)
 const similars = ref([])
 
 const maxStock = computed(() => {
-  if (product.value) {
-    let variant = null;
-    let color = null;
-    if (product.value.variants && selectedVariant.value) {
-      variant = product.value.variants.find((v) => v.id === selectedVariant.value)
-    }
-    if (product.value.colors && selectedColor.value) {
-      color = product.value.colors.find((v) => v.id === selectedColor.value)
-    }
-    return Math.min(product.value.stock, variant.stock, color.stock)
-  }
-  return 0
-})
+  if (!product.value) return 0;
 
-async function fetchSimilars(id){
-    // Fetch suggestions based on the product ID
-    const suggestionsRes = await api.get(`/products/${id}/suggestions`)
-    similars.value = suggestionsRes.data
+  let variantStock = Infinity;
+  let colorStock = Infinity;
+
+  if (product.value.variants && selectedVariant.value) {
+    const variant = product.value.variants.find(v => v.id === selectedVariant.value);
+    variantStock = variant?.stock ?? Infinity;
+  }
+  if (product.value.colors && selectedColor.value) {
+    const color = product.value.colors.find(c => c.id === selectedColor.value);
+    colorStock = color?.stock ?? Infinity;
+  }
+
+  return Math.min(product.value.stock ?? Infinity, variantStock, colorStock);
+});
+
+async function fetchSimilars(id) {
+  // Fetch suggestions based on the product ID
+  const suggestionsRes = await api.get(`/products/${id}/suggestions`)
+  similars.value = suggestionsRes.data
 }
 
-const fetchProduct = async () => {
+const fetchProduct = async (slug) => {
   try {
     loading.value = true
-    const { data } = await api.get(`/products/${route.params.slug}/`)
+    const { data } = await api.get(`/products/${slug || route.params.slug}/`)
     product.value = data
     fetchSimilars(data.id)
   } catch (e) {
@@ -248,29 +251,39 @@ let isRollingBack = false;
 
 watch(quantity, (newVal) => {
   if (isRollingBack) {
-    isRollingBack = true;
+    isRollingBack = false; // Reset here, NOT inside the if block!
     return;
   }
   if (newVal > maxStock) {
     isRollingBack = true;
-    quantity.value = maxStock
+    quantity.value = maxStock;
   }
-  if (newVal == 0) {
+  if (newVal === 0) {
     isRollingBack = true;
-    quantity.value = 1
+    quantity.value = 1;
   }
+});
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (to.params.slug !== from.params.slug) {
+    fetchProduct(to.params.slug)
+    window.scrollTo({ top: 0 })
+  }
+  next()
 })
 
-watch(() => route.params.slug, () => {
-  fetchProduct()
-  window.scrollTo({top:0})
-})
+let slideInterval = null;
 
-setInterval(nextSlide, 5000)
 onMounted(() => {
-  fetchProduct()
-  window.scrollTo({ top: 0 })
-})
+  fetchProduct();
+  window.scrollTo({ top: 0 });
+
+  slideInterval = setInterval(nextSlide, 5000);
+});
+
+onUnmounted(() => {
+  clearInterval(slideInterval);
+});
 </script>
 
 <style scoped>

@@ -1,60 +1,69 @@
 <script setup>
-import { useFeedStore } from '@/stores/feed'
-import { computed, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 
+// Props
 const props = defineProps({
-  id: Number
+  section: Object
 })
 
-const feedStore = useFeedStore()
-const section = computed(() => feedStore.feed.find((s) => s.id === props.id))
-
+// State
 const current = ref(0)
+let intervalId = null
 
+// Navigation
 function next() {
-  if (!section.value?.images?.length) return
-  current.value = (current.value + 1) % section.value.images.length
+  if (!props.section?.images?.length) return
+  current.value = (current.value + 1) % props.section.images.length
 }
 
 function prev() {
-  if (!section.value?.images?.length) return
-  current.value = (current.value - 1 + section.value.images.length) % section.value.images.length
+  if (!props.section?.images?.length) return
+  current.value = (current.value - 1 + props.section.images.length) % props.section.images.length
 }
 
-setInterval(next, 5000)
+// Auto-slide
+onMounted(() => {
+  intervalId = setInterval(next, 5000)
+})
+onBeforeUnmount(() => {
+  clearInterval(intervalId)
+})
 </script>
 
 <template>
   <div class="w-full bg-slate-100 flex justify-center">
     <div class="relative w-full lg:w-[80%] h-[40vh] overflow-hidden">
-      
-      <!-- Slides container -->
+      <!-- Slides -->
       <div
-        class="flex transition-transform duration-500"
+        v-if="props.section?.images?.length"
+        class="flex transition-transform ease-in-out duration-500"
         :style="{ transform: `translateX(-${current * 100}%)` }"
-        v-if="section?.images?.length"
       >
-        <template v-for="(image, index) in section.images" :key="index">
-          <img
-            :src="image.image"
-            class="w-full flex-shrink-0 object-cover h-[40vh]"
-            alt="Slide"
-          />
-        </template>
+        <img
+          v-for="(image, index) in props.section.images"
+          :key="index"
+          :src="image.image"
+          class="w-full flex-shrink-0 object-cover h-[40vh]"
+          alt="Slide"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
-      <!-- Prev / Next buttons -->
+      <!-- Navigation -->
       <button
+        v-if="props.section?.images?.length > 1"
         @click="prev"
-        class="absolute cursor-pointer top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
-        v-if="section?.images?.length > 1"
+        class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+        aria-label="Previous Slide"
       >
         <i class="pi pi-angle-left"></i>
       </button>
       <button
+        v-if="props.section?.images?.length > 1"
         @click="next"
-        class="absolute cursor-pointer top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
-        v-if="section?.images?.length > 1"
+        class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+        aria-label="Next Slide"
       >
         <i class="pi pi-angle-right"></i>
       </button>

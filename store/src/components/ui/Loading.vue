@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-[200px] space-y-4 text-gray-600">
-    <img class="w-[70px] h-[70px]" :src="randomGif" alt="">
+    <!-- <img class="w-[70px] h-[70px]" decoding="async" loading="lazy" :src="randomGif" alt=""> -->
     <div class="text-center text-sm italic">{{ randomMessage }}</div>
   </div>
 </template>

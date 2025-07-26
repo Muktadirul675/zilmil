@@ -1,13 +1,11 @@
-# feed/models.py
-# feed/views.py
+from django.core.cache import cache
+from rest_framework.decorators import action
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
-from rest_framework import viewsets
 from .models import FeedSection
 from .serializers import FeedSectionSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
 
 class FeedSectionViewSet(viewsets.ModelViewSet):
     queryset = FeedSection.objects.filter(is_active=True)
@@ -15,14 +13,32 @@ class FeedSectionViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = None
 
+    def list(self, request, *args, **kwargs):
+        cache_key = 'feed_sections_cache'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
+        # If not cached, fetch and serialize
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+
+        # Cache the result (e.g. for 5 minutes)
+        cache.set(cache_key, data, timeout=60 * 5)
+
+        return Response(data)
+
     @action(detail=False, methods=['post'])
     def build(self, request):
-        data = request.data  # This should be a list of sections
+        data = request.data
         if not isinstance(data, list):
             return Response({"success": False, "message": "Expected a list of sections"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Delete all existing
+        # Delete all existing and clear cache
         FeedSection.objects.all().delete()
+        cache.delete('feed_sections_cache')
 
         created_sections = []
         for index, section_data in enumerate(data):

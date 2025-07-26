@@ -49,21 +49,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue';
-import { useFeedStore } from '@/stores/feed';
+import { onMounted } from 'vue';
+
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const props = defineProps({
-  id: Number
+  section: Object
 })
 
-const feedStore = useFeedStore()
-const section = computed(() => feedStore.feed.find(s => s.id === props.id) || { args: {} })
-
-watch(section, () => {
+onMounted(()=>{
   if (window.FB) {
-    window.FB.XFBML.parse() // Parse new Facebook elements
+    window.FB.XFBML.parse() 
   }
-}, { deep: true, immediate: true })
+})
 </script>
