@@ -10,7 +10,8 @@
             <div class="flex transition-transform duration-500 ease-in-out"
               :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
               <img decoding="async" v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
-                :alt="img.alt_text || `Image ${index + 1}`" class="min-w-full object-cover max-h-[50vh]" />
+                :alt="img.alt_text || `Image ${index + 1}`"
+                class="min-w-full object-cover max-h-[50vh] transition-transform duration-300 hover:scale-110" />
             </div>
 
             <!-- Controls -->
@@ -25,7 +26,7 @@
           </div>
 
           <!-- Thumbnails -->
-          <div class="flex justify-center gap-2 mt-2">
+          <div class="flex flex-wrap justify-center gap-2 mt-2">
             <img v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
               class="h-16 w-16 object-cover border-2 cursor-pointer rounded-md" :class="{
                 'border-black': currentIndex === index,
@@ -131,7 +132,7 @@
       <p v-html="product.description" class="text-gray-700 whitespace-pre-line"></p>
     </div>
     <!-- Similar Products -->
-    <div v-if="similars.length && !loading" class="mt-10">
+    <div v-if="similars.length && !loading" class="mt-10 p-3">
       <h2 class="text-xl font-semibold mb-4">You may also like</h2>
       <div class="flex flex-row flex-wrap">
         <ProductCard v-for="product in similars" :key="product.id" :product="product" />
@@ -239,10 +240,18 @@ const handleAddToCart = async () => {
   }
 }
 
+let slideInterval = null;
+let seconds = 0;
+let hold = false;
+
 const nextSlide = () => {
+  hold = false;
+  seconds = 0;
   currentIndex.value = (currentIndex.value + 1) % product.value.images.length
 }
 const prevSlide = () => {
+  hold = false;
+  seconds = 0;
   currentIndex.value =
     currentIndex.value === 0 ? product.value.images.length - 1 : currentIndex.value - 1
 }
@@ -274,14 +283,16 @@ onBeforeRouteUpdate((to, from, next) => {
   }
   next()
 })
-
-let slideInterval = null;
-
 onMounted(() => {
   fetchProduct();
   window.scrollTo({ top: 0 });
 
-  slideInterval = setInterval(nextSlide, 5000);
+  slideInterval = setInterval(()=>{
+    if(!hold) seconds++;
+    if (seconds === 5 && !hold){
+      nextSlide()
+    }
+  }, 1000);
 });
 
 onUnmounted(() => {

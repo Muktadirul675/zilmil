@@ -116,7 +116,6 @@ class OrderSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         items_data = validated_data.pop('items')
-        status = validated_data.get('status', 'pending')
         order = Order.objects.create(**validated_data)
 
         for item_data in items_data:
@@ -124,10 +123,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         order.total_price = self.calculate_total(order)
         order.save(update_fields=['total_price'])
-
-        stock_action = get_stock_action(old_status='__none__', new_status=status, has_item_changes=True)
-        if stock_action == 'decrease':
-            adjust_stock(order.items.all(), action='decrease')
 
         return order
 

@@ -122,6 +122,7 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://localhost:4173"
     "https://zilmil.com.bd/",
     "https://zilmil.com.bd",

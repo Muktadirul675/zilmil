@@ -14,7 +14,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto p-2 pb-0">
+  <div class="max-w-2xl mt-2 mb-4 mx-auto p-2 pb-0">
     <div class="rounded border border-gray-300 p-0">
       <div class="flex justify-between p-0 rounded-tr rounded-tl bg-blue-100">
         <h2 class="text-lg font-semibold text-gray-800 p-3 uppercase flex items-center gap-2">
@@ -48,11 +48,11 @@ onMounted(() => {
             <BDT :amount="parseFloat(cart.cart.total_price)" />
           </span>
         </div>
-        <RouterLink to="/checkout"
-          class="flex items-center gap-2 bg-red-500 px-2 hover:bg-red-600 text-white rounded-br transition">
-          <i class="pi pi-arrow-right"></i> Checkout
-        </RouterLink>
       </div>
+      <RouterLink to="/checkout"
+        class="flex items-center justify-center gap-2 bg-red-500 p-3 hover:bg-red-600 text-white rounded-br rounded-bl transition">
+        <i class="pi pi-arrow-right"></i> Checkout
+      </RouterLink>
     </div>
   </div>
 </template>

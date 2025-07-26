@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from orders.models import Order, OrderItem
+from django.db import transaction
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -132,7 +133,7 @@ class CartViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Validate stock and compute total
+        # Validate stock and prepare order items
         items = []
 
         for item in cart.items.all():
@@ -166,34 +167,31 @@ class CartViewSet(viewsets.ViewSet):
                 "quantity": quantity
             })
 
-        # Create order
-        order = Order(
-            full_name=full_name,
-            phone=phone,
-            shipping_address=shipping_address,
-            note=note,
-            session_id=cart.session_id
-        )
-        for item in items:
-            item = OrderItem(
-                order=order,
-                product=item["product"],
-                variant=item["variant"],
-                color=item["color"],
-                quantity=item["quantity"],
-                price_at_purchase=item['product'].net_price if item['product'].net_price else item['product'].price
+        # ð§  Atomic block
+        with transaction.atomic():
+            order = Order.objects.create(
+                full_name=full_name,
+                phone=phone,
+                shipping_address=shipping_address,
+                note=note,
+                session_id=cart.session_id
             )
-            item.save()
 
-        order.save()
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item["product"],
+                    variant=item["variant"],
+                    color=item["color"],
+                    quantity=item["quantity"],
+                    price_at_purchase=item['product'].net_price or item['product'].price
+                )
 
-        # Clear the cart
-        cart.items.all().delete()
+            # Clear cart only after successful order creation
+            cart.items.all().delete()
 
         return Response({
             "success": True,
             "message": "Order created successfully.",
             "order_id": order.id
         }, status=status.HTTP_201_CREATED)
-
-

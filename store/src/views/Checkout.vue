@@ -19,7 +19,7 @@
     </div>
 
     <!-- Empty cart state -->
-    <div v-else-if="cart.cart.items.length === 0" class="max-w-xl mx-auto text-center py-12 text-gray-400">
+    <div v-else-if="cart.cart && cart.cart.items.length === 0" class="max-w-xl mx-auto text-center py-12 text-gray-400">
       <i class="pi pi-shopping-cart text-5xl mb-4"></i>
       <p class="text-lg font-semibold">Your cart is empty</p>
       <p class="text-sm">Add some items to get started.</p>
