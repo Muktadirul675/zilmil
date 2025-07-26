@@ -47,6 +47,10 @@ const originalPrice = computed(() =>
   product.value.net_price ? product.value.price : product.value.compared_price
 )
 
+function navigate(){
+  router.push(`/${product.value.slug}`)
+}
+
 const handleAddToCart = async () => {
   if (hasVariants.value) {
     router.push(`/${product.value.slug}`)
@@ -70,7 +74,7 @@ const handleAddToCart = async () => {
 <template>
   <div class="w-1/2 md:w-1/3 lg:w-1/4 p-1">
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
-      <div :to="`/${product.slug}`" class="block relative group cursor-pointer">
+      <div @click="navigate" class="block relative group cursor-pointer">
         <img
           :src="imageUrl"
           alt="Product"
@@ -101,7 +105,7 @@ const handleAddToCart = async () => {
         <button
           @click="handleAddToCart"
           :disabled="loading"
-          class="w-full mt-2 flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
+          class="w-full cursor-pointer mt-2 flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
           :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
           <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />
           <span class="ml-2">{{ loading ? 'Adding...' : 'Add To Cart' }}</span>

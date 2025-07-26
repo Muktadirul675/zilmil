@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
       <button
         v-if="props.section?.images?.length > 1"
         @click="prev"
-        class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+        class="absolute cursor-pointer top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
         aria-label="Previous Slide"
       >
         <i class="pi pi-angle-left"></i>
@@ -62,7 +62,7 @@ onBeforeUnmount(() => {
       <button
         v-if="props.section?.images?.length > 1"
         @click="next"
-        class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
+        class="absolute cursor-pointer top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow"
         aria-label="Next Slide"
       >
         <i class="pi pi-angle-right"></i>
