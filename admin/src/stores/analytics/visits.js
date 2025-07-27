@@ -49,7 +49,7 @@ export const useVisitsAnalyticsStore = defineStore('visitsAnalytics', {
       this.sources = sourcesRes.data
 
       const path = this.today?.most_visited_page?.path
-      if (path?.startsWith('/products/')) {
+      if (!path?.startsWith('/category') || !path?.startsWith('/cart') || !path?.startsWith('/checkout') && path !== '/') {
         const slug = path.split('/').pop()
         try {
           const res = await api.get(`/products/${slug}`)

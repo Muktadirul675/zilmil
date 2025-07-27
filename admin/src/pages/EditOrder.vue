@@ -21,7 +21,7 @@
             <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-6">
           <!-- Left (Compact Inputs) -->
           <div class="md:col-span-2 space-y-4">
             <FormInput label="Full Name" icon="user" v-model="order.full_name" required />
@@ -81,7 +81,7 @@
           </div>
 
           <!-- Right (Wider Product Section) -->
-          <div class="md:col-span-3 space-y-4">
+          <div class="md:col-span-5 space-y-4">
             <FraudChecker v-if="order.phone" :number="order.phone" />
             <OrderItemPreview :items="order.items" @remove="i => order.items.splice(i, 1)" />
             <ProductSelector @add="item => order.items.push(item)" />
