@@ -23,7 +23,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex gap-6 text-gray-700 font-medium">
+  <div class="flex items-center gap-6 text-gray-700 font-medium">
     <div class="mx-2" v-if="cart.loading">
       <i class="pi pi-spin pi-spinner"></i>
     </div>
