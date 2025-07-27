@@ -70,7 +70,8 @@ export const useCartStore = defineStore('cartStore', () => {
         try {
             await api.delete(`/cart/items/${itemId}/`)
             // console.log('deleted')
-            cart.value.items = cart.value.items.filter((i)=>i.id !== itemId)
+            // cart.value.items = cart.value.items.filter((i)=>i.id !== itemId)
+            fetchCart()
             // console.log('removed')
         } catch (err) {
             alert(err.detail || 'Failed to remove item from cart')
