@@ -126,8 +126,11 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
 import { useActivityStore } from '@/stores/activities'
+import { useHead } from '@vueuse/head'
+import { onBeforeUnmount } from 'vue'
+
+useHead({title:'Logs - Zilmil.com.bd'})
 
 const store = useActivityStore()
 

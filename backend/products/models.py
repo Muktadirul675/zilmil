@@ -33,7 +33,7 @@ class Product(models.Model):
     images = models.ManyToManyField('images.UploadedImage', blank=True, related_name='product_images')
 
     is_deleted = models.BooleanField(default=False)  # â Soft delete flag
-
+    total_orders = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

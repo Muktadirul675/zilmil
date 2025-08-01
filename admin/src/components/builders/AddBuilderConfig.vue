@@ -11,7 +11,22 @@ const builder = useBuilderStore()
 const type = ref('')
 const title = ref('')
 const category = ref(null)
-const types = ['Notice', 'Navbar', 'Image Slider', "Products", 'Category','Categories Bar', 'Categories Slider', 'Footer']
+// const types = ['Notice', 'Navbar', 'Image Slider', "Products", 'Category','Categories Bar', 'Categories Slider', 'Footer']
+const types = computed(()=>{
+    let available_types = ['Navbar', 'Image Slider', "Products", 'Category','Categories Bar', 'Categories Slider', 'Footer']
+    const hasNavbar = builder.feed.some((s)=>s.type === 'navbar')
+    const hasCategoryBar = builder.feed.some((s)=>s.type === 'categories_bar')
+    const hasFooter = builder.feed.some((s)=>s.type === 'footer')
+    if(hasNavbar) available_types = available_types.filter((t)=>t!=='Navbar')
+    if(hasCategoryBar) available_types = available_types.filter((t)=>t!=='Categories Bar')
+    if(hasFooter) available_types = available_types.filter((t)=>t!=='Footer')
+
+    if(builder.feed.length === 0){
+        return ['Navbar']
+    }else{
+        return available_types
+    }
+})
 const categories = ref([])
 
 const ok = computed(() => {

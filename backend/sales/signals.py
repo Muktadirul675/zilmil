@@ -17,13 +17,20 @@ def cache_old_order_status(sender, instance, **kwargs):
 @receiver(post_save, sender=Order)
 def handle_order_status_change(sender, instance, created, **kwargs):
     if created:
-        return
+        return  # No status change on creation
 
     old_status = getattr(instance, '_old_status', None)
     new_status = instance.status
 
-    if new_status == 'delivered' and old_status != 'delivered':
+    # States that indicate payment or delivery completed
+    delivered_states = ['delivered', 'partially_delivered', 'partially_returned', 'paid_returned']
+    refund_states = ['returned', 'partially_returned']
+
+    # Create sale if moving into a "first-time deliverable/paid" state
+    if new_status in delivered_states and (old_status not in delivered_states):
         create_sale_from_order(instance)
 
-    elif new_status == 'returned' and old_status == 'delivered':
+    # Refund logic: Only refund if moving to return state from delivered state
+    if new_status in refund_states and old_status in ['delivered', 'partially_delivered']:
         mark_sale_as_refunded(instance)
+

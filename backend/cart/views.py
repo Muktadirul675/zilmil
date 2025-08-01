@@ -186,7 +186,7 @@ class CartViewSet(viewsets.ViewSet):
                     quantity=item["quantity"],
                     price_at_purchase=item['product'].net_price or item['product'].price
                 )
-
+            order.save()
             # Clear cart only after successful order creation
             cart.items.all().delete()
 

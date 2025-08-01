@@ -37,6 +37,10 @@ export const useVisitsAnalyticsStore = defineStore('visitsAnalytics', {
     },
   },
   actions: {
+    clear(){
+      this.startDate = ''
+      this.endDate = ''
+    },
     async fetchAll() {
       this.loading = true
       const [todayRes, activeRes, sourcesRes] = await Promise.all([
@@ -49,7 +53,7 @@ export const useVisitsAnalyticsStore = defineStore('visitsAnalytics', {
       this.sources = sourcesRes.data
 
       const path = this.today?.most_visited_page?.path
-      if (!path?.startsWith('/category') || !path?.startsWith('/cart') || !path?.startsWith('/checkout') && path !== '/') {
+      if (path && (!path?.startsWith('/category') || !path?.startsWith('/cart') || !path?.startsWith('/checkout') && path !== '/')){
         const slug = path.split('/').pop()
         try {
           const res = await api.get(`/products/${slug}`)

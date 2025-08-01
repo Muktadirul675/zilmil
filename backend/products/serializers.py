@@ -64,6 +64,19 @@ class ColorSerializer(serializers.ModelSerializer):
         model = Color
         fields = ['id', 'name', 'hex_code', 'stock']
 
+class ProductOrderReportSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    order_count = serializers.IntegerField()
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'slug', 'price', 'net_price', 'compared_price',
+            'discount', 'image', 'stock', 'sku', 'order_count'
+        ]
+
+    def get_image(self, obj):
+        image = obj.images.first()
+        return UploadedImageSerializer(image).data if image else None
 
 class ProductListSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)

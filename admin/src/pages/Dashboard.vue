@@ -22,21 +22,6 @@
       <Visits />
     </section>
 
-    <!-- Sales Overview -->
-    <section class="bg-white p-6 rounded shadow">
-      <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-gray-800 flex items-center">
-          <i class="pi pi-dollar mr-2"></i> Sales Overview
-        </h1>
-        <div class="flex items-center gap-2">
-          <i v-if="fetching.sales" class="pi pi-spinner pi-spin text-blue-500 text-lg"></i>
-          <i class="pi pi-refresh text-gray-600 hover:text-blue-600 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition"
-            @click="refreshSales" title="Refresh Sales"></i>
-        </div>
-      </div>
-      <Sales />
-    </section>
-
     <!-- Orders Overview -->
     <section class="bg-white p-6 rounded shadow">
       <div class="flex items-center justify-between">
@@ -50,6 +35,21 @@
         </div>
       </div>
       <Orders />
+    </section>
+
+    <!-- Sales Overview -->
+    <section class="bg-white p-6 rounded shadow">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-gray-800 flex items-center">
+          <i class="pi pi-dollar mr-2"></i> Sales Overview
+        </h1>
+        <div class="flex items-center gap-2">
+          <i v-if="fetching.sales" class="pi pi-spinner pi-spin text-blue-500 text-lg"></i>
+          <i class="pi pi-refresh text-gray-600 hover:text-blue-600 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition"
+            @click="refreshSales" title="Refresh Sales"></i>
+        </div>
+      </div>
+      <Sales />
     </section>
 
     <!-- Products Performance -->
@@ -78,7 +78,12 @@ import { useOrdersAnalyticsStore } from '@/stores/analytics/orders';
 import { useProductAnalyticsStore } from '@/stores/analytics/products';
 import { useSalesAnalyticsStore } from '@/stores/analytics/sales';
 import { useVisitsAnalyticsStore } from '@/stores/analytics/visits';
+import { useHead } from '@vueuse/head';
 import { reactive } from 'vue';
+
+useHead({
+  title:'Panel - Zilmil.com.bd'
+})
 
 const visits = useVisitsAnalyticsStore()
 const orders = useOrdersAnalyticsStore()

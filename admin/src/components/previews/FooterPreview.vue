@@ -4,7 +4,7 @@
       <div class="w-full @lg:w-[80%] mx-auto flex flex-col @md:flex-row @md:items-start @md:justify-between gap-6">
         <!-- Left Side: Logo + Info -->
         <div class="flex flex-col items-start gap-2 w-full @md:w-1/2 text-left">
-          <img v-if="section.args?.logo" :src="`${BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-12 w-auto mb-2" />
+          <img v-if="section.args?.logo" :src="section.args.preview || `${BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-12 w-auto mb-2" />
           <p v-if="section.args?.description" class="text-sm">
             {{ section.args.description }}
           </p>

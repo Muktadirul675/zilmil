@@ -15,6 +15,18 @@
       <RouterLink to="/products" class="hover:bg-gray-700 p-2 rounded flex items-center space-x-2">
         <i class="pi pi-box"></i>
         <span>Products</span>
+        <div class="ms-auto">
+          <div class="flex items-center flex-row gap-3 text-sm">
+            <div v-if="products.low_stocks.length" class="">
+              <i class="pi pi-exclamation-circle me-2"></i>
+              <span>{{ products.low_stocks.length }}</span>
+            </div>
+            <div v-if="products.unavailables.length" class="">
+              <i class="pi pi-times-circle me-2"></i>
+              <span>{{ products.unavailables.length }}</span>
+            </div>
+          </div>
+        </div>
       </RouterLink>
 
       <RouterLink to="/orders" class="hover:bg-gray-700 p-2 rounded flex items-center space-x-2">
@@ -46,5 +58,7 @@
 </template>
   
   <script setup>
-  import { RouterLink } from 'vue-router'
+  import { useProductStore } from '@/stores/products';
+import { RouterLink } from 'vue-router'
+  const products = useProductStore()
   </script>

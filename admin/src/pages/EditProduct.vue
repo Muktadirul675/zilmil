@@ -5,12 +5,18 @@ import api from '@/services/api'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import RichTextControls from '@/components/RichTextControls.vue'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/services/toast'
 import BackButton from '@/components/ui/BackButton.vue'
+import { handleError } from '@/services/errors'
+import { useHead } from '@vueuse/head'
 
 const route = useRoute()
 const router = useRouter()
 const productId = route.params.id
+
+useHead({
+  title: `Edit Product #${productId} - Zilmil.com.bd`
+})
 
 const editor = ref(null)
 const isSubmitting = ref(false)
@@ -98,13 +104,27 @@ const toggleCategory = (id) => {
 const validate = () => {
   errors.name = !form.name ? 'Name required' : ''
   errors.sku = !form.sku ? 'SKU required' : ''
+  errors.slug = !form.sku ? 'Slug required' : ''
   errors.categories = form.categories.length === 0 ? 'At least one category' : ''
+  errors.images = (form.images.length + newImages.length) === 0 ? 'At least one image' : ''
   errors.price = !form.price ? 'Price required' : ''
-  return !errors.name && !errors.sku && !errors.categories && !errors.price
+  errors.compared_price = !form.price ? 'Compared Price required' : ''
+  errors.cost_price = !form.price ? 'Cost Price required' : ''
+  errors.stock = !form.price ? 'Stock required' : ''
+  errors.description = !form.price ? 'Description required' : ''
+  return !errors.name && !errors.sku && !errors.categories && !errors.price && !errors.images && !errors.price && !errors.compared_price && !errors.cost_price && !errors.stock && !errors.description
 }
 
 const handleUpdate = async () => {
-  if (!validate()) return
+  if (!validate()){
+    toast.error("Not valid")
+    for(const [key, value] of Object.entries(errors)){
+      if(value){
+        toast.error(value)
+      }
+    }
+    return
+  }
   isSubmitting.value = true
   try {
     const uploadedImageIds = []
@@ -130,6 +150,7 @@ const handleUpdate = async () => {
     toast.success('Product updated successfully!')
     router.push('/products')
   } catch (err) {
+    handleError(err)
     let msg = 'Error occurred.'
     if (err.response?.data) {
       const data = err.response.data
@@ -158,7 +179,7 @@ onBeforeUnmount(() => editor.value?.destroy())
 <template>
   <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
     <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">
-      <BackButton/>
+      <BackButton />
       Edit Product
     </h2>
 
@@ -190,39 +211,48 @@ onBeforeUnmount(() => editor.value?.destroy())
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label><i class="pi pi-hashtag mr-1"></i> SKU *</label>
-          <input v-model="form.sku" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <input required v-model="form.sku" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.sku" class="text-red-500 text-sm mt-1">{{ errors.sku }}</p>
         </div>
         <div>
-          <label><i class="pi pi-link mr-1"></i> Slug</label>
-          <input v-model="form.slug" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <label><i class="pi pi-link mr-1"></i> Slug *</label>
+          <input required v-model="form.slug" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.slug" class="text-red-500 text-sm mt-1">{{ errors.slug }}</p>
         </div>
         <div>
           <label><i class="pi pi-dollar mr-1"></i> Price *</label>
-          <input v-model="form.price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <input required v-model="form.price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.price" class="text-red-500 text-sm mt-1">{{ errors.price }}</p>
         </div>
         <div>
           <label><i class="pi pi-arrow-down mr-1"></i> Compared Price</label>
-          <input v-model="form.compared_price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <input required v-model="form.compared_price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.compared_price" class="text-red-500 text-sm mt-1">{{ errors.compared_price }}</p>
         </div>
         <div>
           <label><i class="pi pi-percentage mr-1"></i> Discount</label>
           <input v-model="form.discount" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
         </div>
         <div>
-          <label><i class="pi pi-wallet mr-1"></i> Cost Price</label>
-          <input v-model="form.cost_price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <label><i class="pi pi-wallet mr-1"></i> Cost Price *</label>
+          <input required v-model="form.cost_price" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.cost_price" class="text-red-500 text-sm mt-1">{{ errors.cost_price }}</p>
         </div>
         <div>
-          <label><i class="pi pi-box mr-1"></i> Stock</label>
-          <input v-model="form.stock" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <label><i class="pi pi-box mr-1"></i> Stock *</label>
+          <input required v-model="form.stock" type="number" class="w-full border border-gray-300 px-3 py-2 rounded" />
+          <p v-if="errors.stock" class="text-red-500 text-sm mt-1">{{ errors.stock }}</p>
         </div>
       </div>
 
       <!-- Description -->
       <div>
-        <label><i class="pi pi-align-left mr-1"></i> Description</label>
+        <label><i class="pi pi-align-left mr-1"></i> Description *</label>
         <RichTextControls :editor="editor" v-if="editor" />
-        <div class="border border-gray-300 rounded p-2"><EditorContent :editor="editor" /></div>
+        <div class="border border-gray-300 rounded p-2">
+          <EditorContent :editor="editor" />
+        </div>
+          <p v-if="errors.description" class="text-red-500 text-sm mt-1">{{ errors.description }}</p>
       </div>
 
       <!-- Variants -->
@@ -230,7 +260,8 @@ onBeforeUnmount(() => editor.value?.destroy())
         <label class="font-semibold mb-1 block"><i class="pi pi-list mr-1"></i> Variants</label>
         <div v-for="(variant, i) in form.variants" :key="i" class="flex gap-2 mb-2">
           <input v-model="variant.name" placeholder="Name" class="border border-gray-300 rounded px-3 py-2 flex-1" />
-          <input v-model="variant.stock" type="number" placeholder="Stock" class="border border-gray-300 rounded px-3 py-2 w-24" />
+          <input v-model="variant.stock" type="number" placeholder="Stock"
+            class="border border-gray-300 rounded px-3 py-2 w-24" />
           <button type="button" @click="removeVariant(i)" class="text-red-600 hover:underline cursor-pointer">
             <i class="pi pi-trash"></i>
           </button>
@@ -244,8 +275,10 @@ onBeforeUnmount(() => editor.value?.destroy())
       <div>
         <label class="font-semibold mb-1 block"><i class="pi pi-palette mr-1"></i> Colors</label>
         <div v-for="(color, i) in form.colors" :key="i" class="flex gap-2 mb-2 items-center">
-          <input v-model="color.name" placeholder="Color name" class="border border-gray-300 rounded px-3 py-2 flex-1" />
-          <input v-model="color.stock" type="number" placeholder="Stock" class="border border-gray-300 rounded px-3 py-2 w-24" />
+          <input v-model="color.name" placeholder="Color name"
+            class="border border-gray-300 rounded px-3 py-2 flex-1" />
+          <input v-model="color.stock" type="number" placeholder="Stock"
+            class="border border-gray-300 rounded px-3 py-2 w-24" />
           <input v-model="color.hex_code" type="text" class="border border-gray-300 rounded px-3 py-2 w-24" />
           <input type="color" v-model="color.hex_code" class="w-8 h-8 border border-gray-300 rounded" />
           <button type="button" @click="removeColor(i)" class="text-red-600 hover:underline cursor-pointer">
@@ -260,7 +293,8 @@ onBeforeUnmount(() => editor.value?.destroy())
       <!-- Images -->
       <div>
         <label><i class="pi pi-image mr-1"></i> Upload New Images</label>
-        <input type="file" multiple @change="onImagesChange" class="border cursor-pointer border-gray-300 rounded px-3 py-2 w-full" />
+        <input type="file" multiple @change="onImagesChange"
+          class="border cursor-pointer border-gray-300 rounded px-3 py-2 w-full" />
       </div>
 
       <div class="flex flex-wrap gap-2 mt-2">
@@ -279,6 +313,8 @@ onBeforeUnmount(() => editor.value?.destroy())
           </button>
         </div>
       </div>
+      <p v-if="errors.images" class="text-red-500 text-sm mt-1">{{ errors.images }}</p>
+
 
       <!-- Active Toggle -->
       <div class="flex items-center mt-4">

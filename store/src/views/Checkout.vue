@@ -72,7 +72,7 @@
                 <span class="font-semibold">{{ item.product.name }}</span>
               </div>
               <div class="text-sm flex items-end flex-col">
-                <div>{{ item.product.net_price || item.product.price }} <i class="pi pi-times text-xs"></i> {{
+                <div>{{ formatBDT(item.product.net_price || item.product.price)}} <i class="pi pi-times text-xs"></i> {{
                   item.quantity }} </div>
                 <div class="text-red-500">
                   <BDT :amount="(item.product.net_price || item.product.price) * item.quantity" />
@@ -114,9 +114,17 @@ import { useCartStore } from '@/stores/cart'
 import api from '@/lib/api'
 import BDT from '@/components/ui/BDT.vue'
 import { RouterLink } from 'vue-router'
+import { useToast } from '@/lib/toast'
+import { useSettingsStore } from '@/stores/settings'
+import { useHead } from '@vueuse/head'
+import { formatBDT } from '@/lib/utils'
+
+useHead({
+  title: "Checkout - Zilmil.com.bd"
+})
 
 const cart = useCartStore()
-
+const settings = useSettingsStore()
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const name = ref('')
@@ -130,8 +138,14 @@ const success = ref(false)
 const order_id = ref(null)
 
 const subtotal = computed(() => cart?.cart?.total_price || 0)
-const deliveryCharge = computed(() => location.value === 'inside' ? 60 : 110)
+const deliveryCharge = computed(() => location.value === 'inside' ? parseFloat(
+  settings.get('delivery_charge_inside_dhaka')
+) : parseFloat(
+  settings.get('delivery_charge_outside_dhaka')
+))
 const total = computed(() => parseFloat(subtotal.value) + parseFloat(deliveryCharge.value))
+
+const toast = useToast()
 
 const isFormValid = computed(() =>
   name.value && address.value && phone.value && location.value
@@ -157,6 +171,7 @@ const submitOrder = async () => {
     // Optional: Clear the form or cart here
   } catch (err) {
     error.value = 'Failed to place order. Please try again.'
+    toast.error('Failed to place order. Please try again.')
   } finally {
     loading.value = false
   }

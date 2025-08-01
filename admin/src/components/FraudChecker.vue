@@ -1,7 +1,9 @@
 <template>
-  <div class="max-w-4xl mx-auto my-2 p-4 bg-white shadow rounded border border-gray-200">
+  <div class="w-full my-2 p-4 bg-white shadow rounded border border-gray-200">
     <!-- Loading or Error -->
-    <div v-if="isLoading" class="text-gray-500 text-center">Loading...</div>
+    <div v-if="isLoading" class="text-gray-500 text-center flex items-center justify-center w-full"> 
+      <i class="pi pi-spin pi-spinner text-blue-500 me-2"></i>
+      Loading...</div>
     <div v-else-if="typeof data !== 'object'" class="text-red-600 text-center">{{ data }}</div>
 
     <!-- Success -->

@@ -1,13 +1,15 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { useAuthStore } from './stores/auth';
 import { onBeforeMount, onMounted } from 'vue';
-import { useProductStore } from './stores/products';
-import { useOrderStore } from './stores/orders';
-import { useBuilderStore } from './stores/builder';
+import { RouterView } from 'vue-router';
 import 'vue3-toastify/dist/index.css';
+import Toaster from './components/Toaster.vue';
 import { useActivityStore } from './stores/activities';
 import { useVisitsAnalyticsStore } from './stores/analytics/visits';
+import { useAuthStore } from './stores/auth';
+import { useBuilderStore } from './stores/builder';
+import { useOrderStore } from './stores/orders';
+import { useProductStore } from './stores/products';
+import { useSettingsStore } from './stores/settings';
 
 const auth = useAuthStore()
 const products = useProductStore()
@@ -15,18 +17,22 @@ const orders = useOrderStore()
 const builder = useBuilderStore()
 const activity = useActivityStore()
 const visits = useVisitsAnalyticsStore()
+const settings = useSettingsStore()
 
 onBeforeMount(() => {
   auth.fetchUser()
 })
 
-onMounted(() => {
+onMounted(async() => {
   products.initProductSocket()
   orders.initOrderSocket()
-  builder.init()
-  activity.fetchActivities()
   activity.connectWebSocket()
-  visits.fetchAll()
+  await Promise.all([
+    builder.init(),
+    activity.fetchActivities(),
+    visits.fetchAll(),
+    settings.fetchSettings()
+  ])
 
   setInterval(()=>{
     visits.fetchAll()
@@ -37,4 +43,5 @@ onMounted(() => {
 
 <template>
   <RouterView />
+  <Toaster/>
 </template>

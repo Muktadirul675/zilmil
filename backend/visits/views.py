@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from django.utils.timezone import now
 from .models import Visit
 from django.db.models import Count
-
+from site_settings.utils import get_setting
 
 class VisitOriginsView(APIView):
     def get(self, request):
@@ -49,6 +49,13 @@ class VisitView(APIView):
         path = request.data.get('path', '/')
         source = request.data.get('source', 'organic')
         today = now().date()
+
+        source_key = f'origin:{ip}'
+        source_timeout_days = get_setting('track_origin')
+        source_timeout_seconds = int(source_timeout_days) * (3600*24)
+
+        if not cache.get(source_key):
+            cache.set(source_key, source, timeout=source_timeout_seconds)
 
         already_visited = Visit.objects.filter(ip_address=ip, visited_at=today, path=path, source=source).exists()
         if not already_visited:

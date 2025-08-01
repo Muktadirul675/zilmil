@@ -6,6 +6,8 @@ export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
   state: () => ({
     summary: null,
     report: [],
+    originsReport: {},
+    productOrdersReport: [],
     startDate: '',
     endDate: '',
     loading: false,
@@ -13,10 +15,17 @@ export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
   }),
 
   actions: {
+    clear(){
+      this.startDate = ''
+      this.endDate = ''
+    },
     async fetchSummary() {
       try {
         this.loading = true
-        const res = await api.get('/analytics/orders')
+        const params = {}
+        if (this.startDate) params.start = this.startDate
+        if (this.endDate) params.end = this.endDate
+        const res = await api.get('/analytics/orders', { params })
         this.summary = res.data
       } catch (err) {
         this.error = err.message || 'Failed to load order summary'
@@ -38,6 +47,36 @@ export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
       } finally {
         this.loading = false
       }
-    }
+    },
+
+    async fetchOriginsReport() {
+      try {
+        this.loading = true
+        const params = {}
+        if (this.startDate) params.start = this.startDate
+        if (this.endDate) params.end = this.endDate
+        const res = await api.get('/analytics/orders/origins', { params })
+        this.originsReport = res.data
+      } catch (err) {
+        this.error = err.message || 'Failed to load origin report'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchProductOrdersReport() {
+      try {
+        this.loading = true
+        const params = {}
+        if (this.startDate) params.start = this.startDate
+        if (this.endDate) params.end = this.endDate
+        const res = await api.get('/analytics/products/report/orders', { params })
+        this.productOrdersReport = res.data
+      } catch (err) {
+        this.error = err.message || 'Failed to load product orders report'
+      } finally {
+        this.loading = false
+      }
+    },
   }
 })

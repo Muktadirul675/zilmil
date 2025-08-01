@@ -92,7 +92,12 @@
 import { onMounted } from 'vue'
 import { useCourierStore } from '@/stores/couriers'
 import { useRouter } from 'vue-router'
+import { useHead } from '@vueuse/head'
 const router = useRouter()
+
+useHead({
+  title: 'Ready For Courier - Zilmil.com.bd'
+})
 
 function handleRowClick(event, orderId) {
   // Avoid navigating if user clicked a checkbox or icon

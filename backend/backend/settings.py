@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!ae_bdv_=7st!4pq)gk=kal!2vymwqw%)=v!h24cj!f#qo00xs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
@@ -122,10 +122,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "http://localhost:4173"
-    "https://zilmil.com.bd/",
+    "http://localhost:4173",
     "https://zilmil.com.bd",
-    "http://zilmil.com.bd/",
     "http://zilmil.com.bd",
     "https://admin.zilmil.com.bd",
     "http://admin.zilmil.com.bd", 

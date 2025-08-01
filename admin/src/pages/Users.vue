@@ -2,6 +2,10 @@
 import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/users'
 
+useHead({
+  title: 'Users - Zilmil.com.bd'
+})
+
 const userStore = useUserStore()
 
 onMounted(() => {
@@ -10,6 +14,7 @@ onMounted(() => {
 
 import { ref } from 'vue'
 import api from '@/services/api'
+import { useHead } from '@vueuse/head'
 
 const newUser = ref({
   username: '',

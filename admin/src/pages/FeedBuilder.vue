@@ -100,9 +100,11 @@ import ImageSliderPreview from '@/components/previews/ImageSliderPreview.vue';
 import NavbarPreview from '@/components/previews/NavbarPreview.vue';
 import NoticesPreview from '@/components/previews/NoticesPreview.vue';
 import ProductsPreview from '@/components/previews/ProductsPreview.vue';
-import { transformSection } from '@/services/utils';
 import { useBuilderStore } from '@/stores/builder';
-import { computed, ref } from 'vue';
+import { useHead } from '@vueuse/head';
+import { computed, ref, watch } from 'vue';
+
+useHead({title:'Website Builder - Zilmil.com.bd'})
 
 const builder = useBuilderStore()
 const viewMode = ref('desktop')
@@ -122,4 +124,13 @@ function expandAll() {
 function collapseAll() {
     builder.feed = builder.feed.map((f) => ({ ...f, show: false }))
 }
+
+watch(builder.feed, (newFeed)=>{
+    const all_categories = null;
+    const category_bar = newFeed.find((s)=>s.type === 'categories_bar')
+    const navbar = newFeed.find((s)=>s.type === 'navbar')
+    if(category_bar && category_bar.args.all_categories && navbar){
+        navbar.args.all_categories = category_bar.args.all_categories
+    }
+},{deep:true})
 </script>

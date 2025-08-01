@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/lib/api'
+import { useToast } from '../lib/toast'
 
 export const useCartStore = defineStore('cartStore', () => {
     const cart = ref(null)
     const loading = ref(false)
     const error = ref(null)
+    const toast = useToast()
 
     const fetchCart = async () => {
         loading.value = true
@@ -37,6 +39,7 @@ export const useCartStore = defineStore('cartStore', () => {
         try {
             const res = await api.post('/cart/', payload)
             cart.value = res.data
+            toast.success("Product Added to Cart")
         } catch (err) {
             alert('Failed to add item to cart')
         }

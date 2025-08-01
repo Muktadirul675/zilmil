@@ -1,5 +1,5 @@
 <template>
-  <span class="inline-flex items-center cursor-pointer hover:opacity-90" :title="formatted">
+  <span class="inline-flex items-center cursor-pointer hover:opacity-90">
     <img
       v-if="showIcon"
       src="/bdt.png"
@@ -34,7 +34,7 @@ const formatBDT = (num) => {
   const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') +
     (otherNumbers ? ',' : '') +
     lastThree
-  return `${formatted}.${decimal}`
+  return `${formatted}`
 }
 
 const formatted = computed(() => formatBDT(props.amount))

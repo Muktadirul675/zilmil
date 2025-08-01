@@ -13,6 +13,10 @@ export const useProductAnalyticsStore = defineStore('productAnalytics', {
     error: null,
   }),
   actions: {
+    clear() {
+      this.startDate = ''
+      this.endDate = ''
+    },
     async fetchReport() {
       this.loading = true
       const params = {}
@@ -32,8 +36,11 @@ export const useProductAnalyticsStore = defineStore('productAnalytics', {
 
     async fetchPerformance() {
       this.loading = true
+      const params = {}
+      if (this.startDate) params.start = this.startDate
+      if (this.endDate) params.end = this.endDate
       try {
-        const res = await api.get('/analytics/products/performance/')
+        const res = await api.get('/analytics/products/performance/', { params })
         this.performance = res.data
       } catch (err) {
         this.error = 'Failed to load product performance'

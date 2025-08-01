@@ -25,7 +25,7 @@
         <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1E8jUYbdar%2F&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
           width="0" height="0" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
           allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe> 
-        {{ section.args.facebook || 'https://www.facebook.com/zilmil.com.bd' }}
+        <!-- {{ section.args.facebook || 'https://www.facebook.com/zilmil.com.bd' }} -->
         <div class="fb-page" :data-href="section.args.facebook || 'https://www.facebook.com/zilmil.com.bd'"
           data-tabs="" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true"
           data-hide-cover="false" data-show-facepile="true">
@@ -35,7 +35,7 @@
           </blockquote>
         </div>
         <a
-          :href="section.args?.facebook || '#'"
+          :href="section.args?.facebook || 'https://www.facebook.com/zilmil.com.bd'"
           target="_blank"
           rel="noopener"
           class="bg-white text-red-500 px-4 py-2 rounded hover:bg-red-100 transition-all text-sm font-medium"

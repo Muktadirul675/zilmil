@@ -19,10 +19,14 @@
               Variant: <span class="font-medium">{{ item.variant?.name || 'N/A' }}</span> |
               Color: <span class="font-medium">{{ item.color?.name || 'N/A' }}</span>
             </p>
-            <p class="text-sm text-gray-700">
+            <div class="text-sm text-gray-700 flex flex-row items-center">
               Quantity: <span class="font-semibold">{{ item.quantity }}</span> &nbsp; | &nbsp;
-              Price: <span class="font-semibold">${{ item.price_at_purchase }}</span>
-            </p>
+              <div class="flex flex-row items-center">
+                Price: <span class="font-semibold">
+                  <BDT :amount="parseFloat(item.price_at_purchase)"/>
+                </span>
+              </div>
+            </div>
           </div>
   
           <button
@@ -38,6 +42,8 @@
   </template>
   
   <script setup>
+import BDT from './ui/BDT.vue';
+
   defineProps(['items'])
   defineEmits(['remove'])
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL

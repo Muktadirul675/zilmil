@@ -1,7 +1,9 @@
 <template>
   <header class="bg-white h-16 shadow flex items-center justify-between px-4 border-b">
     <!-- Logo -->
-    <img src="/logo.png" class="h-7" alt="">
+     <RouterLink to="/dashboard">
+       <img src="/logo.png" class="h-7" alt="">
+     </RouterLink>
 
     <!-- User Info -->
     <div class="flex items-center gap-1 text-sm text-gray-700">
@@ -20,7 +22,7 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { computed } from 'vue'
 
 const auth = useAuthStore()

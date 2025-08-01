@@ -34,6 +34,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/services/api'
+import { handleError } from '@/services/errors'
+import { toast } from '@/services/toast'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Settings - Zilmil.com.bd'
+})
 
 const settings = ref({})
 const localSettings = ref({})
@@ -58,7 +65,9 @@ async function submit() {
   try {
     await api.post('/site-settings/update/', localSettings.value)
     settings.value = { ...localSettings.value }
+    toast.success("Settings Updated")
   } catch (e) {
+    handleError(e)
     console.error('Failed to update site settings:', e)
   } finally {
     isSubmitting.value = false

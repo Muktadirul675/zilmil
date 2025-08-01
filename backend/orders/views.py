@@ -15,7 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import send_order_to_courier, is_order_ready
-
+from visits.utils import get_client_ip
+from django.core.cache import cache
 
 class SendToCourierView(APIView):
     def post(self, request, *args, **kwargs):
@@ -55,8 +56,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = OrderFilter
-    search_fields = ['full_name', 'phone']
-    ordering_fields = ['created_at', 'order_discount']
+    search_fields = ['full_name', 'phone','id', 'shipping_address', 'c_id']
+    ordering_fields = ['created_at']
     ordering = ['-created_at']
     
     def perform_update(self, serializer):
@@ -82,8 +83,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not session_id: 
             self.request.session.create()
             session_id = self.request.session.session_key
-
-        order = serializer.save(session_id=session_id)
+        origin = cache.get(f'origin:{get_client_ip(self.request)}')
+        source = 'organic'
+        if origin:
+            source = origin
+        order = serializer.save(session_id=session_id, source=source)
 
         log_activity(
             user=self.request.user,

@@ -12,9 +12,16 @@ export const useSalesAnalyticsStore = defineStore('salesAnalytics', {
     error: null,
   }),
   actions: {
+    clear() {
+      this.startDate = ''
+      this.endDate = ''
+    },
     async fetchSummary() {
       try {
-        const res = await api.get('/analytics/sales')
+        const params = {}
+        if (this.startDate) params.start = this.startDate
+        if (this.endDate) params.end = this.endDate
+        const res = await api.get('/analytics/sales', { params })
         this.summary = res.data
       } catch (e) {
         this.error = e.message

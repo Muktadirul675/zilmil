@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@tiptap/starter-kit": "^2.25.0",
     "@tiptap/vue-3": "^2.25.0",
+    "@vueuse/head": "^2.0.0",
     "axios": "^1.10.0",
     "chart.js": "^4.5.0",
     "html2pdf.js": "^0.10.3",

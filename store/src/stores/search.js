@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import api from '@/lib/api' // your axios instance
 import debounce from 'lodash/debounce'
+import { useToast } from '@/lib/toast'
 
 export const useSearchStore = defineStore('search', () => {
   const query = ref('')
@@ -13,7 +14,7 @@ export const useSearchStore = defineStore('search', () => {
   const limit = ref(10)
   const offset = ref(0)
   const loading = ref(false)
-
+  const toast = useToast()
   const hasMore = computed(() => !!next.value)
 
   const fetchResults = async () => {
@@ -47,6 +48,7 @@ export const useSearchStore = defineStore('search', () => {
       previous.value = res.data.previous
     } catch (err) {
       console.error('Search failed:', err)
+      toast.error(err.message)
     } finally {
       loading.value = false
     }

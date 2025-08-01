@@ -2,14 +2,24 @@
     <section class="w-full max-w-[90vw] mx-auto py-8">
         <!-- Filters -->
         <div class="flex flex-wrap gap-4 items-center mb-6">
+            <button @click="today"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+                Today
+            </button>
+            <button @click="yesterday"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+                Yesterday
+            </button>
             <input type="date" v-model="store.startDate"
                 class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:outline-none" />
             <input type="date" v-model="store.endDate"
                 class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:outline-none" />
-            <button @click="store.fetchReport"
+            <button @click="apply"
                 class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
                 Apply
             </button>
+            <button v-if="store.startDate || store.endDate" @click="clear"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">Clear</button>
         </div>
 
         <!-- Main Grid Layout -->
@@ -23,7 +33,7 @@
                             <span class="truncate">{{ item.product }} ({{ item.sku }})</span>
                             <span class="text-gray-900 font-semibold">
                                 <!-- {{ item.amount.toLocaleString() }} -->
-                                  <BDT :amount="item.amount"/>
+                                <BDT :amount="item.amount" />
                             </span>
                         </div>
                         <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -64,10 +74,44 @@ import BDT from '../ui/BDT.vue'
 
 const store = useProductAnalyticsStore()
 
+async function apply(){
+    await Promise.all([
+        store.fetchReport(),
+        store.fetchPerformance()
+    ])
+}
+
 onMounted(() => {
-    store.fetchReport()
-    store.fetchPerformance()
+    apply()
 })
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0] // returns "YYYY-MM-DD"
+}
+
+async function today() {
+  const now = new Date()
+  const dateStr = formatDate(now)
+
+  store.startDate = dateStr
+  store.endDate = dateStr
+  apply()
+}
+
+async function yesterday() {
+  const date = new Date()
+  date.setDate(date.getDate() - 1)
+
+  const dateStr = formatDate(date)
+
+  store.startDate = dateStr
+  store.endDate = dateStr
+  apply()
+}
+function clear() {
+  store.clear()
+  apply()
+}
 
 const labels = computed(() => store.report.map(r => r.product))
 const sales = computed(() => store.report.map(r => r.count))

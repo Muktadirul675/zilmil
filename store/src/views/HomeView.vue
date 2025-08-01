@@ -4,7 +4,8 @@ defineOptions({ name: 'HomeView' })
 import Loading from '@/components/ui/Loading.vue'
 import ProductGridSkeleton from '@/components/ui/ProductGridSkeleton.vue'
 import { useFeedStore } from '@/stores/feed'
-import { defineAsyncComponent } from 'vue'
+import { useHead } from '@vueuse/head'
+import { defineAsyncComponent, onActivated, onMounted } from 'vue'
 
 const ImageSlider = defineAsyncComponent(() => import('@/components/sections/ImageSlider.vue'))
 const Products = defineAsyncComponent(() => import('@/components/sections/Products.vue'))
@@ -19,6 +20,12 @@ const componentMap = {
   category: Category,
   categories_slider: CategorySlider,
 }
+
+onActivated(()=>{
+  useHead({
+    title: "Zilmil Online Shopping"
+  })
+})
 
 </script>
 

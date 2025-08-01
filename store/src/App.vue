@@ -9,10 +9,12 @@ import CategoriesBar from './components/sections/CategoriesBar.vue';
 import Footer from './components/sections/Footer.vue';
 import Navbar from './components/sections/Navbar.vue';
 import Notices from './components/sections/Notices.vue';
+import { useSettingsStore } from './stores/settings';
+import Toaster from './components/composables/Toaster.vue';
 
 const feed = useFeedStore()
 const cart = useCartStore()
-
+const settings = useSettingsStore()
 // ð¢ Fetch feed and cart
 
 const noticeSection = computed(() =>
@@ -50,9 +52,12 @@ router.afterEach((to) => {
 })
 
 onMounted(async () => {
-  await feed.fetchFeed()
-  cart.fetchCart()
-  api.get('/visits/active')
+  await Promise.all([
+    feed.fetchFeed(),
+    cart.fetchCart(),
+    settings.fetchSettings(),
+    await api.get('/visits/active')
+  ])
   setInterval(() => {
     api.get('/visits/active')
   }, 170000)
@@ -61,6 +66,7 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen flex flex-col">
+    <Toaster/>
     <div class="flex-1">
       <template v-if="noticeSection">
         <Notices :section="noticeSection" />

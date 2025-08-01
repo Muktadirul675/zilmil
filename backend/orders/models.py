@@ -5,12 +5,16 @@ from decimal import Decimal
 ORDER_STATUS_CHOICES = [
     ('pending', 'Pending'),
     ('confirmed', 'Confirmed'),
-    ('processing', 'Processing'),
     ('hold', 'Hold'),
+    ('processing', 'Processing'),
     ('shipped', 'Shipped'),
     ('delivered', 'Delivered'),
+    ('partially_delivered', 'Partially Delivered'),
     ('cancelled', 'Cancelled'),
     ('returned', 'Returned'),
+    ('failed', 'Failed'),
+    ('partially_returned', 'Partially Returned'),
+    ('paid_returned', 'Paid Returned'),
 ]
 
 class Order(models.Model):
@@ -35,7 +39,9 @@ class Order(models.Model):
     note = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    collected_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    source = models.CharField(max_length=20, default='organic')
+    courier_reason = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -59,7 +65,8 @@ class OrderItem(models.Model):
     color = models.ForeignKey(Color, null=True, blank=True, on_delete=models.SET_NULL)
     quantity = models.PositiveIntegerField()
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def total_price(self):
         return Decimal(self.price_at_purchase * self.quantity)
 

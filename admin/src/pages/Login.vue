@@ -49,6 +49,9 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useHead } from '@vueuse/head'
+
+useHead({title: `Login to Zilmil.com.bd`})
 
 const auth = useAuthStore()
 const router = useRouter()

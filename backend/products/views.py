@@ -165,7 +165,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         base_qs = Product.objects.filter(is_deleted=False)
 
         # Distinct categories
-        low_stock_qs = base_qs.filter(stock__lt=threshold, is_active=True).distinct()
+        low_stock_qs = base_qs.filter(stock__lte=threshold).distinct()
         unavailable_qs = base_qs.filter(is_active=False).exclude(id__in=low_stock_qs.values_list('id', flat=True))
         out_of_stock_qs = base_qs.filter(stock=0, is_active=True).exclude(id__in=low_stock_qs.values_list('id', flat=True))
 

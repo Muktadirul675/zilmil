@@ -34,6 +34,7 @@ const selectLogo = (event) => {
         const url = URL.createObjectURL(file)
         logoPreview.value = url
         section.value.args.logo = url // store object URL in args.logo
+        section.value.args.preview = url // store object URL in args.logo
         section.value.args.file = file // store object URL in args.logo
     }
 }

@@ -1,7 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,8 +10,80 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from decimal import Decimal
+from orders.models import Order
+import json
 
 client = get_pathao_client()
+
+WEBHOOK_SECRET = "f3992ecc-59da-4cbe-a049-a13da2018d51"
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CourierWebhookView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        print(f"COURIER PAYLOAD:\n{(data)}\n")
+        # Extract required fields
+        c_id = data.get('consignment_id')
+        merchant_order_id = data.get('merchant_order_id')
+        event = data.get('event')
+        collected_amount = data.get('collected_amount')
+        reason = data.get('reason')
+
+        if not all([c_id, merchant_order_id, event]):
+            return Response({'detail': 'Invalid payload'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Map event to simplified status key
+        event_key = event.replace('order.', '').strip()
+
+        try:
+            order = Order.objects.get(c_id=c_id, id=int(merchant_order_id))
+        except Order.DoesNotExist:
+            return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update courier status always
+        order.courier_status = event_key
+
+        # Update collected amount if present
+        if collected_amount is not None:
+            try:
+                order.collected_amount = Decimal(str(collected_amount))
+            except Exception:
+                pass  # Ignore malformed collected_amount
+
+        # Status map based on your provided logic
+        if event_key in ['delivered', 'partial-delivery']:
+            order.status = 'delivered' if event_key == 'delivered' else 'partially_delivered'
+        elif event_key == 'returned':
+            order.status = 'returned'
+        elif event_key == 'paid-return':
+            order.status = 'paid_returned'
+        elif event_key in ['delivery-failed', 'pickup-failed']:
+            order.status = 'failed'
+        elif event_key == 'partial-returned':
+            order.status = 'partially_returned'
+        elif event_key == 'picked':
+            order.status = 'shipped'
+        elif event_key == 'created':
+            order.status = 'processing'
+
+        if reason:
+            order.courier_reason = reason
+        order.save()
+
+        return Response(
+            {"detail": "Webhook received"},
+            status=status.HTTP_202_ACCEPTED,
+            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": "f3992ecc-59da-4cbe-a049-a13da2018d51"}
+        )
 
 @api_view(['GET'])
 def get_delivery_charge(request):

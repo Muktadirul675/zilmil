@@ -1,35 +1,71 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import api from '@/lib/api'
 import ProductCard from '@/components/product/ProductCard.vue'
 import Loading from '@/components/ui/Loading.vue'
 import BackButton from '@/components/ui/BackButton.vue'
+import { toast } from '@/lib/toast'
+import { useHead } from '@vueuse/head'
 
 const route = useRoute()
 const category = ref(null)
 const products = ref([])
 const loading = ref(true)
 
+async function fetchCategory(slug) {
+    loading.value = true;
+    const { data: catData } = await api.get(`/categories/${slug}`)
+    category.value = catData
+
+    const { data: prodData } = await api.get(`/categories/${slug}/products`)
+    products.value = prodData
+    loading.value = false
+}
+
 onMounted(async () => {
-    window.scrollTo({top:0})
+    window.scrollTo({ top: 0 })
     try {
         const slug = route.params.slug
-        const { data: catData } = await api.get(`/categories/${slug}`)
-        category.value = catData
-
-        const { data: prodData } = await api.get(`/categories/${slug}/products`)
-        products.value = prodData
+        await fetchCategory(slug)
     } catch (error) {
+        // toast.info("No Products")
         console.error('Error fetching category or products:', error)
     } finally {
         loading.value = false
     }
 })
+
+onBeforeRouteUpdate((to, from, next) => {
+    if (to.params.slug !== from.params.slug) {
+        fetchCategory(to.params.slug)
+        window.scrollTo({ top: 0 })
+    }
+    next()
+})
+
+watch(category, (newCategory) => {
+  if (!newCategory) return
+
+  useHead({
+    title: `${newCategory.name} - Buy Products Online`,
+    meta: [
+      {
+        name: 'description',
+        content: newCategory.description || `Browse ${newCategory.name} products online.`
+      },
+      { property: 'og:title', content: newCategory.name },
+      {
+        property: 'og:description',
+        content: newCategory.description || ''
+      }
+    ]
+  })
+})
 </script>
 
 <template>
-    <div class="max-w-6xl mx-auto p-2 lg:px-4 lg:py-6">
+    <div class="w-full md:w-[80%] mx-auto p-2 lg:px-4 lg:py-6">
         <Loading v-if="loading" />
         <div v-else>
             <div class="flex items-center gap-2 mb-6">

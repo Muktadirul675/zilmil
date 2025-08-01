@@ -8,7 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'HomeView',
       component: HomeView,
-      meta:{keepAlive: true},
+      meta: { keepAlive: true },
     },
     {
       path: '/category/:slug',
@@ -26,7 +26,7 @@ const router = createRouter({
       component: () => import('@/views/Checkout.vue'), // lazy load
     },
     {
-      path: '/:slug',
+      path: '/product/:slug',
       name: 'product',
       component: () => import('@/views/Product.vue'), // lazy load
     },

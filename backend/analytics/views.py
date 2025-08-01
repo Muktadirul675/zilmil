@@ -14,15 +14,54 @@ from rest_framework.views import APIView
 from rest_framework.response import Response 
 from orders.models import OrderItem 
 from sales.models import Sale 
-from django.utils.dateparse import parse_date 
-from datetime import date, timedelta 
-from django.db.models import Sum, Q 
+from django.utils.dateparse import parse_datetime
 from collections import defaultdict 
 from products.models import Product
+from products.serializers import ProductOrderReportSerializer
+from django.db.models import OuterRef, Subquery, Count, IntegerField
+from django.db.models.functions import Coalesce
 
-class ProductPerformanceView(APIView): 
-    def get(self, request): 
-        sales = Sale.objects.filter(refunded=False) 
+class ProductOrderReport(APIView):
+    def get(self, request):
+        start_date = request.query_params.get("start")
+        end_date = request.query_params.get("end")
+
+        orderitem_filter = Q(product=OuterRef('pk'))
+
+        if start_date:
+            orderitem_filter &= Q(order__created_at__date__gte=parse_date(start_date))
+        if end_date:
+            orderitem_filter &= Q(order__created_at__date__lte=parse_date(end_date))
+
+        filtered_orderitems = (
+            OrderItem.objects
+            .filter(orderitem_filter)
+            .values('product')
+            .annotate(count=Count('id'))
+            .values('count')
+        )
+
+        products = Product.objects.annotate(
+            order_count=Coalesce(Subquery(filtered_orderitems, output_field=IntegerField()), 0)
+        ).order_by('-order_count')
+
+        serializer = ProductOrderReportSerializer(products, many=True)
+        return Response(serializer.data)
+
+class ProductPerformanceView(APIView):
+    def get(self, request):
+        start_raw = request.query_params.get('start')
+        end_raw = request.query_params.get('end')
+        start = parse_date(start_raw) if start_raw else None
+        end = parse_date(end_raw) if end_raw else None
+
+        sales = Sale.objects.filter(refunded=False)
+
+        if start:
+            sales = sales.filter(created_at_date__gte=start)
+        if end:
+            sales = sales.filter(created_at_date__lte=end)
+
         total_sales_amount = float(sales.aggregate(total=Sum('ordered_price'))['total'] or 0)
         order_ids = sales.values_list('order_id', flat=True)
         items = OrderItem.objects.filter(order_id__in=order_ids)
@@ -100,14 +139,48 @@ ORDER_STATUSES = [
 
 class OrderStatsView(APIView):
     def get(self, request):
+        start_date = request.query_params.get("start")
+        end_date = request.query_params.get("end")
+
+        # Parse dates from query parameters
+        filters = {}
+        if start_date:
+            filters["created_at__date__gte"] = parse_date(start_date)
+        if end_date:
+            filters["created_at__date__lte"] = parse_date(end_date)
+
         stats = {}
-        total = Order.objects.count()
+        filtered_orders = Order.objects.filter(**filters)
 
+        stats["total"] = filtered_orders.count()
         for status in ORDER_STATUSES:
-            stats[status] = Order.objects.filter(status=status).count()
+            stats[status] = filtered_orders.filter(status=status).count()
 
-        stats['total'] = total
         return Response(stats)
+
+class OrderOriginSummaryView(APIView):
+    def get(self, request):
+        start_date = request.query_params.get("start")
+        end_date = request.query_params.get("end")
+
+        # Apply optional date filters
+        filters = {}
+        if start_date:
+            filters["created_at__date__gte"] = parse_date(start_date)
+        if end_date:
+            filters["created_at__date__lte"] = parse_date(end_date)
+
+        queryset = Order.objects.filter(**filters)
+
+        # Group by origin and count
+        origin_counts = queryset.values("source").annotate(count=Count("id"))
+
+        result = {}  # total orders
+        for entry in origin_counts:
+            origin = entry["source"] or "unknown"
+            result[origin] = entry["count"]
+
+        return Response(result)
 
 
 class OrderReportView(APIView):
@@ -124,7 +197,7 @@ class OrderReportView(APIView):
 
         qs = Order.objects.filter(
             created_at__date__gte=start_date,
-            created_at__date__lt=end_date + timedelta(days=1)
+            created_at__date__lte=end_date
         )
 
         daily = qs.annotate(day=TruncDate('created_at')) \
@@ -205,9 +278,9 @@ class SalesSummaryView(APIView):
 
         sales_qs = Sale.objects.all()
         if start:
-            sales_qs = sales_qs.filter(created_at__gte=parse_date(start))
+            sales_qs = sales_qs.filter(created_at__date__gte=parse_date(start))
         if end:
-            sales_qs = sales_qs.filter(created_at__lte=parse_date(end))
+            sales_qs = sales_qs.filter(created_at__date__lte=parse_date(end))
 
         total_sales_count = sales_qs.filter(refunded=False).count()
         total_sales_amount = sales_qs.filter(refunded=False).aggregate(total=Sum('ordered_price'))['total'] or 0

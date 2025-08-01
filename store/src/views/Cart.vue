@@ -5,9 +5,12 @@ import CartItem from '@/components/cart/CartItem.vue'
 import { onMounted, ref, watch } from 'vue'
 import BDT from '@/components/ui/BDT.vue'
 import { RouterLink } from 'vue-router'
+import { useHead } from '@vueuse/head'
 
 const cart = useCartStore()
-
+useHead({
+  title: "Cart - Zilmil.com.bd"
+})
 onMounted(() => {
   window.scrollTo({ top: 0 })
 })

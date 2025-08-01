@@ -4,7 +4,7 @@
       v-if="showIcon"
       src="/bdt.png"
       alt="BDT"
-      class="w-6 h-6 object-contain"
+      class="w-4 object-contain"
     />
     <span>{{ formatted }}</span>
   </span>
@@ -32,7 +32,7 @@ const formatBDT = (num) => {
   const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') +
     (otherNumbers ? ',' : '') +
     lastThree
-  return `${formatted}.${decimal}`
+  return `${(formatted)}`
 }
 
 const formatted = computed(() => formatBDT(props.amount))

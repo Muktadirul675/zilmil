@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import Order
-from .utils import adjust_stock, get_stock_action, is_order_ready
+from .utils import is_order_ready
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
@@ -13,12 +13,20 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Order, OrderItem, ReadyForCourier
 
-NEGATIVE_STATUSES = ['cancelled', 'returned', 'failed']
-POSITIVE_STATUSES = [
+NEGATIVE_STATUSES = [
     'pending',
+    'cancelled', 
+    'returned', 
+    'hold',
+    'failed',
+    'partially_returned',
+    'partially_delivered',
+    'paid_returned',
+]
+
+POSITIVE_STATUSES = [
     'confirmed',
     'processing',
-    'hold',
     'shipped',
     'delivered',
 ]
@@ -105,7 +113,7 @@ def reduce_stock_on_item_create(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=OrderItem)
 def return_stock_on_item_delete(sender, instance, **kwargs):
     order = instance.order
-    if order.status in POSITIVE_STATUSES:
+    if order.status not in ['delivered']:
         increase_stock(instance)
 
 @receiver(pre_save, sender=Order)

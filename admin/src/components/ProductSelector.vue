@@ -51,11 +51,11 @@
             <td class="px-4 py-2">
               <input type="number" min="1" v-model.number="productInputs[product.id].quantity"
                 @input="updatePrice(product.id, product.price)"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+                class="w-[80px] border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </td>
             <td class="px-4 py-2">
-              <input type="number" min="0" step="0.01" v-model.number="productInputs[product.id].price_at_purchase"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+              <input disabled type="number" min="0" step="0.01" v-model.number="productInputs[product.id].price_at_purchase"
+                class="w-[150px] border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
               <div v-if="product.net_price" class="text-xs text-gray-500 mt-1">
                 Price: {{ product.price }}, Discount: {{ product.discount }}
               </div>
@@ -111,8 +111,13 @@ function updatePrice(productId, basePrice) {
 
 function add(product) {
   const input = productInputs[product.id]
-  if (!input.quantity || !input.price_at_purchase) return
-
+  if (!input.quantity || input.quantity < 1 || !input.price_at_purchase) return
+  if (product.variants.length && !input.variant_id){
+    return
+  }
+  if (product.colors.length && !input.color_id){
+    return
+  }
   const variant = product.variants.find(v => v.id === input.variant_id)
   const color = product.colors.find(c => c.id === input.color_id)
 

@@ -1,6 +1,9 @@
 // stores/orderStore.js
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { toast } from '@/services/toast'
+import { beep } from '@/services/beep'
+import { handleError } from '@/services/errors'
 
 export const useOrderStore = defineStore('orderStore', {
   state: () => ({
@@ -54,6 +57,12 @@ export const useOrderStore = defineStore('orderStore', {
 
       if (this.filterStatus) {
         params.status = this.filterStatus
+      }
+
+      for (const [key, value] of Object.entries(this.filters)) {
+        if (value !== null && value !== '') {
+          params[key] = value
+        }
       }
 
       for (const [key, value] of Object.entries(this.filters)) {
@@ -138,7 +147,9 @@ export const useOrderStore = defineStore('orderStore', {
           order.id === orderId ? response.data : order
         )
       } catch (err) {
+        handleError(err)
         this.error = err.response?.data || 'Failed to change order status'
+        toast.error(this.error)
         console.error(err)
       } finally {
         this.processing_orders = this.processing_orders.filter(id => id !== orderId)
@@ -149,7 +160,7 @@ export const useOrderStore = defineStore('orderStore', {
     initOrderSocket() {
       if (this.socket) return
 
-      this.socket = new WebSocket(`${location.protocol === 'https' ? 'wss':'ws'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
+      this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
 
       this.socket.onmessage = (event) => {
         const message = JSON.parse(event.data)
@@ -162,6 +173,8 @@ export const useOrderStore = defineStore('orderStore', {
             if (!this.orders.some(o => o.id === data.id)) {
               this.orders.unshift(data)
               this.totalCount += 1
+              toast.info("New Order!", 500)
+              beep()
             }
             break
 

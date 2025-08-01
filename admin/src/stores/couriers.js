@@ -1,6 +1,7 @@
 // stores/couriers.js
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { handleError } from '@/services/errors'
 
 export const useCourierStore = defineStore('courier', {
   state: () => ({
@@ -71,7 +72,7 @@ export const useCourierStore = defineStore('courier', {
           delete this.sendingStatus[id]
           delete this.sendingErrors[id]
         } catch (err) {
-          console.log("errors")
+          handleError(err)
           this.sendingStatus[id] = 'error'
           this.sendingErrors[id] = err?.response.data.message || 'Failed to send'
         }

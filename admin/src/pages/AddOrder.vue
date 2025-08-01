@@ -1,15 +1,21 @@
 <template>
-  <div class="max-w-[90%] mx-auto mt-10">
+  <div class="max-w-[80%] mx-auto mt-10">
     <div class="bg-white p-6 rounded shadow-md">
-      <div class="mb-6 flex items-center justify-start gap-2">
-        <BackButton/>
-        <h2 class="text-2xl font-semibold">Add Order</h2>
+      <div v-if="loading" class="text-center py-10">
+        <i class="pi pi-spin pi-spinner text-2xl text-indigo-600" />
+        <p class="text-sm text-gray-500 mt-2">Adding...</p>
       </div>
 
-      <form @submit.prevent="submitOrder">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <form v-if="!loading" @submit.prevent="submitOrder">
+        <div class="flex items-center justify-between my-2 mb-3">
+          <div class="flex flex-row items-center gap-2">
+            <BackButton />
+            <h2 class="text-2xl font-semibold">Add Order</h2>
+          </div>
+        </div>
+        <div class="flex flex-col md:flex-row gap-6">
           <!-- Left (Compact Inputs) -->
-          <div class="md:col-span-2 space-y-4">
+          <div class="w-full md:w-1/3 space-y-4">
             <FormInput label="Full Name" icon="user" v-model="order.full_name" required />
             <FormInput label="Phone" icon="phone" v-model="order.phone" required />
 
@@ -17,13 +23,6 @@
               <FormLabel icon="home">Shipping Address</FormLabel>
               <textarea v-model="order.shipping_address" required placeholder="Shipping Address"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
-            </div>
-
-            <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
-
-            <div>
-              <FormInput label="Delivery Charge" icon="dollar" v-model="order.delivery_charge" type="number" />
-              <p v-if="isCalculatingDelivery" class="text-xs text-gray-500 mt-1">Calculating delivery charge...</p>
             </div>
 
             <div>
@@ -40,36 +39,60 @@
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </div>
 
-            <!-- Location Selects -->
-            <SearchSelect label="City" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
+            <SearchSelect label="District" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
               v-model="order.city_id" @change="fetchZones" />
-            <SearchSelect label="Zone" icon="globe" :items="zones" itemKey="zone_id" itemLabel="zone_name"
-              v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
-            <SearchSelect label="Area" icon="location-arrow" :items="areas" itemKey="area_id" itemLabel="area_name"
-              v-model="order.area_id" :disabled="!order.zone_id" />
-
+            <div v-if="fetchingCities" class="text-slate-800">
+              <i class="pi pi-spin pi-spinner me-2"></i>
+              Fetching Districts
+            </div>
+            <div class="flex flex-row items-center justify-start gap-1">
+              <div class="flex-1">
+                <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
+                  itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
+                <div v-if="fetchingZones" class="text-slate-800">
+                  <i class="pi pi-spin pi-spinner me-2"></i>
+                  Fetching zones
+                </div>
+              </div>
+              <div class="flex-1">
+                <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
+                  itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
+                <div v-if="fetchingAreas" class="text-slate-800">
+                  <i class="pi pi-spin pi-spinner me-2"></i>
+                  Fetching areas
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-row flex-wrap gap-2 items-start">
+              <div class="flex-1">
+                <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
+              </div>
+              <div class="flex-1">
+                <FormInput label="Delivery Charge" icon="dollar" v-model="order.delivery_charge" type="number" />
+                <p v-if="isCalculatingDelivery" class="text-xs text-gray-500 mt-1">Calculating delivery charge...</p>
+              </div>
+            </div>
             <!-- Total Price -->
             <div class="text-sm font-medium pt-2 flex items-center">
               Total Price:
               <BDT :amount="totalPrice" />
             </div>
+            <div class="my-3">
+              <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
+                <i class="pi pi-check mr-1" /> Add Order
+              </button>
+              <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
+              <p v-if="success" class="text-green-600 text-sm mt-2">Order added successfully!</p>
+            </div>
           </div>
 
           <!-- Right (Wider Product Section) -->
-          <div class="md:col-span-3 space-y-4">
+          <div class="w-full md:w-2/3 space-y-4">
+            <FraudChecker v-if="order.phone" :number="order.phone" />
             <OrderItemPreview :items="order.items" @remove="i => order.items.splice(i, 1)" />
             <ProductSelector @add="item => order.items.push(item)" />
           </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="mt-6">
-          <button type="submit"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
-            <i class="pi pi-check mr-1" /> Create Order
-          </button>
-          <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
-          <p v-if="success" class="text-green-600 text-sm mt-2">Order created successfully!</p>
         </div>
       </form>
     </div>
@@ -87,6 +110,11 @@ import FormLabel from '@/components/ui/FormLabel.vue'
 import SearchSelect from '@/components/ui/SearchSelect.vue'
 import BDT from '@/components/ui/BDT.vue'
 import BackButton from '@/components/ui/BackButton.vue'
+import { toast } from '@/services/toast'
+import FraudChecker from '@/components/FraudChecker.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({title:"Add Order - Zilmil.com.bd"})
 
 const router = useRouter()
 
@@ -104,7 +132,7 @@ const order = ref({
   items: [],
 })
 
-const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled','returned']
+const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
 const success = ref(false)
 const error = ref('')
 const loading = ref(false)
@@ -173,6 +201,10 @@ function capitalize(s) {
 }
 
 async function submitOrder() {
+  if (isCalculatingDelivery.value) {
+    toast.error("Calculating Delivery Charge")
+    return
+  }
   loading.value = true
   error.value = ''
   success.value = false
@@ -189,6 +221,9 @@ async function submitOrder() {
   }
 
   try {
+    if (!order.value.order_discount) {
+      order.value.order_discount = parseFloat('0')
+    }
     const payload = {
       ...order.value,
       items: order.value.items.map(item => ({

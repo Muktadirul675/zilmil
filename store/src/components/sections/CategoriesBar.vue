@@ -1,4 +1,6 @@
 <script setup>
+import { RouterLink } from 'vue-router';
+
 const { section } = defineProps({
   section: Object
 })
@@ -11,13 +13,13 @@ const { section } = defineProps({
   >
     <div class="w-full lg:w-[80%] flex">
       <template v-for="(cat, index) in [{ id: 'all', name: 'All Categories' }, ...section.categories]" :key="cat.id">
-        <div
+        <RouterLink :to="`/category/${cat.slug}`"
           class="px-3 py-2 cursor-pointer border-l border-gray-300 last:border-r hover:bg-red-600 transition-all"
           role="button"
           tabindex="0"
         >
           {{ cat.name }}
-        </div>
+        </RouterLink>
       </template>
     </div>
   </div>

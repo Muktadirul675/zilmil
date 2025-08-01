@@ -1,20 +1,10 @@
-<!-- <script setup>
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  }
-})
-
-</script>
-<template>
-  {{ product.name }}
-</template> -->
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import BDT from '../ui/BDT.vue'
+import { useToast } from '@/lib/toast'
+import { formatBDT } from '@/lib/utils'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -29,6 +19,7 @@ const { product } = toRefs(props)
 const router = useRouter()
 const cartStore = useCartStore()
 const loading = ref(false)
+const toast = useToast()
 
 const imageUrl = computed(() => {
   const img = product.value.image?.image || ''
@@ -36,7 +27,11 @@ const imageUrl = computed(() => {
 })
 
 const hasVariants = computed(() =>
-  Boolean(product.value.variants?.length || product.value.colors?.length)
+  Boolean(product.value.variants?.length)
+)
+
+const hasColors = computed(() =>
+  Boolean(product.value.colors?.length)
 )
 
 const netPrice = computed(() =>
@@ -47,17 +42,28 @@ const originalPrice = computed(() =>
   product.value.net_price ? product.value.price : product.value.compared_price
 )
 
-function navigate(){
-  router.push(`/${product.value.slug}`)
+function navigate() {
+  router.push(`/product/${product.value.slug}`)
 }
 
 const handleAddToCart = async () => {
-  if (hasVariants.value) {
-    router.push(`/${product.value.slug}`)
+  loading.value = true
+  if (hasVariants.value || hasColors.value) {
+    let constructedString = "Please Select "
+    const arr = []
+    if (hasVariants.value) {
+      arr.push('variants')
+    }
+    if (hasColors.value) {
+      arr.push('colors')
+    }
+    constructedString += arr.join(' and ')
+    router.push(`/product/${product.value.slug}`)
+    toast.info(constructedString)
+    loading.value = false;
     return
   }
 
-  loading.value = true
   try {
     await cartStore.addToCart({
       product: product.value.id,
@@ -75,18 +81,17 @@ const handleAddToCart = async () => {
   <div class="w-1/2 md:w-1/3 lg:w-1/4 p-1">
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">
-        <img
-          :src="imageUrl"
-          alt="Product"
-          loading="lazy"
-          decoding="async"
-          class="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-[1.02]"
-        />
+        <img :src="imageUrl" alt="Product" loading="lazy" decoding="async"
+          class="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-[1.02]" />
 
         <div
           class="absolute bottom-0 w-full h-0 group-hover:h-8 transition-all duration-300 bg-white/80 flex justify-center items-center gap-4 overflow-hidden">
-          <i class="pi pi-shopping-cart text-xl cursor-pointer hover:text-red-500"></i>
-          <i class="pi pi-eye text-xl cursor-pointer hover:text-red-500"></i>
+          <i class="pi pi pi-shopping-cart text-xl cursor-pointer hover:text-red-500" v-if="loading"></i>
+          <i class="pi pi-shopping-cart text-xl cursor-pointer hover:text-red-500" v-else
+            @click.stop="handleAddToCart"></i>
+          <RouterLink :to="`/product/${product.slug}`">
+            <i class="pi pi-eye text-xl cursor-pointer hover:text-red-500"></i>
+          </RouterLink>
         </div>
       </div>
 
@@ -98,13 +103,11 @@ const handleAddToCart = async () => {
         <div class="text-red-500 font-semibold text-lg flex flex-col lg:flex-row lg:items-center gap-2">
           <BDT :amount="netPrice" />
           <span v-if="originalPrice" class="text-sm text-gray-500 line-through">
-            {{ originalPrice }}
+            {{ formatBDT(originalPrice) }}
           </span>
         </div>
 
-        <button
-          @click="handleAddToCart"
-          :disabled="loading"
+        <button @click="handleAddToCart" :disabled="loading"
           class="w-full cursor-pointer mt-2 flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
           :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
           <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />

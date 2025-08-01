@@ -1,10 +1,14 @@
 // stores/productStore.js
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { handleError } from '@/services/errors'
+import { toast } from '@/services/toast'
 
 export const useProductStore = defineStore('productStore', {
     state: () => ({
         products: [],
+        low_stocks: [],
+        unavailables: [],
         loading: false,
         error: null,
         search: '',
@@ -13,7 +17,8 @@ export const useProductStore = defineStore('productStore', {
         offset: 0,
         totalCount: 0,
         selectedProductIds: [],
-
+        lowStocksFetched: false,
+        lowStockTimeOut : false,
         filters: {
             price_min: null,
             price_max: null,
@@ -72,6 +77,7 @@ export const useProductStore = defineStore('productStore', {
                 this.products = response.data.results
                 this.totalCount = response.data.count
                 this.clearSelection()
+                await this.fetchLowStocks()
             } catch (err) {
                 this.error = err.message || 'Failed to fetch products'
                 console.error(err)
@@ -99,19 +105,51 @@ export const useProductStore = defineStore('productStore', {
             this.loading = true
             this.error = null
             try {
-                console.log(JSON.stringify(formData,null,2))
-                let data = {...formData,
+                if(!formData.categories.length){
+                    toast.error("You have to select at least one category")
+                    return;
+                }
+                if(!formData.images.length){
+                    toast.error("You have to attach at least one image")
+                    return;
+                }
+                console.log(JSON.stringify(formData, null, 2))
+                let data = {
+                    ...formData,
                     category_ids: formData.categories,
                     image_ids: formData.images,
                 }
                 const response = await api.post('/products/', data)
                 this.products.unshift(response.data)
+                toast.success("Product Added Successfully")
+                await this.fetchLowStocks()
                 return response.data
             } catch (err) {
                 this.error = err.response?.data || 'Failed to add product'
-                throw err
+                handleError(err)
             } finally {
                 this.loading = false
+            }
+        },
+
+        async fetchLowStocks() {
+            if(this.lowStocksFetched){
+                if(!this.lowStockTimeOut){
+                    this.lowStockTimeOut = true;
+                    setTimeout(()=>{
+                        this.lowStocksFetched = false;
+                        this.lowStockTimeOut = false
+                    },500)
+                }
+                return
+            }
+            try {
+                const res = await api.get('/products/low-stocks/')
+                this.low_stocks = res.data['low_stock'].products || []
+                this.unavailables = res.data['unavailable'].products || []
+                this.lowStocksFetched = true
+            } catch (e) {
+                this.error = err.message || "Failed to load stock alert"
             }
         },
 
@@ -151,7 +189,7 @@ export const useProductStore = defineStore('productStore', {
         initProductSocket() {
             if (this.socket) return
 
-            this.socket = new WebSocket(`${location.protocol === 'https' ? 'wss':'ws'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
+            this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
 
             this.socket.onmessage = (event) => {
                 const message = JSON.parse(event.data)
@@ -179,6 +217,7 @@ export const useProductStore = defineStore('productStore', {
                         this.totalCount -= 1
                         break
                 }
+                this.fetchLowStocks()
             }
 
             this.socket.onclose = () => {

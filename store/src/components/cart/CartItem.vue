@@ -13,7 +13,7 @@
         </div>
         <div class="font-semibold text-gray-700 flex flex-col items-end">
             <div class="text-sm">
-                {{ unitPrice }} <i class="pi pi-times text-xs"></i> {{ qty }}
+                {{ formatBDT(unitPrice) }} <i class="pi pi-times text-xs"></i> {{ qty }}
             </div>
             <span class="text-lg text-red-500">
                 <BDT :amount="parseFloat(totalPrice)" />
@@ -47,6 +47,7 @@
 import { computed, ref, watch } from 'vue';
 import BDT from '../ui/BDT.vue';
 import { useCartStore } from '@/stores/cart';
+import { formatBDT } from '@/lib/utils';
 
 const cart = useCartStore()
 

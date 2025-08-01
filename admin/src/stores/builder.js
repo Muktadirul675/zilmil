@@ -5,6 +5,7 @@ import isEqual from 'lodash/isEqual'
 import cloneDeep from 'lodash/cloneDeep'
 import omit from 'lodash/omit'
 import { transformSection } from '@/services/utils'
+import { handleError } from '@/services/errors'
 
 let uid = 0
 
@@ -245,7 +246,8 @@ export const useBuilderStore = defineStore('builderStore', () => {
             await api.post('/feed/build/', transformed)
             buildSuccess.value = true
         } catch (err) {
-            buildError.value = err?.response?.data?.message || 'Build failed. Please try again.'
+            handleError(err)
+            buildError.value = err?.message || err?.response?.data?.message || 'Build failed. Please try again.'
         } finally {
             buildLoading.value = false
         }

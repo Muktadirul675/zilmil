@@ -24,7 +24,7 @@
 
     <!-- Stock Form -->
     <form @submit.prevent="submitStocks" class="space-y-6">
-      <div v-for="(product, pIndex) in filteredProducts" :key="product.id"
+      <div v-for="product in filteredProducts" :key="product.id"
         class="border border-gray-300 rounded p-4 bg-gray-50">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Product Info -->
@@ -35,7 +35,7 @@
               <p class="font-semibold">{{ product.name }}</p>
               <div class="relative mt-2">
                 <i class="pi pi-box absolute left-3 top-2.5 text-gray-400" />
-                <input type="number" min="0" v-model.number="productStocks[pIndex].quantity" placeholder="Add stock"
+                <input type="number" min="0" v-model.number="product.quantity" placeholder="Add stock"
                   class="pl-8 w-full border border-gray-300 px-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" />
               </div>
             </div>
@@ -47,9 +47,9 @@
               <i class="pi pi-tags text-indigo-600" /> Variants
             </p>
             <div v-if="product.variants?.length" class="flex flex-col gap-2">
-              <div v-for="(variant, vIndex) in product.variants" :key="variant.id" class="flex items-center gap-2">
+              <div v-for="variant in product.variants" :key="variant.id" class="flex items-center gap-2">
                 <span class="text-sm flex-1">{{ variant.name }}</span>
-                <input type="number" min="0" v-model.number="productStocks[pIndex].variants[vIndex].quantity"
+                <input type="number" min="0" v-model.number="variant.quantity"
                   class="w-24 border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   placeholder="Qty" />
               </div>
@@ -63,9 +63,9 @@
               <i class="pi pi-palette text-indigo-600" /> Colors
             </p>
             <div v-if="product.colors?.length" class="flex flex-col gap-2">
-              <div v-for="(color, cIndex) in product.colors" :key="color.id" class="flex items-center gap-2">
+              <div v-for="color in product.colors" :key="color.id" class="flex items-center gap-2">
                 <span class="text-sm flex-1">{{ color.name }}</span>
-                <input type="number" min="0" v-model.number="productStocks[pIndex].colors[cIndex].quantity"
+                <input type="number" min="0" v-model.number="color.quantity"
                   class="w-24 border border-gray-300 px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   placeholder="Qty" />
               </div>
@@ -91,6 +91,12 @@ import { ref, onMounted, computed } from 'vue'
 
 import api from '@/services/api'
 import BackButton from '@/components/ui/BackButton.vue'
+import { toast } from '@/services/toast'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title:'Add Stocks - Zilmil.com.bd'
+})
 
 const products = ref([])
 const productStocks = ref([])
@@ -128,6 +134,7 @@ async function submitStocks() {
     console.log(JSON.stringify(productStocks.value, null, 2))
     await api.post('/products/stocks/add/', productStocks.value)
     success.value = true
+    toast.success("Stocks updated successfully")
   } catch (err) {
     error.value = err.response?.data?.detail || 'Failed to update stocks.'
   } finally {

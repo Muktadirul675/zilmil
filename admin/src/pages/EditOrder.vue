@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-[90%] mx-auto mt-10">
+  <div class="max-w-[80%] mx-auto mt-10">
     <div class="bg-white p-6 rounded shadow-md">
       <div v-if="isFetchingOrder" class="text-center py-10">
         <i class="pi pi-spin pi-spinner text-2xl text-indigo-600" />
@@ -7,23 +7,15 @@
       </div>
 
       <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
-        <div class="flex items-center justify-between my-2">
+        <div class="flex items-center justify-between my-2 mb-3">
           <div class="flex flex-row items-center gap-2">
             <BackButton />
             <h2 class="text-2xl font-semibold">Edit Order</h2>
           </div>
-          <div class="mt-6">
-            <button type="submit"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
-              <i class="pi pi-check mr-1" /> Update Order
-            </button>
-            <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
-            <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
-          </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-6">
+        <div class="flex flex-col md:flex-row gap-6">
           <!-- Left (Compact Inputs) -->
-          <div class="md:col-span-2 space-y-4">
+          <div class="w-full md:w-1/3 space-y-4">
             <FormInput label="Full Name" icon="user" v-model="order.full_name" required />
             <FormInput label="Phone" icon="phone" v-model="order.phone" required />
 
@@ -31,13 +23,6 @@
               <FormLabel icon="home">Shipping Address</FormLabel>
               <textarea v-model="order.shipping_address" required placeholder="Shipping Address"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
-            </div>
-
-            <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
-
-            <div>
-              <FormInput label="Delivery Charge" icon="dollar" v-model="order.delivery_charge" type="number" />
-              <p v-if="isCalculatingDelivery" class="text-xs text-gray-500 mt-1">Calculating delivery charge...</p>
             </div>
 
             <div>
@@ -54,34 +39,56 @@
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </div>
 
-            <!-- Location Selects -->
-            <SearchSelect label="City" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
+            <SearchSelect label="District" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
               v-model="order.city_id" @change="fetchZones" />
             <div v-if="fetchingCities" class="text-slate-800">
               <i class="pi pi-spin pi-spinner me-2"></i>
-              Fetching cities
+              Fetching districts
             </div>
-            <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
-              itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
-            <div v-if="fetchingZones" class="text-slate-800">
-              <i class="pi pi-spin pi-spinner me-2"></i>
-              Fetching zones
+            <div class="flex flex-row items-center justify-start gap-1">
+              <div class="flex-1">
+                <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
+                  itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
+                <div v-if="fetchingZones" class="text-slate-800">
+                  <i class="pi pi-spin pi-spinner me-2"></i>
+                  Fetching zones
+                </div>
+              </div>
+              <div class="flex-1">
+                <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
+                  itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
+                <div v-if="fetchingAreas" class="text-slate-800">
+                  <i class="pi pi-spin pi-spinner me-2"></i>
+                  Fetching areas
+                </div>
+              </div>
             </div>
-            <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
-              itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
-            <div v-if="fetchingAreas" class="text-slate-800">
-              <i class="pi pi-spin pi-spinner me-2"></i>
-              Fetching areas
+            <div class="flex flex-row flex-wrap gap-2 items-start">
+              <div class="flex-1">
+                <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
+              </div>
+              <div class="flex-1">
+                <FormInput label="Delivery Charge" icon="dollar" v-model="order.delivery_charge" type="number" />
+                <p v-if="isCalculatingDelivery" class="text-xs text-gray-500 mt-1">Calculating delivery charge...</p>
+              </div>
             </div>
             <!-- Total Price -->
             <div class="text-sm font-medium pt-2 flex items-center">
               Total Price:
               <BDT :amount="totalPrice" />
             </div>
+            <div class="my-3">
+              <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
+                <i class="pi pi-check mr-1" /> Update Order
+              </button>
+              <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
+              <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
+            </div>
           </div>
 
           <!-- Right (Wider Product Section) -->
-          <div class="md:col-span-5 space-y-4">
+          <div class="w-full md:w-2/3 space-y-4">
             <FraudChecker v-if="order.phone" :number="order.phone" />
             <OrderItemPreview :items="order.items" @remove="i => order.items.splice(i, 1)" />
             <ProductSelector @add="item => order.items.push(item)" />
@@ -105,10 +112,17 @@ import FraudChecker from '@/components/FraudChecker.vue'
 import BDT from '@/components/ui/BDT.vue'
 import BackButton from '@/components/ui/BackButton.vue'
 import { debounce } from 'lodash'
+import { handleError } from '@/services/errors'
+import { toast } from '@/services/toast'
+import { useHead } from '@vueuse/head'
 
 const router = useRouter()
 const route = useRoute()
 const orderId = route.params.id
+
+useHead({
+  title: `Edit Order #${orderId} - Zilmil.com.bd`
+})
 
 const order = ref({
   full_name: '',
@@ -230,6 +244,10 @@ function capitalize(s) {
 }
 
 const submitOrder = async () => {
+  if (isCalculatingDelivery.value) {
+    toast.error("Calculating Delivery Charge")
+    return
+  }
   loading.value = true
   error.value = ''
   success.value = false
@@ -241,6 +259,9 @@ const submitOrder = async () => {
   }
 
   try {
+    if (!order.value.order_discount) {
+      order.value.order_discount = parseFloat('0')
+    }
     const payload = {
       ...order.value,
       items: order.value.items.map(item => ({
@@ -256,7 +277,10 @@ const submitOrder = async () => {
     success.value = true
     router.push('/orders')
   } catch (err) {
-    error.value = err.message || 'Failed to update order.'
+    const e = handleError(err)
+    if (!e) {
+      error.value = err.message || 'Unexpected Error: Failed to update order.'
+    }
   } finally {
     loading.value = false
   }

@@ -11,6 +11,15 @@ export default defineConfig({
     vueDevTools(),
     tailwindcss()
   ],
+  build: {
+    ssrManifest: true,
+    rollupOptions: {
+      input: '/src/entry-client.js'
+    }
+  },
+  ssr: {
+    noExternal: ['vue', 'vue-router']
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

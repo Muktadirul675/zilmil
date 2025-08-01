@@ -1,8 +1,13 @@
 <template>
   <div>
     <h1 class="text-2xl font-bold flex items-center gap-2 mb-2">
-      <i class="pi pi-shopping-cart  text-indigo-600"></i>
-      Orders
+      <div class="flex items-center gap-2">
+        <i class="pi pi-shopping-cart  text-indigo-600"></i>
+        Orders
+      </div>
+      <div v-if="orderStore.loading">
+        <i class="pi pi-spin pi-spinner text-sm px-3 text-center text-indigo-600"></i>
+      </div>
     </h1>
 
     <!-- Search and Filters -->
@@ -82,59 +87,92 @@
 
     <!-- Orders Table -->
     <div class="overflow-x-auto bg-white rounded shadow">
-      <table class="min-w-full divide-y divide-gray-200">
+      <table class="min-w-full w-full divide-y divide-gray-200">
         <thead class="bg-slate-700 text-white">
           <tr>
             <th class="pl-4 py-3 text-left w-10">
               <input type="checkbox" :checked="orderStore.areAllSelected" @change="orderStore.toggleSelectAll" />
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Order ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Created</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Customer</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Phone</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Address</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Items</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Created</th>
-            <th class="px-6 py-3 w-12"></th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white divide-y divide-gray-300">
           <template v-for="order in orderStore.orders" :key="order.id">
-            <tr class="hover:bg-gray-50 cursor-pointer" @click="goToOrder(order.id)">
+            <tr class="hover:bg-gray-50 cursor-pointer border-gray-300" @click="goToOrder(order.id)">
               <td class="pl-4 py-4 w-10" v-if="orderStore.processing_orders.includes(order.id)"><i
                   class="pi pi-spin pi-cog"></i></td>
               <td class="pl-4 py-4 w-10" v-else>
                 <input type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
                   @change.stop="orderStore.toggleOrderSelection(order.id)" @click.stop />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ order.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <div class="flex flex-col gap-1">
+                  <div>
+                    #{{ order.id }}
+                  </div>
+                  <div v-if="order.c_id" class="text-xs">
+                    <TapToShowText :text="order.c_id" />
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ new Date(order.created_at).toLocaleDateString() }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.full_name }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ order.phone }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ order.shipping_address || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <div v-for="item in order.items" class="flex mb-1 gap-2 items-center">
+                  <img :src="BACKEND_URL + item.product.image.image" alt="" class="h-10 w-10 rounded">
+                  <div class="flex flex-col">
+                    <span>
+                      {{ item.product.name }}
+                    </span>
+                    <span v-if="item.variant">
+                      {{ item.variant.name }}
+                      <span v-if="item.color" class="">
+                        <span class="me-1">,</span>{{ item.color.name }}
+                      </span>
+                    </span>
+                    <span class="text-sm flex items-center">
+                      <BDT :amount="parseFloat(item.price_at_purchase)" />
+                      <i class="pi pi-times text-xs mx-1"></i>
+                      {{ item.quantity }}
+                    </span>
+                  </div>
+                </div>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"
-                  :class="statusClass(order.status)">
-                  <i :class="statusIcon(order.status)" /> {{ capitalize(order.status) }}
-                </span>
+                <div class="flex flex-col items-starts gap-1">
+                  <span class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"
+                    :class="statusClass(order.status)">
+                    <i :class="statusIcon(order.status)" /> {{ capitalize(order.status) }}
+                    <span v-if="order.collected_amount > 0">[{{ parseInt(order.collected_amount) }}]</span>
+                  </span>
+                  <div v-if="order.courier_status && order.courier_status !== 'pending'"
+                    class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit bg-slate-100 text-slate-600">
+                    <i class="pi pi-truck text-indigo-800"></i>
+                    {{ capitalize(order.courier_status.replace("-", " ")) }}
+                  </div>
+                  <div v-if="order.courier_reason" :class="order.status === 'failed' && 'text-red-500'">
+                    <TapToShowText :text="order.courier_reason" />
+                  </div>
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- {{ totalPrice(order).toFixed(2) }} -->
                 <BDT :amount="parseFloat(order.total_price)" />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ new Date(order.created_at).toLocaleDateString() }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                <button @click.stop="toggleExpanded(order.id)"
-                  class="text-indigo-600 hover:underline cursor-pointer flex items-center gap-1">
-                  <i :class="expandedOrders.has(order.id) ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" />
-                  {{ expandedOrders.has(order.id) ? 'Hide Items' : 'Show Items' }} ({{ order.items?.length || 0 }})
-                </button>
-              </td>
             </tr>
-
             <!-- Expanded row for items -->
-            <tr v-if="expandedOrders.has(order.id)" class="bg-gray-50">
+            <!-- <tr class="border-b border-gray-300">
               <td colspan="8" class="px-6 py-4">
                 <table class="min-w-full border border-gray-300 rounded">
                   <thead class="bg-gray-200 text-gray-700">
@@ -148,21 +186,24 @@
                   </thead>
                   <tbody>
                     <tr v-for="item in order.items" :key="item.id" class="border-t border-gray-300">
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.product.name }}</td>
+                      <td class="px-3 py-1 whitespace-nowrap text-sm">
+                        <div class="flex flex-row flex-wrap items-center gap-2">
+                          <img class="h-[50px] w-[50px] rounded" :src="BACKEND_URL+item.product.image.image" alt="">
+                          {{ item.product.name }}
+                        </div>
+                      </td>
                       <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.variant?.name || '-' }}</td>
                       <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.color?.name || '-' }}</td>
                       <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.quantity }}</td>
                       <td class="px-3 py-1 whitespace-nowrap text-sm">
                         <BDT :amount="parseFloat(item.price_at_purchase)" />
-                        <!-- {{ parseFloat(item.price_at_purchase).toFixed(2) }} -->
                       </td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="my-1"></div>
-                <!-- <InvoiceButton :order="order"/> -->
               </td>
-            </tr>
+            </tr> -->
           </template>
 
           <tr v-if="orderStore.loading">
@@ -208,17 +249,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useOrderStore } from '@/stores/orders'
-import { RouterLink } from 'vue-router'
-import { useRouter } from 'vue-router'
-import InvoiceButton from '@/components/InvoiceButton.vue'
 import BDT from '@/components/ui/BDT.vue'
+import TapToShowText from '@/components/ui/TapToShowText.vue'
+import { useOrderStore } from '@/stores/orders'
+import { useHead } from '@vueuse/head'
+import { computed, ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+
+useHead({
+  title: 'Orders - Zilmil.com.bd'
+})
+
 const router = useRouter()
 
 const goToOrder = (id) => {
   router.push(`/orders/${id}`)
 }
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const orderStore = useOrderStore()
 
 // Local reactive state
