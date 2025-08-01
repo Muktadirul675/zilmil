@@ -214,6 +214,8 @@ export const useBuilderStore = defineStore('builderStore', () => {
                         })
 
                         transformedSection.args.logo = response.data.image
+                        delete transformedSection.args.file 
+                        delete transformedSection.args.preview 
                     }
 
                     // Notice: upload notices[*].text â notice_ids

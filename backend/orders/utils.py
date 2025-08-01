@@ -98,44 +98,6 @@ def send_order_to_courier(order_id):
             "order_id": order_id,
             "message":"Consignment ID not found"
         }
-    
-    client = get_pathao_client()
-    with transaction.atomic():
-        try:
-            order = Order.objects.select_for_update().get(pk=order_id)
-        except Order.DoesNotExist:
-            return {
-                "success": False,
-                "message": "Order not found.",
-                "order_id": order_id
-            }
-
-        if order.sent_to_courier:
-            return {
-                "success": True,
-                "already_sent": True,
-                "order_id": order_id,
-                "consignment_id": order.c_id
-            }
-
-        # Send to courier
-        courier_response = client.create_order(order)
-        consignment_id = courier_response.get("consignment_id")
-
-        # Save updates
-        order.sent_to_courier = True
-        order.c_id = consignment_id
-        order.save()
-
-        # Remove from queue
-        ReadyForCourier.objects.filter(order=order).delete()
-
-        return {
-            "success": True,
-            "already_sent": False,
-            "order_id": order_id,
-            "consignment_id": consignment_id
-        }
 
 def get_stock_action(old_status: str, new_status: str, has_item_changes: bool = False) -> str:
     """

@@ -7,6 +7,8 @@ const props = defineProps({ uid: Number })
 const builder = useBuilderStore()
 const section = computed(() => builder.feed.find(s => s.uid === props.uid))
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
 // Ensure section.args is always initialized
 watch(section, (val) => {
     if (val && !val.args) {
@@ -15,14 +17,16 @@ watch(section, (val) => {
 }, { immediate: true })
 
 // Temp preview for logo
-const logoPreview = ref(null)
+const logoPreview = ref(section.value?.args?.logo)
 
 // Watch logo change and set preview
 watch(
-    () => section.value?.args?.logo,
+    () => section.value?.args,
     (val) => {
-        if (val) {
-            logoPreview.value = val
+        if (val.preview) {
+            logoPreview.value = val.preview
+        }else if(val.logo){
+            logoPreview.value = `${BACKEND_URL}${val.logo}`
         }
     },
     { immediate: true }
@@ -33,7 +37,6 @@ const selectLogo = (event) => {
     if (file) {
         const url = URL.createObjectURL(file)
         logoPreview.value = url
-        section.value.args.logo = url // store object URL in args.logo
         section.value.args.preview = url // store object URL in args.logo
         section.value.args.file = file // store object URL in args.logo
     }
@@ -45,7 +48,7 @@ const selectLogo = (event) => {
         <div class="p-2 flex flex-col gap-4">
             <div class="label">Logo</div>
             <div v-if="logoPreview" class="w-full flex justify-center">
-                <img :src="`http://localhost:8000${logoPreview}`" alt="Logo Preview" class="h-14 mb-2 border rounded" />
+                <img :src="`${logoPreview}`" alt="Logo Preview" class="h-14 mb-2 border rounded" />
             </div>
             <label for="logo"
                 class="border p-2 border-dashed border-blue-500 flex justify-center rounded cursor-pointer text-white bg-blue-300 items-center">

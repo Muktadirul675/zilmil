@@ -14,17 +14,28 @@ from django.core.files.base import ContentFile
 def compress_image(image_file, format='WEBP', quality=80):
     image = Image.open(image_file)
 
-    # Convert to RGB if image has alpha or palette
-    if image.mode in ("RGBA", "P"):
+    # Detect if image has transparency
+    has_alpha = image.mode in ("RGBA", "LA") or (image.mode == "P" and "transparency" in image.info)
+
+    # Convert to correct mode
+    if has_alpha:
+        image = image.convert("RGBA")
+    else:
         image = image.convert("RGB")
 
     image_io = BytesIO()
-    image.save(image_io, format=format, quality=quality, optimize=True)
+    image.save(
+        image_io,
+        format=format,
+        quality=quality,
+        lossless=has_alpha,
+        optimize=True
+    )
 
     # Generate new file name with .webp and date stamp
     original_name = image_file.name.rsplit('.', 1)[0]
     date_stamp = datetime.now().strftime('%Y%m%d')
-    new_image_name = f"{original_name}_{date_stamp}.webp"
+    new_image_name = f"{original_name}_{date_stamp}_zilmil.webp"
 
     return ContentFile(image_io.getvalue(), name=new_image_name)
 
