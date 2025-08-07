@@ -11,7 +11,7 @@ export const useOrderStore = defineStore('orderStore', {
     loading: false,
     error: null,
     search: '',
-    filterStatus: '',
+    filterStatus: 'pending',
     filters: {
       discount_min: null,
       discount_max: null,

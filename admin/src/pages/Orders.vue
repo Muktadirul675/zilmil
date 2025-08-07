@@ -15,13 +15,22 @@
       <input v-model="orderStore.search" @input="onSearch" type="text" placeholder="Search by name or phone"
         class="border bg-white border-gray-300 rounded px-3 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
 
+      <div class="flex flex-row flex-wrap gap-1">
+        <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{orderStore.filterStatus = ''; orderStore.fetchOrders()}">All</button>
+        <template v-for="status in statusOptions" :key="status" >
+          <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{orderStore.filterStatus = status; orderStore.fetchOrders()}">
+            {{ capitalize(status) }}
+          </button>
+        </template>
+      </div>
+<!-- 
       <select v-model="orderStore.filterStatus" @change="orderStore.fetchOrders"
         class="border bg-white border-gray-300 cursor-pointer rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <option value="">All Status</option>
         <option v-for="status in statusOptions" :key="status" :value="status">
           {{ capitalize(status) }}
         </option>
-      </select>
+      </select> -->
 
 
       <div class="flex flex-row gap-2 items-center">
@@ -64,15 +73,21 @@
     <!-- Advanced Filters Accordion -->
     <Transition name="slide-fade">
       <div v-if="showFilters" class="bg-white border border-gray-300 rounded p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input type="number" v-model.number="orderStore.filters.discount_min" placeholder="Min Discount"
-            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <input type="number" v-model.number="orderStore.filters.discount_max" placeholder="Max Discount"
-            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <input type="datetime-local" v-model="orderStore.filters.created_after"
-            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <input type="datetime-local" v-model="orderStore.filters.created_before"
-            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <div class="flex flex-col gap-2">
+          <div class="text-gray-800 uppercase font-semibold">Date Time Filtering</div>
+          <div class="flex flex-row gap-2">
+            <input type="datetime-local" v-model="orderStore.filters.created_after"
+              class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="datetime-local" v-model="orderStore.filters.created_before"
+              class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div class="text-gray-800 uppercase font-semibold">Discount Filtering</div>
+          <div class="flex flex-row gap-2">
+            <input type="number" v-model.number="orderStore.filters.discount_min" placeholder="Min Discount"
+              class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="number" v-model.number="orderStore.filters.discount_max" placeholder="Max Discount"
+              class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
         </div>
         <div class="mt-4 flex gap-3">
           <button @click="applyFilters" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
@@ -95,8 +110,9 @@
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Order ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Updated</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Customer</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Phone</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Success Rate</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Address</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Items</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
@@ -125,8 +141,22 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {{ new Date(order.created_at).toLocaleDateString() }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.full_name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ order.phone }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ new Date(order.updated_at).toLocaleDateString() }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <div class="flex flex-col gap-2">
+                  <div>
+                    {{ order.full_name }}
+                  </div>
+                  <div>
+                    {{ order.phone }}
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <FraudRatio :number="order.phone" />
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ order.shipping_address || '-' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 <div v-for="item in order.items" class="flex mb-1 gap-2 items-center">
@@ -249,6 +279,7 @@
 </template>
 
 <script setup>
+import FraudRatio from '@/components/FraudRatio.vue'
 import BDT from '@/components/ui/BDT.vue'
 import TapToShowText from '@/components/ui/TapToShowText.vue'
 import { useOrderStore } from '@/stores/orders'
@@ -284,7 +315,7 @@ const statusOptions = [
   'delivered',
   'cancelled',
   'returned',
-  'shipped'
+  'failed'
 ]
 
 function statusIcon(status) {
@@ -293,6 +324,7 @@ function statusIcon(status) {
     case 'shipped': return 'pi pi-send';
     case 'delivered': return 'pi pi-check-circle';
     case 'cancelled': return 'pi pi-times-circle';
+    case 'failed': return 'pi pi-times-circle';
     default: return 'pi pi-info-circle';
   }
 }
@@ -382,6 +414,8 @@ const statusClass = (status) => {
     shipped: 'bg-purple-100 text-purple-800',
     delivered: 'bg-green-100 text-green-800',
     cancelled: 'bg-red-100 text-red-800',
+    returned: 'bg-red-100 text-red-800',
+    failed: 'bg-red-100 text-red-800',
   }[status] || 'bg-gray-100 text-gray-800'
 }
 

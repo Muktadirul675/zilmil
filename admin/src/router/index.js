@@ -18,7 +18,7 @@ const Logs = () => import('@/pages/Logs.vue')
 const Settings = () => import('@/pages/Settings.vue')
 const AddStock = () => import('@/pages/AddStock.vue')
 const ReadyForCourier = () => import('@/pages/ReadyForCourier.vue')
-const Notice = () => import('@/pages/Notice.vue')
+const DashboardOrder = () => import('@/pages/OrdersOverview.vue')
 const FeedBuilder = () => import('@/pages/FeedBuilder.vue')
 
 const routes = [
@@ -32,6 +32,7 @@ const routes = [
     children: [
       { path: '', redirect: '/dashboard' },
       { path: 'dashboard', component: Dashboard },
+      { path: 'dashboard/orders', component: DashboardOrder },
       { path: 'users', component: Users },
       { path: 'products', component: Products },
       { path: 'products/add', component: AddProduct },

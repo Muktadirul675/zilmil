@@ -34,6 +34,11 @@
         <span>Orders</span>
       </RouterLink>
 
+      <RouterLink to="/dashboard/orders" class="hover:bg-gray-700 p-2 rounded flex items-center space-x-2">
+        <i class="pi pi-shopping-cart"></i>
+        <span>Orders Overview</span>
+      </RouterLink>
+
       <RouterLink to="/couriers" class="hover:bg-gray-700 p-2 rounded flex items-center space-x-2">
         <i class="pi pi-truck"></i>
         <span>Courier</span>
@@ -56,9 +61,9 @@
     </nav>
   </aside>
 </template>
-  
-  <script setup>
-  import { useProductStore } from '@/stores/products';
+
+<script setup>
+import { useProductStore } from '@/stores/products';
 import { RouterLink } from 'vue-router'
-  const products = useProductStore()
-  </script>
+const products = useProductStore()
+</script>

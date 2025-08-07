@@ -36,40 +36,45 @@ const showSearchBox = ref(false)
   </div>
   <div class="flex w-full flex-col sticky top-0 z-20">
     <nav class="bg-white shadow px-3 lg:px-6 py-3 flex items-center justify-center">
-      <div class="flex w-full lg:w-[80%] justify-between">
-        <div class="flex items-center gap-3 md:w-[20%]">
-          <span class="lg:hidden">
-            <i @click="showSidebar = !showSidebar" class="pi pi-bars cursor-pointer hover:text-red-500"></i>
-          </span>
-          <RouterLink to="/">
-            <img v-if="section?.args" :src="section.args.preview || `${BACKEND_URL}${section.args.logo}`" alt="Logo"
-              class="h-8 w-auto" />
-          </RouterLink>
-        </div>
-        <div class="flex w-full flex-row items-center md:w[80%] justify-end gap-3">
-          <div class="hidden md:flex md:mx-auto md:w-[80%] justify-center items-center">
-            <div class="w-fit">
+      <div class="flex w-full lg:w-[80%]">
+        <div class="flex w-full flex-row items-center md:w- gap-3">
+          <div class="w-1/2 flex flex-row items-center gap-2">
+            <span class="lg:hidden">
+              <i @click="showSidebar = !showSidebar" class="pi pi-bars cursor-pointer hover:text-red-500"></i>
+            </span>
+            <RouterLink to="/">
+              <img v-if="section?.args" :src="section.args.preview || `${BACKEND_URL}${section.args.logo}`" alt="Logo"
+                class="h-8 w-auto" />
+            </RouterLink>
+          </div>
+          <div class="w-1/2 flex flex-row items-center">
+            <div class="hidden lg:block w-fit -translate-x-1/2">
               <SearchBox />
             </div>
-          </div>
-          <a :href="`https://wa.me/${settings.get('whatsapp_number')}`" class="hidden lg:flex flex-row items-center">
-            <img src="/helpline.png" alt="" class="w-10 h-10">
-            <div class="flex flex-col">
-              <span class="text-sm text-red-500">
-                {{ settings.get('whatsapp_number') }}
-              </span>
-              <span class="text-black text-xs">Hotline Number</span>
+            <a :href="`https://wa.me/${settings.get('whatsapp_number')}`"
+              class="hidden lg:flex flex-row items-center mx-auto -translate-x-1/2">
+              <img src="/helpline.png" alt="" class="w-10 h-10">
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-red-500">
+                  {{ settings.get('whatsapp_number') }}
+                </span>
+                <span class="w-full font-semibold text-justify text-sm [text-align-last:center] [text-justify:inter-character]">
+                  Hotline Number
+                </span>
+              </div>
+            </a>
+            <div class="ms-auto flex items-center gap-3">
+              <div @click="showSearchBox = !showSearchBox" class="flex items-center md:hidden">
+                <i class="pi pi-search text-xl"></i>
+              </div>
+              <CartIcon />
             </div>
-          </a>
-          <div @click="showSearchBox = !showSearchBox" class="flex items-center md:hidden">
-            <i class="pi pi-search text-xl"></i>
           </div>
-          <CartIcon />
         </div>
       </div>
     </nav>
     <div
-      :class="`md:hidden ${showSearchBox ? '' : 'overflow-hidden'} flex z-10 flex-row items-center gap-1 px-2 transition-all ${showSearchBox ? 'h-[80px]' : 'h-0'}`">
+      :class="`md:hidden ${showSearchBox ? '' : 'overflow-hidden'} flex z-10 flex-row items-center gap-1 border-b border-gray-300 shadow-sm bg-white px-2 transition-all ${showSearchBox ? 'h-[80px]' : 'h-0'}`">
       <SearchBox @close="showSearchBox = false" />
       <i @click="showSearchBox = false" class="pi pi-times text-xl"></i>
     </div>

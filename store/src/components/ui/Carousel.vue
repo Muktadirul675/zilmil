@@ -2,31 +2,54 @@
   <div class="carousel w-full max-w-screen-md mx-auto">
     <!-- Image Area -->
     <div class="relative overflow-hidden">
-      <div class="carousel-inner flex transition-transform duration-500 ease-in-out"
-        :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-        <div v-for="(img, index) in images" :key="index" class="carousel-item min-w-full relative overflow-hidden">
-          <img ref="zoomImages" :src="img" :alt="'Image ' + (index + 1)"
-            class="zoom-image w-full h-auto object-cover lg:rounded-md" loading="lazy"
-            @mousemove="handleZoom($event, index)" @mouseleave="resetZoom(index)" @load="prefetchAdjacent(index)" />
+      <div
+        class="carousel-inner flex transition-transform duration-500 ease-in-out"
+        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      >
+        <div
+          v-for="(img, index) in images"
+          :key="index"
+          class="carousel-item min-w-full relative flex items-center justify-center bg-slate-100"
+        >
+          <img
+            :ref="el => zoomImages[index] = el"
+            :src="img"
+            :alt="'Image ' + (index + 1)"
+            class="zoom-image h-[400px] w-auto object-contain lg:rounded-md"
+            loading="lazy"
+            @mousemove="handleZoom($event, index)"
+            @mouseleave="resetZoom(index)"
+            @load="prefetchAdjacent(index)"
+          />
         </div>
       </div>
 
-      <!-- Navigation buttons (inside image container) -->
-      <button @click="prev"
-        class="absolute z-10 left-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full">
+      <!-- Navigation buttons -->
+      <button
+        @click="prev"
+        class="absolute z-10 left-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full"
+      >
         <i class="pi pi-chevron-left"></i>
       </button>
-      <button @click="next"
-        class="absolute z-10 right-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full">
+      <button
+        @click="next"
+        class="absolute z-10 right-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full"
+      >
         <i class="pi pi-chevron-right"></i>
       </button>
     </div>
 
     <!-- Thumbnails -->
     <div class="thumbnails flex justify-center gap-2 mt-4">
-      <img v-for="(img, index) in images" :key="'thumb-' + index" :src="img" :alt="'Thumbnail ' + (index + 1)"
+      <img
+        v-for="(img, index) in images"
+        :key="'thumb-' + index"
+        :src="img"
+        :alt="'Thumbnail ' + (index + 1)"
         class="w-16 h-16 object-cover border cursor-pointer rounded"
-        :class="{ 'border-blue-500': currentIndex === index }" @click="currentIndex = index" />
+        :class="{ 'border-blue-500': currentIndex === index }"
+        @click="currentIndex = index"
+      />
     </div>
   </div>
 </template>
@@ -53,7 +76,7 @@ const prev = () => {
 }
 
 const prefetchAdjacent = (index) => {
-  [index - 1, index + 1].forEach(i => {
+  [index - 1, index + 1].forEach((i) => {
     if (props.images[i]) {
       const link = document.createElement('link')
       link.rel = 'prefetch'
@@ -71,7 +94,7 @@ const handleZoom = (event, index) => {
   const x = ((event.clientX - rect.left) / rect.width) * 100
   const y = ((event.clientY - rect.top) / rect.height) * 100
   img.style.transformOrigin = `${x}% ${y}%`
-  img.style.transform = 'scale(2.5)' // Adjust zoom level here
+  img.style.transform = 'scale(2.5)'
 }
 
 const resetZoom = (index) => {
@@ -93,13 +116,11 @@ onMounted(() => {
 }
 
 .carousel-item {
-  max-height: 400px;
+  height: 400px;
 }
 
 .zoom-image {
   transition: transform 0.3s ease;
-  max-height: 400px;
-  object-fit: cover;
   pointer-events: auto;
 }
 </style>

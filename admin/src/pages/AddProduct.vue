@@ -67,6 +67,7 @@ const addNewCategory = async () => {
 
   addingCategory.value = true
   try {
+    console.log('adding')
     const response = await api.post('/categories/', { name })
     const newCat = response.data
     categories.value.push(newCat)
@@ -74,7 +75,7 @@ const addNewCategory = async () => {
     newCategoryName.value = ''
     showCategoryForm.value = false
   } catch (err) {
-    alert('Failed to add category')
+    console.log('error')
   } finally {
     addingCategory.value = false
   }

@@ -113,7 +113,7 @@ def reduce_stock_on_item_create(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=OrderItem)
 def return_stock_on_item_delete(sender, instance, **kwargs):
     order = instance.order
-    if order.status not in ['delivered']:
+    if order.status not in POSITIVE_STATUSES:
         increase_stock(instance)
 
 @receiver(pre_save, sender=Order)

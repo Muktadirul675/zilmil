@@ -1,38 +1,9 @@
 <template>
-  <div class="w-full lg:w-[70%] mx-auto">
+  <div class="w-full lg:w-[50%] mx-auto flex flex-col items-center">
     <Loading v-if="loading" />
-    <div v-else-if="product" class="flex flex-col md:flex-row gap-4" :key="product.id">
-      <!-- Left: Carousel -->
-      <!-- <div class="w-full md:w-[70%]">
-          <div class="relative overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
-            <div class="flex transition-transform duration-500 ease-in-out"
-              :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-              <img decoding="async" v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
-                :alt="img.alt_text || `Image ${index + 1}`"
-                class="min-w-full object-cover max-h-[50vh] transition-transform duration-300 hover:scale-110" />
-            </div>
-
-            <button class="absolute cursor-pointer left-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
-              @click="prevSlide">
-              <i class="pi pi-chevron-left"></i>
-            </button>
-            <button class="absolute cursor-pointer right-0 top-1/2 transform -translate-y-1/2 text-white text-2xl px-2"
-              @click="nextSlide">
-              <i class="pi pi-chevron-right"></i>
-            </button>
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-2 mt-2">
-            <img v-for="(img, index) in product.images" :key="img.id" :src="img.image" loading="lazy"
-              class="h-16 w-16 object-cover border-2 cursor-pointer rounded-md" :class="{
-                'border-black': currentIndex === index,
-                'border-gray-300': currentIndex !== index,
-                'opacity-70': currentIndex !== index,
-              }" @click="goToSlide(index)" />
-          </div>
-        </div> -->
+    <div v-else-if="product" class="flex flex-col md:flex-row gap-4 w-full" :key="product.id">
       <KeepAlive>
-        <div class="">
+        <div class="w-full lg:w-1/2">
           <h1 class="text-xl font-semibold my-3 px-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
           <Carousel v-if="product.images.length && product.images.every((i) => i.image)"
             :images="product.images.map((i) => i.image)" />
@@ -40,8 +11,10 @@
       </KeepAlive>
 
       <!-- Right: Selections -->
-      <div class="w-full md:w-[38%] flex flex-col gap-2 lg:gap-4">
-        <div class="flex items-center space-x-2 text-lg mt-2 lg:mt-12 px-2 lg:px-0">
+      <div class="flex flex-col gap-2 lg:gap-4">
+        <!-- <h1 class="text-xl font-semibold hidden lg:block">{{ product.name }}</h1> -->
+
+        <div class="flex items-center space-x-2 mt-2 lg:mt-12 text-lg px-2 lg:px-0">
           <span v-if="product.net_price" class="text-red-500 font-semibold text-2xl">
             <BDT :amount="parseFloat(product.net_price)" />
           </span>
@@ -111,9 +84,9 @@
         <div class="my-2 px-2 lg:px-0">
           Categories:
           <template v-for="(cat, index) in product.categories" :key="cat.id">
-            <span class="text-red-500 hover:text-red-700 cursor-pointer">
+            <RouterLink :to="`/category/${cat.slug}`" class="text-red-500 hover:text-red-700 cursor-pointer">
               {{ cat.name }}
-            </span>
+            </RouterLink>
             <span v-if="index !== product.categories.length - 1" class="text-gray-500">, </span>
           </template>
         </div>
@@ -125,7 +98,7 @@
             <Phone class="w-4 h-4" /> Call us {{ settings.get('contact_number') && 'at' }} {{
               settings.get('contact_number') }}
           </a>
-          <a :href="`https://wa.me/${settings.get('whatsapp_number')}`" target="_blank"
+          <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
             class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
             <MessageSquare class="w-4 h-4" /> Contact at WhatsApp
           </a>
@@ -138,8 +111,8 @@
     </div>
 
     <!-- Description -->
-    <div v-if="product && !loading" class="lg:mt-6 p-3 rounded-md">
-      <div class="text-lg font-semibold mb-2">Description</div>
+    <div v-if="product && !loading" class="lg:mt-6 p-1 lg:p-3 w-full">
+      <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Description</div>
       <p v-html="product.description" class="text-gray-700 whitespace-pre-line"></p>
     </div>
     <!-- Similar Products -->
@@ -155,20 +128,18 @@
 </template>
 
 <script setup>
-import { Phone, MessageSquare, FacebookIcon } from 'lucide-vue-next'
-import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
-import api from '@/lib/api'
-import Loading from '@/components/ui/Loading.vue'
-import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
-import BDT from '@/components/ui/BDT.vue'
-import { useCartStore } from '@/stores/cart'
 import ProductCard from '@/components/product/ProductCard.vue'
-import { KeepAlive } from 'vue'
+import BDT from '@/components/ui/BDT.vue'
 import Carousel from '@/components/ui/Carousel.vue'
+import Loading from '@/components/ui/Loading.vue'
+import api from '@/lib/api'
+import { formatBDT } from '@/lib/utils'
+import { useCartStore } from '@/stores/cart'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
-import { parse } from 'postcss'
-import { formatBDT } from '@/lib/utils'
+import { FacebookIcon, MessageSquare, Phone } from 'lucide-vue-next'
+import { computed, KeepAlive, onMounted, ref, watch } from 'vue'
+import { onBeforeRouteUpdate, RouterLink, useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -185,6 +156,14 @@ const quantity = ref(1)
 const addingToCart = ref(false)
 const buyingNow = ref(false)
 const similars = ref([])
+
+const wp_message = computed(()=>{
+  if(product.value){
+    const msg = `I want to know about ${product.value.name}`
+    return msg;
+  }
+  return ''
+})
 
 const maxStock = computed(() => {
   if (!product.value) return 0;

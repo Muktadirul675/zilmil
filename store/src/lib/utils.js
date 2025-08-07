@@ -9,3 +9,8 @@ export const formatBDT = (n) => {
     lastThree
   return `${formatted}`
 }
+
+export function truncate(text, count = 10, postfix = "...") {
+  if (typeof text !== 'string') return ''
+  return text.length > count ? text.slice(0, count) + postfix : text
+}

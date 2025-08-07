@@ -1,10 +1,10 @@
 <template>
   <div class="relative md:me-4 p-2 z-10 md:p-0 w-full md:mx-0">
-    <div class="flex items-center border rounded border-gray-300 px-4 py-2 shadow-sm bg-white">
-      <i class="pi pi-search text-gray-500 mr-2" />
+    <div class="flex items-center border rounded border-red-500 px-4 py-2 shadow-sm bg-white">
       <input type="text" v-model="query" placeholder="Search products..."
         class="w-full md:w-[300px] outline-none text-sm bg-transparent" />
-      <i v-if="loading" class="pi pi-spinner pi-spin text-gray-400 ml-2" />
+      <i v-if="loading" class="pi pi-spinner pi-spin text-gray-400 ms-auto" />
+      <i v-else class="pi pi-search text-gray-500 ms-auto" />
     </div>
 
     <!-- Dropdown search results -->
@@ -18,7 +18,7 @@
         </div>
         <div class="flex flex-col items-end">
           <span class="text-red-500">
-            <BDT :amount="parseFloat(item.net_price || item.price)"/>
+            <BDT :amount="parseFloat(item.net_price || item.price)" />
           </span>
           <div class="text-gray-500 line-through text-xs">{{ item.net_price ? item.price : item.compared_price }}</div>
         </div>
@@ -28,6 +28,10 @@
         class="px-4 py-2 text-sm text-center text-blue-500 hover:underline cursor-pointer">
         Load more
       </div>
+    </div>
+    <div v-if="results.length && query" @click="query = ''"
+      class="fixed inset-0 bg-transparent pointer-events-none">
+      <div class="w-full h-full pointer-events-auto"></div>
     </div>
   </div>
 </template>
@@ -47,9 +51,9 @@ const { loadMore } = searchStore
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const router = useRouter()
 
-function navigate(slug){
+function navigate(slug) {
   emit('close')
-  router.push(`/${slug}`)
+  router.push(`/product/${slug}`)
 }
 
 </script>

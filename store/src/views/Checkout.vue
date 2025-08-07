@@ -52,12 +52,12 @@
 
         <div class="flex my-2 items-center gap-4">
           <label>
-            <input type="radio" v-model="location" value="inside" />
-            Inside Dhaka
-          </label>
-          <label>
             <input type="radio" v-model="location" value="outside" />
             Outside Dhaka
+          </label>
+          <label>
+            <input type="radio" v-model="location" value="inside" />
+            Inside Dhaka
           </label>
         </div>
         <div class="w-full bg-gray-300 h-[1px] my-3"></div>
@@ -66,32 +66,39 @@
         </div>
         <div class="divide-y divide-gray-300">
           <template v-if="cart.cart && cart.cart.items" v-for="item in cart.cart.items" :key="item.id">
-            <div class="flex items-start justify-between p-2">
+            <div class="flex items-start justify-between p-1">
               <div class="flex items-center gap-2">
-                <img :src="`${item.product.image.image}`" alt="" class="w-10 h-10 rounded">
-                <span class="font-semibold">{{ item.product.name }}</span>
-              </div>
-              <div class="text-sm flex items-end flex-col">
-                <div>{{ formatBDT(item.product.net_price || item.product.price)}} <i class="pi pi-times text-xs"></i> {{
+                <img :src="prodImage(item.product.image.image)" alt="" class="w-10 h-10 rounded">
+                <span class="md:font-semibold text-sm truncate">{{ truncate(item.product.name, 20) }}</span>
+                <div class="text-sm">{{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
                   item.quantity }} </div>
-                <div class="text-red-500">
-                  <BDT :amount="(item.product.net_price || item.product.price) * item.quantity" />
-                </div>
+              </div>
+              <div class="text-red-500 flex items-center ms-auto">
+                <BDT :amount="(item.product.net_price || item.product.price) * item.quantity" />
               </div>
             </div>
           </template>
         </div>
         <div class="">
-          <p class="flex items-center">Subtotal:
+          <p class="flex items-center">
+            Subtotal:
+          <div class="ms-auto flex items-center">
             <BDT :amount="parseFloat(subtotal)" />
+          </div>
           </p>
-          <p class="flex items-center">Delivery:
+          <p class="flex items-center">
+            Delivery:
+          <div class="ms-auto flex items-center">
             <BDT :amount="parseFloat(deliveryCharge)" />
+          </div>
           </p>
-          <p class="font-bold text-lg flex items-center">Total:
+          <p class="font-bold text-lg flex items-center">
+            Total:
+          <div class="ms-auto flex items-center">
             <span class="text-red-500">
               <BDT :amount="parseFloat(total)" />
             </span>
+          </div>
           </p>
         </div>
 
@@ -117,7 +124,7 @@ import { RouterLink } from 'vue-router'
 import { useToast } from '@/lib/toast'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
-import { formatBDT } from '@/lib/utils'
+import { formatBDT, truncate } from '@/lib/utils'
 
 useHead({
   title: "Checkout - Zilmil.com.bd"
@@ -130,7 +137,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const name = ref('')
 const address = ref('')
 const phone = ref('')
-const location = ref('inside')
+const location = ref('outside')
 
 const loading = ref(false)
 const error = ref(null)
@@ -150,6 +157,11 @@ const toast = useToast()
 const isFormValid = computed(() =>
   name.value && address.value && phone.value && location.value
 )
+
+function prodImage(url) {
+  if (url.startsWith(BACKEND_URL)) return url;
+  return `${BACKEND_URL}${url}`
+}
 
 const submitOrder = async () => {
   if (!isFormValid.value) return

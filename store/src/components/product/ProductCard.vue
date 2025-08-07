@@ -75,6 +75,37 @@ const handleAddToCart = async () => {
     loading.value = false
   }
 }
+
+const handleBuyNow = async () => {
+  loading.value = true
+  if (hasVariants.value || hasColors.value) {
+    let constructedString = "Please Select "
+    const arr = []
+    if (hasVariants.value) {
+      arr.push('variants')
+    }
+    if (hasColors.value) {
+      arr.push('colors')
+    }
+    constructedString += arr.join(' and ')
+    router.push(`/product/${product.value.slug}`)
+    toast.info(constructedString)
+    loading.value = false;
+    return
+  }
+
+  try {
+    await cartStore.addToCart({
+      product: product.value.id,
+      quantity: 1
+    })
+    router.push(`/checkout/`)
+  } catch (err) {
+    alert('Failed to add to cart.')
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -82,7 +113,7 @@ const handleAddToCart = async () => {
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">
         <img :src="imageUrl" alt="Product" loading="lazy" decoding="async"
-          class="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-[1.02]" />
+          class="aspect-square w-full object-cover transition-transform group-hover:scale-[1.02]" />
 
         <div
           class="absolute bottom-0 w-full h-0 group-hover:h-8 transition-all duration-300 bg-white/80 flex justify-center items-center gap-4 overflow-hidden">
@@ -95,24 +126,31 @@ const handleAddToCart = async () => {
         </div>
       </div>
 
-      <div class="p-2">
-        <div class="text-sm font-medium truncate mb-1">
+      <div class="p-1">
+        <div class="font-medium truncate">
           {{ product.name }}
         </div>
 
-        <div class="text-red-500 font-semibold text-lg flex flex-col lg:flex-row lg:items-center gap-2">
+        <div class="text-red-500 font-semibold text-lg flex flex-col lg:flex-row lg:items-center gap-1">
           <BDT :amount="netPrice" />
-          <span v-if="originalPrice" class="text-sm text-gray-500 line-through">
+          <span v-if="originalPrice" class="hidden lg:inline text-sm text-gray-500 line-through">
             {{ formatBDT(originalPrice) }}
           </span>
         </div>
-
-        <button @click="handleAddToCart" :disabled="loading"
-          class="w-full cursor-pointer mt-2 flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
-          :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
-          <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />
-          <span class="ml-2">{{ loading ? 'Adding...' : 'Add To Cart' }}</span>
-        </button>
+        <div class="flex flex-col items-center gap-1 mt-1">
+          <button @click="handleAddToCart" :disabled="loading"
+            class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
+            :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
+            <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />
+            <span class="ml-2">{{ loading ? 'Adding...' : 'Add To Cart' }}</span>
+          </button>
+          <button @click="handleBuyNow" :disabled="loading"
+            class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
+            :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
+            <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-bag'" />
+            <span class="ml-2">{{ loading ? 'Buying...' : 'Buy Now' }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
