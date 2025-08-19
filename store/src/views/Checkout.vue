@@ -28,24 +28,24 @@
     <div v-else class="border border-gray-300 rounded m-2">
       <h1 class="text-2xl font-bold mb-4 p-3 bg-blue-100 text-slate-800 uppercase">
         <i class="pi pi-wallet me-2"></i>
-        Checkout
+        আপনার নাম, ফোন নাম্বার এবং ঠিকানা দিয়ে অর্ডার কনফার্ম করুন।
       </h1>
       <div class="space-y-2 p-3">
         <label class="block text-sm font-medium text-gray-700">
-          <i class="pi pi-user mr-2"></i>Full Name
+          <i class="pi pi-user mr-2"></i>নাম
         </label>
         <input v-model="name" type="text" placeholder="Full Name" class="w-full p-2 border border-gray-300 rounded" />
 
         <!-- Shipping Address -->
         <label class="block text-sm font-medium text-gray-700">
-          <i class="pi pi-map-marker mr-2"></i>Shipping Address
+          <i class="pi pi-map-marker mr-2"></i> ঠিকানা
         </label>
         <textarea v-model="address" placeholder="Shipping Address"
           class="w-full p-2 border border-gray-300 rounded"></textarea>
 
         <!-- Phone Number -->
         <label class="block text-sm font-medium text-gray-700">
-          <i class="pi pi-phone mr-2"></i>Phone Number
+          <i class="pi pi-phone mr-2"></i>নাম্বার
         </label>
         <input v-model="phone" type="text" placeholder="Phone Number"
           class="w-full p-2 border border-gray-300 rounded" />
@@ -53,11 +53,11 @@
         <div class="flex my-2 items-center gap-4">
           <label>
             <input type="radio" v-model="location" value="outside" />
-            Outside Dhaka
+            ঢাকার বাহিরে
           </label>
           <label>
             <input type="radio" v-model="location" value="inside" />
-            Inside Dhaka
+            ঢাকার ভিতরে
           </label>
         </div>
         <div class="w-full bg-gray-300 h-[1px] my-3"></div>
@@ -105,7 +105,7 @@
           class="w-full bg-red-500 hover:bg-red-600 cursor-pointer transition-all text-white p-2 rounded disabled:opacity-50">
           <span v-if="loading">Placing Order...</span>
           <span v-else-if="!isFormValid">Please fill all informations to confirm order</span>
-          <span v-else class=""> <i class="pi pi-check me-2"></i> Confirm Order</span>
+          <span v-else class=""> <i class="pi pi-check me-2"></i>অর্ডার কনফার্ম করুন</span>
         </button>
 
         <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
@@ -191,4 +191,4 @@ const submitOrder = async () => {
 onMounted(() => {
   window.scrollTo({ top: 0 })
 })
-</script>
+</script>            
