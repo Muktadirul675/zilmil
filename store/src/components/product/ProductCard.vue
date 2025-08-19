@@ -148,7 +148,7 @@ const handleBuyNow = async () => {
             class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
             :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
             <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-bag'" />
-            <span class="ml-2">{{ loading ? '' : 'ক্রয় করুন' }}</span>
+            <span class="ml-2">{{ loading ? '' : 'অর্ডার করুন' }}</span>
           </button>
         </div>
       </div>
