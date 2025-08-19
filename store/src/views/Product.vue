@@ -95,16 +95,16 @@
         <div class="flex gap-1 flex-col p-1 lg:p-0">
           <a :href="`tel:${settings.get('contact_number')}`" target="_blank"
             class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <Phone class="w-4 h-4" /> Call us {{ settings.get('contact_number') && 'at' }} {{
+            <Phone class="w-4 h-4" /> ফোনে অর্ডার করুন {{ settings.get('contact_number') && ': ' }} {{
               settings.get('contact_number') }}
           </a>
           <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
             class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <MessageSquare class="w-4 h-4" /> Contact at WhatsApp
+            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{ settings.get('whatsapp_number')  }}
           </a>
           <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
             class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <FacebookIcon class="w-4 h-4" /> Contact at Messenger
+            <FacebookIcon class="w-4 h-4" /> ম্যাসেজের মাধ্যমে অর্ডার করতে ক্লিক করুন
           </a>
         </div>
       </div>
