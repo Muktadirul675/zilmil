@@ -117,7 +117,7 @@
     </div>
     <!-- Similar Products -->
     <div v-if="similars.length && !loading" class="mt-10 p-3">
-      <h2 class="text-xl font-semibold mb-4">You may also like</h2>
+      <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Similar Products</div>
       <div class="flex flex-row flex-wrap">
         <ProductCard v-for="product in similars" :key="product.id" :product="product" />
       </div>

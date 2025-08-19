@@ -40,7 +40,7 @@
     </div>
 
     <!-- Thumbnails -->
-    <div class="thumbnails flex justify-center gap-2 mt-4">
+    <div class="thumbnails flex flex-wrap justify-center gap-2 mt-4">
       <img
         v-for="(img, index) in images"
         :key="'thumb-' + index"
