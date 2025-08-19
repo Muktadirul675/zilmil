@@ -3,7 +3,7 @@
     <div class="w-full bg-red-500 text-white py-6 px-4">
       <div class="w-full @lg:w-[80%] mx-auto flex flex-col @md:flex-row @md:items-start @md:justify-between gap-6">
         <!-- Left Side: Logo + Info -->
-        <div class="flex flex-col items-start gap-2 w-full @md:w-1/2 text-left">
+        <div class="flex flex-col items-start gap-2 w-full @md:w-1/3 text-left">
           <img v-if="section.args?.logo" :src="`${BACKEND_URL}${section.args.logo}`" alt="Logo" class="h-12 w-auto mb-2" />
           <img v-else="section.args?.preview" :src="`${section.args.preview}`" alt="Logo" class="h-12 w-auto mb-2" />
           <!-- <div v-if="section.args?.logo">BACKEND LOGO {{ `${BACKEND_URL}${section.args.logo}` }} </div>
@@ -22,11 +22,22 @@
           </div>
         </div>
 
+        <div class="flex flex-col items-start gap-2 w-full @md:w-1/3 text-left p-3">
+          <div class="uppercase font-semibold">
+            Useful Links
+          </div>
+          <div class="flex flex-col py-3 gap-2">
+            <div>About Us</div>
+            <div>Contact Us</div>
+            <div>Teems and Condition</div>
+            <div>Return and Refunds</div>
+          </div>
+        </div>  
+
         <!-- Right Side: Facebook Page Button -->
-        <!-- <div class="flex flex-col items-start @md:items-end w-full @md:w-1/2 text-left @md:text-right gap-2">
+        <div class="flex flex-col items-start @md:items-end w-full @md:w-1/3 text-left @md:text-right gap-2">
           <div class="text-lg font-semibold">Follow us on Facebook</div>
-          <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1E8jUYbdar%2F&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="0" height="0" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe> 
-          {{ section.args.facebook || 'https://www.facebook.com/zilmil.com.bd' }}
+          <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1E8jUYbdar%2F&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="0" height="0" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
           <div class="fb-page" :data-href="section.args.facebook || 'https://www.facebook.com/zilmil.com.bd'"
             data-tabs="" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true"
             data-hide-cover="false" data-show-facepile="true">
@@ -43,7 +54,7 @@
           >
             Visit Facebook Page
           </a> 
-        </div> -->
+        </div>
       </div>
     </div>
   </Preview>

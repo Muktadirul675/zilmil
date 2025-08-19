@@ -24,15 +24,14 @@
 
     <!-- Stock Form -->
     <form @submit.prevent="submitStocks" class="space-y-6">
-      <div v-for="product in filteredProducts" :key="product.id"
-        class="border border-gray-300 rounded p-4 bg-gray-50">
+      <div v-for="product in filteredProducts" :key="product.id" class="border border-gray-300 rounded p-4 bg-gray-50">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Product Info -->
           <div class="flex gap-4 items-start">
-            <img :src="BACKEND_URL + product.image.image" alt="Product"
-              class="w-20 h-20 object-cover rounded" />
+            <img :src="BACKEND_URL + product.image.image" alt="Product" class="w-20 h-20 object-cover rounded" />
             <div class="flex-1">
               <p class="font-semibold">{{ product.name }}</p>
+              <p v-if="qErrors[product.id]" class="text-red-500 font-semibold">Please check for quantity mismatch</p>
               <div class="relative mt-2">
                 <i class="pi pi-box absolute left-3 top-2.5 text-gray-400" />
                 <input type="number" min="0" v-model.number="product.quantity" placeholder="Add stock"
@@ -95,7 +94,7 @@ import { toast } from '@/services/toast'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title:'Add Stocks - Zilmil.com.bd'
+  title: 'Add Stocks - Zilmil.com.bd'
 })
 
 const products = ref([])
@@ -104,6 +103,7 @@ const loading = ref(false)
 const error = ref('')
 const success = ref(false)
 const searchQuery = ref('')
+const qErrors = ref({})
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 onMounted(async () => {
@@ -126,17 +126,58 @@ const filteredProducts = computed(() => {
 })
 
 async function submitStocks() {
+  qErrors.value = {}
   loading.value = true
   error.value = ''
   success.value = false
 
+  productStocks.value = products.value.map(p => ({
+    id: p.id,
+    quantity: p.quantity,
+    variants: p.variants?.map(v => ({ id: v.id, quantity: v.quantity })) || [],
+    colors: p.colors?.map(c => ({ id: c.id, quantity: c.quantity })) || [],
+  }))
+
+  let quantity_error = false;
+
+  productStocks.value.filter((p) => p.quantity).forEach((product) => {
+    if (product.quantity) {
+      const quantity = product.quantity;
+      let vq = 0, cq = 0;
+      if (product.variants.length) {
+        product.variants.forEach((v) => vq += v.quantity || 0)
+      }
+      if (product.colors.length) {
+        product.colors.forEach((v) => cq += v.quantity || 0)
+      }
+      if (vq >= 0) {
+        if (quantity !== vq) {
+          quantity_error = true;
+          qErrors.value[product.id] = true;
+        }
+      }
+      if (cq >= 0) {
+        if (quantity !== cq) {
+          quantity_error = true;
+          qErrors.value[product.id] = true;
+        }
+      }
+    }
+  })
+
+  if (quantity_error) {
+    toast.error("Quantity mismatched");
+    loading.value = false;
+    return;
+  }
+
   try {
-    console.log(JSON.stringify(productStocks.value, null, 2))
-    await api.post('/products/stocks/add/', productStocks.value)
+    await api.post('/products/stocks/add/', productStocks.value.filter((p) => p.quantity))
     success.value = true
     toast.success("Stocks updated successfully")
   } catch (err) {
     error.value = err.response?.data?.detail || 'Failed to update stocks.'
+    toast.error(error.value)
   } finally {
     loading.value = false
   }

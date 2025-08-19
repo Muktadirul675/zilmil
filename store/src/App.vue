@@ -35,23 +35,38 @@ const categoriesBarSection = computed(() =>
 
 const router = useRouter()
 
-async function visit(path) {
+async function visit(path, source) {
   try {
     console.log('visiting')
-    await api.post('/visits/', { path: path })
+    await api.post('/visits/', { path: path, source:source })
     console.log('visited')
   } catch (e) {
     console.log(`Visiting ERROR: ${e.message}`)
   }
 }
 
+function saveUTMSource() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const utmSource = urlParams.get("utm_source");
+
+  if (utmSource) {
+    sessionStorage.setItem("source", utmSource);
+  }
+}
+
+
 router.afterEach((to) => {
+  let source = sessionStorage.getItem('source')
+  if(!source){
+    source = 'organic'
+  }
   if (!['/cart', '/checkout'].includes(to.path)) {
-    visit(to.path)
+    visit(to.path, source)
   }
 })
 
 onMounted(async () => {
+  saveUTMSource()
   await Promise.all([
     feed.fetchFeed(),
     cart.fetchCart(),

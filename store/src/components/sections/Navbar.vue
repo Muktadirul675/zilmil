@@ -48,7 +48,7 @@ const showSearchBox = ref(false)
             </RouterLink>
           </div>
           <div class="w-1/2 flex flex-row items-center">
-            <div class="hidden lg:block w-fit -translate-x-1/2">
+            <div class="hidden lg:block -translate-x-1/2">
               <SearchBox />
             </div>
             <a :href="`https://wa.me/${settings.get('whatsapp_number')}`"

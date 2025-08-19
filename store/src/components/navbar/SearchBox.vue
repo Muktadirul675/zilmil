@@ -29,10 +29,9 @@
         Load more
       </div>
     </div>
-    <div v-if="results.length && query" @click="query = ''"
-      class="fixed inset-0 bg-transparent pointer-events-none">
-      <div class="w-full h-full pointer-events-auto"></div>
-    </div>
+  </div>
+  <div v-if="results.length && query" @click="propagate" class="fixed inset-0 bg-transparent z-15 md:w-[100vw] md:h-[100vh] md:-translate-x-1/2 md:ms-[50%] overlay-blocker">
+    
   </div>
 </template>
 
@@ -53,7 +52,28 @@ const router = useRouter()
 
 function navigate(slug) {
   emit('close')
+  query.value = ''
   router.push(`/product/${slug}`)
+}
+
+function propagate(event) {
+  // clear query
+  query.value = '';
+
+  // temporarily disable overlay's pointer events
+  const overlay = event.currentTarget;
+  overlay.style.pointerEvents = "none";
+
+  // now find the element underneath
+  const underlying = document.elementFromPoint(event.clientX, event.clientY);
+
+  // restore pointer events
+  overlay.style.pointerEvents = "";
+
+  // trigger click if found
+  if (underlying) {
+    underlying.click();
+  }
 }
 
 </script>

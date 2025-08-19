@@ -67,39 +67,38 @@
         <div class="divide-y divide-gray-300">
           <template v-if="cart.cart && cart.cart.items" v-for="item in cart.cart.items" :key="item.id">
             <div class="flex items-start justify-between p-1">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 w-full">
                 <img :src="prodImage(item.product.image.image)" alt="" class="w-10 h-10 rounded">
-                <span class="md:font-semibold text-sm truncate">{{ truncate(item.product.name, 20) }}</span>
-                <div class="text-sm">{{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
-                  item.quantity }} </div>
-              </div>
-              <div class="text-red-500 flex items-center ms-auto">
-                <BDT :amount="(item.product.net_price || item.product.price) * item.quantity" />
+                <span class="md:font-semibold truncate">{{ truncate(item.product.name, 20) }}</span>
+                <div class="ms-auto">
+                  {{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
+                    item.quantity }}
+                </div>
               </div>
             </div>
           </template>
         </div>
         <div class="">
-          <p class="flex items-center">
+          <div class="flex items-center">
             Subtotal:
           <div class="ms-auto flex items-center">
             <BDT :amount="parseFloat(subtotal)" />
           </div>
-          </p>
-          <p class="flex items-center">
+        </div>
+          <div class="flex items-center">
             Delivery:
           <div class="ms-auto flex items-center">
             <BDT :amount="parseFloat(deliveryCharge)" />
           </div>
-          </p>
-          <p class="font-bold text-lg flex items-center">
+        </div>
+          <div class="font-bold text-lg flex items-center">
             Total:
           <div class="ms-auto flex items-center">
             <span class="text-red-500">
               <BDT :amount="parseFloat(total)" />
             </span>
           </div>
-          </p>
+        </div>
         </div>
 
         <button :disabled="!isFormValid || loading" @click="submitOrder"

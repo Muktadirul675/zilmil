@@ -82,9 +82,21 @@
       </div>
 
       <!-- Chart: Top Ordered Products (Bar) -->
-      <div class="bg-white flex-2 border border-gray-300 rounded-lg p-6 shadow-sm">
-        <h3 class="text-sm font-semibold text-gray-700 mb-2">Top Ordered Products</h3>
-        <BarChart v-if="store.productOrdersReport.length" :chartData="barData" />
+      <div class="bg-white flex-2 border border-gray-300 rounded-lg shadow-sm p-6">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2 ">Top Ordered Products</h3>
+        <div class="divide-y space-y-2 divide-gray-300" v-if="store.productOrdersReport.length">
+          <template v-for="product in store.productOrdersReport" :key="product.id">
+            <div v-if="product.order_count > 0" class="flex p-3 items-center gap-2">
+              <img :src="`${BACKEND_URL}${product.image.image}`" l0ading="lazy" alt="" class="rounded-md w-18 h-18">
+              <div class="text-lg font-semibold">
+                {{ product.name }}
+              </div>
+              <div class="ms-auto">
+                {{ product.order_count }}
+              </div>
+            </div>
+          </template>
+        </div>
         <p v-else class="text-center text-gray-500 text-sm py-16">No product order data available.</p>
       </div>
     </div>
@@ -111,6 +123,8 @@ import PieChart from '../charts/PieChart.vue'
 import BarChart from '../charts/BarChart.vue'
 
 const store = useOrdersAnalyticsStore()
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 async function apply() {
   try {
@@ -184,7 +198,7 @@ onMounted(() => {
 
 const labels = computed(() => store.report.map(r => r.day))
 const ordersData = computed(() => store.report.map(r => r.orders))
-const rejectionsData = computed(() => store.report.map(r => r.rejections))
+const rejectionsData = computed(() => store.report.map(r => r.cancellations))
 
 const lineData = computed(() => ({
   labels: labels.value,
@@ -199,7 +213,7 @@ const lineData = computed(() => ({
       pointRadius: 3,
     },
     {
-      label: 'Rejections',
+      label: 'Cancellations',
       data: rejectionsData.value,
       borderColor: '#DC2626', // Red-600
       backgroundColor: '#FCA5A5', // Red-300 light fill

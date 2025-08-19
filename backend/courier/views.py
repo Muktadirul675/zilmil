@@ -21,6 +21,7 @@ from rest_framework import status
 from decimal import Decimal
 from orders.models import Order
 import json
+from rest_framework.permissions import AllowAny
 
 client = get_pathao_client()
 
@@ -28,6 +29,7 @@ WEBHOOK_SECRET = "f3992ecc-59da-4cbe-a049-a13da2018d51"
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CourierWebhookView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         data = request.data
         print(f"COURIER PAYLOAD:\n{(data)}\n")
@@ -38,14 +40,20 @@ class CourierWebhookView(APIView):
         collected_amount = data.get('collected_amount')
         reason = data.get('reason')
 
-        if not all([c_id, merchant_order_id, event]):
-            return Response({'detail': 'Invalid payload'}, status=status.HTTP_400_BAD_REQUEST)
+        if event == "webhook_integration":
+            return Response({"Sucess":True}, 
+                            status=status.HTTP_202_ACCEPTED,
+                            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": "f3992ecc-59da-4cbe-a049-a13da2018d51"}
+                    )
+
+        # if not all([c_id, merchant_order_id, event]):
+        #     return Response({'detail': 'Invalid payload'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Map event to simplified status key
         event_key = event.replace('order.', '').strip()
 
         try:
-            order = Order.objects.get(c_id=c_id, id=int(merchant_order_id))
+            order = Order.objects.get(id=int(merchant_order_id))
         except Order.DoesNotExist:
             return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 

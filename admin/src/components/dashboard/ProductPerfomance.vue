@@ -55,8 +55,17 @@
             <div class="bg-white border border-gray-300 p-6 rounded-xl shadow-sm flex-1 overflow-x-auto">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Sales Count by Product</h2>
                 <div class="w-full h-[500px]">
-                    <BarChart v-if="barData.labels.length" :chartData="barData" :chartOptions="chartOptions"
-                        class="min-w-[500px]" />
+                    <div v-if="store.report.length" class="divide-y divide-gray-300">
+                        <template v-for="product in store.report" :key="product.sku">
+                            <div class="flex items-center p-3 gap-2">
+                                <img :src="`${BACKEND_URL}${product.image}`" alt="" class="w-18 h-18 rounded">
+                                <div class="text-lg font-semibold">{{ product.product }}</div>
+                                <div class="ms-auto">
+                                    {{ product.count }}
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                     <p v-else class="text-gray-500 text-sm mt-24 text-center">
                         No data available for selected range.
                     </p>
@@ -73,6 +82,8 @@ import BarChart from '@/components/charts/BarChart.vue'
 import BDT from '../ui/BDT.vue'
 
 const store = useProductAnalyticsStore()
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 async function apply(){
     await Promise.all([

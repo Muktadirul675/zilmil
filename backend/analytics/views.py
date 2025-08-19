@@ -109,7 +109,7 @@ class ProductSalesCountReportView(APIView):
 
         items = OrderItem.objects.filter(order_id__in=order_ids)
 
-        product_counts = defaultdict(lambda: {'count': 0, 'sku': '', 'name': ''})
+        product_counts = defaultdict(lambda: {'count': 0, 'sku': '', 'name': '','image':''})
         for item in items:
             if not item.product:
                 continue
@@ -117,10 +117,12 @@ class ProductSalesCountReportView(APIView):
             product_counts[pid]['count'] += item.quantity
             product_counts[pid]['sku'] = item.product.sku
             product_counts[pid]['name'] = item.product.name
+            product_counts[pid]['image'] = item.product.images.all()[0].image.url
 
         result = [
             {
                 'product': data['name'],
+                'image':data['image'],
                 'sku': data['sku'],
                 'count': data['count']
             }
@@ -204,7 +206,7 @@ class OrderReportView(APIView):
             .values('day') \
             .annotate(
                 count=Count('id'),
-                rejections=Count('id', filter=Q(status__in=['cancelled', 'returned', 'failed']))
+                cancellations=Count('id', filter=Q(status__in=['cancelled']))
             ).order_by('day')
 
         data_map = {d['day']: d for d in daily}
@@ -214,12 +216,12 @@ class OrderReportView(APIView):
             record = data_map.get(current, {
                 'day': current,
                 'count': 0,
-                'rejections': 0
+                'cancellations': 0
             })
             full_data.append({
                 'day': record['day'],
                 'orders': record['count'],
-                'rejections': record['rejections']
+                'cancellations': record['cancellations']
             })
             current += timedelta(days=1)
 
