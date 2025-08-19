@@ -139,6 +139,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         product.is_deleted = True
         product.is_active = False  # Optional: deactivate the product
+        product.cart_items.all().delete()
+        product.order_items.all().delete()
         product.save(update_fields=['is_deleted', 'is_active'])
         log_activity(
             user=request.user,
