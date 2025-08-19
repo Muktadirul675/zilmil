@@ -52,9 +52,9 @@ class Product(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['sku'],
+                fields=['sku','slug'],
                 condition=models.Q(is_deleted=False),
-                name='unique_active_sku'
+                name='unique_active_sku_&_slug'
             )
         ]
 

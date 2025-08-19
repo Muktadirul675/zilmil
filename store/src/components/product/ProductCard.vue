@@ -16,6 +16,9 @@ const props = defineProps({
 })
 
 const { product } = toRefs(props)
+const unavailable = computed(()=>{
+  return product.value.stock <= 0 || !product.value.is_active;
+})
 const router = useRouter()
 const cartStore = useCartStore()
 const loading = ref(false)
@@ -109,7 +112,11 @@ const handleBuyNow = async () => {
 </script>
 
 <template>
-  <div class="w-1/2 md:w-1/3 lg:w-1/4 p-1">
+  <div class="relative w-1/2 md:w-1/3 lg:w-1/4 p-1">
+    <div class="absolute inset-0 z-5 rounded m-1" v-if="unavailable">
+      <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>
+      <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-1/2 text-center z-6">Unavailable</div>
+    </div>
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">
         <img :src="imageUrl" alt="Product" loading="lazy" decoding="async"
@@ -138,13 +145,13 @@ const handleBuyNow = async () => {
           </span>
         </div>
         <div class="flex flex-col items-center gap-1 mt-1">
-          <button @click="handleAddToCart" :disabled="loading"
+          <button @click="handleAddToCart" :disabled="loading || unavailable"
             class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
             :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
             <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />
             <span class="ml-2">{{ loading ? '' : 'কার্টে যোগ করুন' }}</span>
           </button>
-          <button @click="handleBuyNow" :disabled="loading"
+          <button @click="handleBuyNow" :disabled="loading || unavailable"
             class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
             :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
             <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-bag'" />

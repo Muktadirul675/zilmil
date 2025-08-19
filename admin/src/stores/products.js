@@ -126,7 +126,7 @@ export const useProductStore = defineStore('productStore', {
                 return response.data
             } catch (err) {
                 this.error = err.response?.data || 'Failed to add product'
-                handleError(err)
+                // handleError(err)
             } finally {
                 this.loading = false
             }
