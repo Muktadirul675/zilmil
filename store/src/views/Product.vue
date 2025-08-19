@@ -67,7 +67,7 @@
             :disabled="addingToCart" @click="handleAddToCart">
             <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
             <template v-else>
-              <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden md:inline">Add to Cart</span>
+              <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden md:inline">কার্টে যোগ করুন</span>
             </template>
           </button>
           <button
@@ -75,7 +75,7 @@
             :disabled="buyingNow" @click="handleBuyNow">
             <i class="pi pi-spin pi-spinner" v-if="buyingNow"></i>
             <template v-else>
-              <i class="pi pi-shopping-bag me-2"></i> Buy Now
+              <i class="pi pi-shopping-bag me-2"></i> অর্ডার করুন
             </template>
           </button>
         </div>
