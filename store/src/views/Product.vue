@@ -99,8 +99,8 @@
               settings.get('contact_number') }}
           </a>
           <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
-            class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{ settings.get('whatsapp_number')  }}
+            class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 p-2 cursor-pointer flex-wrap">
+            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{ settings.get('whatsapp_number').replace('+88','')  }}
           </a>
           <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
             class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">

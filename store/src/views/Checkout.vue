@@ -2,10 +2,10 @@
   <!-- Loading state -->
   <div class="max-w-xl mx-auto p-2 lg:p-3">
     <div v-if="success" id="success"
-      class="min-h-[200px] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
+      class="min-h-[50vh] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
       <img src="/order_confirmed.gif" class="w-[70px] h-[70px]" alt="">
-      <div class="text-3xl text-green-500">আপনার অর্ডার গ্রহণ করা হয়েছে!</div>
-      <div class="text-lg text-green-500"> Order id: #{{ order_id }}</div>
+      <div class="text-3xl text-green-500 text-center">আপনার অর্ডার গ্রহণ করা হয়েছে!</div>
+      <div class="text-lg text-green-500 text-center"> Order id: #{{ order_id }}</div>
       <RouterLink to="/" class="btn"> <i class="pi pi-shopping-cart me-2"></i> Continue Shopping</RouterLink>
     </div>
     <div v-else-if="loading"
@@ -26,7 +26,7 @@
       <RouterLink to="/" class="btn"> <i class="pi pi-shopping-cart me-2 my-4"></i> Shop Now</RouterLink>
     </div>
     <div v-else class="border border-gray-300 rounded m-2">
-      <h1 class="text-2xl font-bold mb-4 p-3 bg-blue-100 text-slate-800 uppercase">
+      <h1 class="text-xl font-bold mb-4 p-3 bg-blue-100 text-slate-800 uppercase">
         <i class="pi pi-wallet me-2"></i>
         আপনার নাম, ফোন নাম্বার এবং ঠিকানা দিয়ে অর্ডার কনফার্ম করুন।
       </h1>
@@ -104,7 +104,7 @@
         <button :disabled="!isFormValid || loading" @click="submitOrder"
           class="w-full bg-red-500 hover:bg-red-600 cursor-pointer transition-all text-white p-2 rounded disabled:opacity-50">
           <span v-if="loading">Placing Order...</span>
-          <span v-else-if="!isFormValid">Please fill all informations to confirm order</span>
+          <span v-else-if="!isFormValid">অর্ডার কনফার্ম করুন</span>
           <span v-else class=""> <i class="pi pi-check me-2"></i>অর্ডার কনফার্ম করুন</span>
         </button>
 
