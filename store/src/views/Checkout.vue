@@ -31,20 +31,20 @@
       </h1>
       <div class="space-y-2 p-3 w-full">
         <label class="block text-sm text-gray-700 font-semibold">
-          <i class="pi pi-user mr-2"></i>নাম
+          <i class="pi pi-user mr-2"></i>আপনার নাম
         </label>
         <input v-model="name" type="text" placeholder="Full Name" class="w-full p-2 border border-gray-300 rounded" />
 
         <!-- Shipping Address -->
         <label class="block text-sm text-gray-700 font-semibold">
-          <i class="pi pi-map-marker mr-2"></i> ঠিকানা
+          <i class="pi pi-map-marker mr-2"></i> আপনার ঠিকানা
         </label>
         <textarea v-model="address" placeholder="Shipping Address"
           class="w-full p-2 border border-gray-300 rounded"></textarea>
 
         <!-- Phone Number -->
         <label class="block text-sm font-semibold text-gray-700">
-          <i class="pi pi-phone mr-2"></i>নাম্বার
+          <i class="pi pi-phone mr-2"></i>আপনার মোবাইল নাম্বার
         </label>
         <input v-model="phone" type="text" placeholder="Phone Number"
           class="w-full p-2 border border-gray-300 rounded" />
