@@ -117,7 +117,7 @@ const handleBuyNow = async () => {
       <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>
       <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-fit min-w-1/2 text-center z-6">Unavailable</div>
     </div>
-    <div class="bg-white rounded hover:shadow transition overflow-hidden">
+    <div class="bg-white border border-red-500 rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">
         <img :src="imageUrl" alt="Product" loading="lazy" decoding="async"
           class="aspect-square w-full object-cover transition-transform group-hover:scale-[1.02]" />
@@ -134,28 +134,30 @@ const handleBuyNow = async () => {
       </div>
 
       <div class="p-1">
-        <div class="font-medium truncate">
+        <div class="font-medium text-center truncate">
           {{ product.name }}
         </div>
 
-        <div class="text-red-500 font-semibold text-lg flex flex-col lg:flex-row lg:items-center gap-1">
-          <BDT :amount="netPrice" />
-          <span v-if="originalPrice" class="hidden lg:inline text-sm text-gray-500 line-through">
-            {{ formatBDT(originalPrice) }}
-          </span>
+        <div class="text-red-500 font-semibold text flex flex-col lg:flex-row items-center justify-center gap-1">
+          <div class="flex items-center justify-center gap-2 ms-[-1%]">
+            <BDT :amount="netPrice" />
+            <span v-if="originalPrice" class="hidden lg:inline text-sm text-gray-500 line-through">
+              {{ formatBDT(originalPrice) }}
+            </span>
+          </div>
         </div>
         <div class="flex flex-col items-center gap-1 mt-1">
-          <button @click="handleAddToCart" :disabled="loading || unavailable"
+          <!-- <button @click="handleAddToCart" :disabled="loading || unavailable"
             class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
             :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
             <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-cart'" />
             <span class="ml-2">{{ loading ? '' : 'কার্টে যোগ করুন' }}</span>
-          </button>
+          </button> -->
           <button @click="handleBuyNow" :disabled="loading || unavailable"
             class="w-full cursor-pointer flex items-center justify-center text-sm font-medium rounded px-3 py-2 transition-all text-white"
             :class="loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
             <i :class="loading ? 'pi pi-spinner pi-spin' : 'pi pi-shopping-bag'" />
-            <span class="ml-2">{{ loading ? '' : 'অর্ডার করুন' }}</span>
+            <span class="ml-2 font-semibold">{{ loading ? '' : 'অর্ডার করুন' }}</span>
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@
       <KeepAlive>
         <div class="w-full lg:w-1/2">
           <h1 class="text-xl font-semibold my-3 px-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
+          <div class="w-[98vw] mx-auto h-[1px] my-1 bg-red-500"></div>
           <Carousel v-if="product.images.length && product.images.every((i) => i.image)"
             :images="product.images.map((i) => i.image)" />
         </div>
@@ -15,14 +16,14 @@
         <!-- <h1 class="text-xl font-semibold hidden lg:block">{{ product.name }}</h1> -->
 
         <div class="flex items-center space-x-2 mt-2 lg:mt-12 text-lg px-2 lg:px-0">
-          <span v-if="product.net_price" class="text-red-500 font-semibold text-2xl">
+          <span v-if="product.net_price" class="text-red-500 font-semibold text-2xl flex items-center">
             <BDT :amount="parseFloat(product.net_price)" />
           </span>
           <span class="line-through text-gray-500" v-if="product.net_price">
             {{ formatBDT(product.price) }}
           </span>
 
-          <span v-else class="text-red-500 font-semibold text-2xl">
+          <span v-else class="text-red-500 font-semibold text-2xl flex items-center">
             <BDT :amount="parseFloat(product.price)" />
           </span>
           <span v-if="!product.net_price" class="line-through text-gray-500">
@@ -67,7 +68,7 @@
             :disabled="addingToCart" @click="handleAddToCart">
             <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
             <template v-else>
-              <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden md:inline">কার্টে যোগ করুন</span>
+              <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">কার্টে যোগ করুন</span>
             </template>
           </button>
           <button
@@ -75,11 +76,32 @@
             :disabled="buyingNow" @click="handleBuyNow">
             <i class="pi pi-spin pi-spinner" v-if="buyingNow"></i>
             <template v-else>
-              <i class="pi pi-shopping-bag me-2"></i> অর্ডার করুন
+              <span class="bn">
+                <i class="pi pi-shopping-bag me-2"></i> অর্ডার করুন
+              </span>
             </template>
           </button>
         </div>
         <p v-if="errorMessage" class="text-sm text-red-500 px-2">{{ errorMessage }}</p>
+
+        <!-- Contact Options -->
+        <div class="flex gap-1 flex-col p-1 lg:p-0">
+          <a :href="`tel:${settings.get('contact_number')}`" target="_blank"
+            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
+            <Phone class="w-4 h-4" /> ফোনে অর্ডার করুন {{ settings.get('contact_number') && ': ' }} {{
+              settings.get('contact_number') }}
+          </a>
+          <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
+            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 p-2 cursor-pointer flex-wrap">
+            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{
+              settings.get('whatsapp_number').replace('+88', '')
+            }}
+          </a>
+          <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
+            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
+            <FacebookIcon class="w-4 h-4" /> ম্যাসেজের মাধ্যমে অর্ডার করতে ক্লিক করুন
+          </a>
+        </div>
         <!-- Categories -->
         <div class="my-2 px-2 lg:px-0">
           Categories:
@@ -90,35 +112,18 @@
             <span v-if="index !== product.categories.length - 1" class="text-gray-500">, </span>
           </template>
         </div>
-
-        <!-- Contact Options -->
-        <div class="flex gap-1 flex-col p-1 lg:p-0">
-          <a :href="`tel:${settings.get('contact_number')}`" target="_blank"
-            class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <Phone class="w-4 h-4" /> ফোনে অর্ডার করুন {{ settings.get('contact_number') && ': ' }} {{
-              settings.get('contact_number') }}
-          </a>
-          <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
-            class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 p-2 cursor-pointer flex-wrap">
-            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{ settings.get('whatsapp_number').replace('+88','')  }}
-          </a>
-          <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
-            class="text-white rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <FacebookIcon class="w-4 h-4" /> ম্যাসেজের মাধ্যমে অর্ডার করতে ক্লিক করুন
-          </a>
-        </div>
       </div>
     </div>
 
     <!-- Description -->
     <div v-if="product && !loading" class="lg:mt-6 p-1 lg:p-3 w-full">
       <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Description</div>
-      <p v-html="product.description" class="text-gray-700 whitespace-pre-line"></p>
+      <p v-html="product.description" class="text-gray-700 whitespace-pre-line p-2"></p>
     </div>
     <!-- Similar Products -->
-    <div v-if="similars.length && !loading" class="mt-10 p-3">
+    <div v-if="similars.length && !loading" class="mt-10 p-1">
       <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Similar Products</div>
-      <div class="flex flex-row flex-wrap">
+      <div class="flex flex-row flex-wrap p-1">
         <ProductCard v-for="product in similars" :key="product.id" :product="product" />
       </div>
     </div>
@@ -157,8 +162,8 @@ const addingToCart = ref(false)
 const buyingNow = ref(false)
 const similars = ref([])
 
-const wp_message = computed(()=>{
-  if(product.value){
+const wp_message = computed(() => {
+  if (product.value) {
     const msg = `I want to know about ${product.value.name}`
     return msg;
   }

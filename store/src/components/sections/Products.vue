@@ -10,8 +10,11 @@ const { section } = defineProps({
 <template>
   <div v-if="section?.products?.length" class="my-2 flex justify-center w-full">
     <div class="w-full lg:w-4/5 p-2">
-      <div class="flex flex-wrap items-center justify-between mb-2">
-        <h3 class="font-semibold text-xl truncate">{{ section.title }}</h3>
+      <div class="flex flex-wrap items-center  justify-between mb-2">
+        <div class="flex-1 font-semibold text-xl truncate">
+          {{ section.title }}
+          <div class="w-full h-[1px] my-[2px] bg-red-500"></div>
+        </div>
         <!-- <RouterLink
           v-if="section?.category?.slug"
           :to="`/category/${section.category.slug}`"

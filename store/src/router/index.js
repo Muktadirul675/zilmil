@@ -30,6 +30,26 @@ const router = createRouter({
       name: 'product',
       component: () => import('@/views/Product.vue'), // lazy load
     },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/About.vue'), // lazy load
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('@/views/ContactUs.vue'), // lazy load
+    },
+    {
+      path: '/return-and-refunds',
+      name: 'return-and-refunds',
+      component: () => import('@/views/ReturnPolicy.vue'), // lazy load
+    },
+    {
+      path: '/terms-and-conditions',
+      name: 'terms-and-conditions',
+      component: () => import('@/views/TermsAndConditions.vue'), // lazy load
+    },
   ],
 })
 

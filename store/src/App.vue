@@ -81,7 +81,7 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen flex flex-col">
     <Toaster/>
-    <div class="flex-1">
+    <div class="min-h-[90vh]">
       <template v-if="noticeSection">
         <Notices :section="noticeSection" />
       </template>

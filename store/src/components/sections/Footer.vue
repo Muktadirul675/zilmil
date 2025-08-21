@@ -24,10 +24,10 @@
           Useful Links
         </div>
         <div class="flex flex-col py-3 gap-2">
-          <div>About Us</div>
-          <div>Contact Us</div>
-          <div>Teems and Condition</div>
-          <div>Return and Refunds</div>
+          <RouterLink :to="`/about`">About Us</RouterLink>
+          <RouterLink :to="`/contact`">Contact Us</RouterLink>
+          <RouterLink :to="`/terms-and-conditions`">Teems and Condition</RouterLink>
+          <RouterLink :to="`/return-and-refunds`">Return and Refunds</RouterLink>
         </div>
       </div>
 
@@ -60,6 +60,7 @@
 
 <script setup>
 import { onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
