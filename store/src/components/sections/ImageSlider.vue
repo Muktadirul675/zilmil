@@ -32,18 +32,18 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full bg-slate-100 flex justify-center">
-    <div class="relative w-full lg:w-[80%] h-[40vh] overflow-hidden">
+    <div class="relative w-full lg:w-[80%] overflow-hidden">
       <!-- Slides -->
       <div
         v-if="props.section?.images?.length"
-        class="flex transition-transform ease-in-out duration-500"
+        class="flex transition-transform ease-in-out duration-500 w-full"
         :style="{ transform: `translateX(-${current * 100}%)` }"
       >
         <img
           v-for="(image, index) in props.section.images"
           :key="index"
           :src="image.image"
-          class="w-full flex-shrink-0 object-cover h-[40vh]"
+          class="w-full flex-shrink-0"
           alt="Slide"
           loading="lazy"
           decoding="async"

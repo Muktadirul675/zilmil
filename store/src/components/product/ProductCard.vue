@@ -115,7 +115,7 @@ const handleBuyNow = async () => {
   <div class="relative w-1/2 md:w-1/3 lg:w-1/4 p-1">
     <div class="absolute inset-0 z-5 rounded m-1" v-if="unavailable">
       <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>
-      <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-1/2 text-center z-6">Unavailable</div>
+      <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-fit min-w-1/2 text-center z-6">Unavailable</div>
     </div>
     <div class="bg-white rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">

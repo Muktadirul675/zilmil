@@ -15,7 +15,6 @@ import Toaster from './components/composables/Toaster.vue';
 const feed = useFeedStore()
 const cart = useCartStore()
 const settings = useSettingsStore()
-// ð¢ Fetch feed and cart
 
 const noticeSection = computed(() =>
   feed.feed.find((section) => section.type === 'notice')
