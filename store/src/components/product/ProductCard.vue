@@ -16,7 +16,7 @@ const props = defineProps({
 })
 
 const { product } = toRefs(props)
-const unavailable = computed(()=>{
+const unavailable = computed(() => {
   return product.value.stock <= 0 || !product.value.is_active;
 })
 const router = useRouter()
@@ -115,7 +115,8 @@ const handleBuyNow = async () => {
   <div class="relative w-1/2 md:w-1/3 lg:w-1/4 p-1">
     <div class="absolute inset-0 z-5 rounded m-1" v-if="unavailable">
       <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>
-      <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-fit min-w-1/2 text-center z-6">Unavailable</div>
+      <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-fit min-w-1/2 text-center z-6">Unavailable
+      </div>
     </div>
     <div class="bg-white border border-red-500 rounded hover:shadow transition overflow-hidden">
       <div @click="navigate" class="block relative group cursor-pointer">
@@ -140,7 +141,7 @@ const handleBuyNow = async () => {
 
         <div class="text-red-500 font-semibold text flex flex-col lg:flex-row items-center justify-center gap-1">
           <div class="flex items-center justify-center gap-2 ms-[-1%]">
-            <BDT :amount="netPrice" />
+            Tk {{ formatBDT(netPrice) }}
             <span v-if="originalPrice" class="hidden lg:inline text-sm text-gray-500 line-through">
               {{ formatBDT(originalPrice) }}
             </span>

@@ -13,7 +13,7 @@ const { section } = defineProps({
       <div class="flex flex-wrap items-center  justify-between mb-2">
         <div class="flex-1 font-semibold text-xl truncate">
           {{ section.title }}
-          <div class="w-full h-[1px] my-[2px] bg-red-500"></div>
+          <div class="w-full h-[1px] my-[2px] bg-red-500 opacity-50"></div>
         </div>
         <!-- <RouterLink
           v-if="section?.category?.slug"
