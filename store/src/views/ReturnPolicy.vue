@@ -1,6 +1,9 @@
 <template>
     <div class="w-full lg:w-2/3 mx-auto p-3">
-        <div class="text-xl font-semibold">Return Polic</div>
+        <div class="text-xl font-semibold flex mb-3 items-center gap-2">
+            <BackButton/>
+            Return Policy
+        </div>
 
 প্রোডাক্ট নষ্ট বা ভাঙা হলে:
 প্রোডাক্ট ডেলিভারির সময় যদি ভাঙা কিংবা ড্যামেজ অবস্থায় পেয়ে থাকেন, তাহলে ডেলিভারি ম্যানের সামনে থাকাকালীন অবস্থায় আমাদেরকে WhatsApp-এ +880133109468 নম্বরে কল করে অবহিত করুন। প্রোডাক্ট ফেরত দেয়া যাবে কোনো খরচ ছাড়াই। ফেরতের সময় প্যাকেজ ও সব এক্সেসরিজ সহযোগে দিতে হবে।
@@ -30,6 +33,7 @@
 </template>
 
 <script setup>
+import BackButton from '@/components/ui/BackButton.vue';
 import { onMounted } from 'vue';
 
 onMounted(()=>{

@@ -5,7 +5,7 @@
       <KeepAlive>
         <div class="w-full lg:w-1/2">
           <h1 class="text-xl font-semibold my-3 px-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
-          <div class="w-[98vw] mx-auto h-[1px] my-1 bg-red-500"></div>
+          <div class="w-[98vw] mx-auto h-[1px] my-1 bg-red-500 opacity-30"></div>
           <Carousel v-if="product.images.length && product.images.every((i) => i.image)"
             :images="product.images.map((i) => i.image)" />
         </div>

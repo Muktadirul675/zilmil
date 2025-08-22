@@ -1,6 +1,6 @@
 <template>
   <!-- Loading state -->
-  <div class="max-w-xl mx-auto p-2 lg:p-3 mb-8">
+  <div class="max-w-xl mx-auto p-2 lg:p-3 mb-12">
     <div v-if="success" id="success"
       class="min-h-[50vh] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
       <img src="/order_confirmed.gif" class="w-[70px] h-[70px]" alt="">
@@ -31,23 +31,23 @@
       </h1>
       <div class="space-y-2 p-3 w-full">
         <label class="block text-sm text-gray-700 font-semibold">
-          <i class="pi pi-user mr-2"></i>আপনার নাম
+          <i class="pi pi-user mr-2"></i>আপনার নাম *
         </label>
-        <input v-model="name" type="text" placeholder="Full Name" class="w-full p-2 border border-gray-300 rounded" />
+        <input v-model="name" type="text" placeholder="Full Name" class="w-full p-2 border shadow-sm border-gray-300 rounded" />
 
         <!-- Shipping Address -->
         <label class="block text-sm text-gray-700 font-semibold">
-          <i class="pi pi-map-marker mr-2"></i> আপনার ঠিকানা
+          <i class="pi pi-map-marker mr-2"></i> আপনার ঠিকানা *
         </label>
         <textarea v-model="address" placeholder="Shipping Address"
-          class="w-full p-2 border border-gray-300 rounded"></textarea>
+          class="w-full p-2 border shadow-sm border-gray-300 rounded"></textarea>
 
         <!-- Phone Number -->
         <label class="block text-sm font-semibold text-gray-700">
-          <i class="pi pi-phone mr-2"></i>আপনার মোবাইল নাম্বার
+          <i class="pi pi-phone mr-2"></i>আপনার মোবাইল নাম্বার *
         </label>
         <input v-model="phone" type="text" placeholder="Phone Number"
-          class="w-full p-2 border border-gray-300 rounded" />
+          class="w-full p-2 border shadow-sm border-gray-300 rounded" />
 
         <div class="flex my-2 items-center gap-4">
           <label class="flex items-center gap-2">
@@ -102,7 +102,7 @@
               </span>
             </div>
           </div>
-
+          <div class="my-3"></div>
           <div class="flex w-full items-center justify-center">
             <button :disabled="!isFormValid || loading" @click="submitOrder"
               class="w-2/3 mx-auto bg-red-500 hover:bg-red-600 cursor-pointer transition-all text-white p-2 rounded disabled:opacity-50">

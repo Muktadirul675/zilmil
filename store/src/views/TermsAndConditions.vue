@@ -1,6 +1,9 @@
 <template>
     <div class="w-full lg:w-2/3 mx-auto p-3">
-        <div class="text-xl font-semibold">Terms and Conditions</div>
+        <div class="text-xl font-semibold flex mb-3 items-center gap-2">
+            <BackButton/>
+            Terms and Conditions
+        </div>
 Dear valued customer,
 
 আপনাদের অর্ডারটি প্রসেস করার সময় প্রতিটি প্রোডাক্ট অত্যন্ত নিখুঁতভাবে পর্যবেক্ষণ করা হয়।
@@ -25,6 +28,7 @@ Zilmil Online Shop আপনাদের নির্ভরযোগ্য অ�
 </template>
 
 <script setup>
+import BackButton from '@/components/ui/BackButton.vue';
 import { onMounted } from 'vue';
 
 onMounted(()=>{

@@ -135,7 +135,7 @@ const handleBuyNow = async () => {
       </div>
 
       <div class="p-1">
-        <div class="font-medium text-center truncate">
+        <div class="font-semibold text-center truncate">
           {{ product.name }}
         </div>
 
