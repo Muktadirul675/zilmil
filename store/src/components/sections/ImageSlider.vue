@@ -32,7 +32,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full bg-slate-100 flex justify-center">
-    <div class="relative w-full lg:w-[80%] overflow-hidden">
+    <div class="relative w-full lg:w-1/2 overflow-hidden">
       <!-- Slides -->
       <div
         v-if="props.section?.images?.length"

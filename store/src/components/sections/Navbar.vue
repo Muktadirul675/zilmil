@@ -36,7 +36,7 @@ const showSearchBox = ref(false)
   </div>
   <div class="flex w-full flex-col sticky top-0 z-20">
     <nav class="bg-white shadow px-3 lg:px-6 py-3 flex items-center justify-center">
-      <div class="flex w-full lg:w-[80%]">
+      <div class="flex w-full lg:w-1/2">
         <div class="flex w-full flex-row items-center md:w- gap-3">
           <div class="w-1/2 flex flex-row items-center gap-2">
             <span class="lg:hidden">

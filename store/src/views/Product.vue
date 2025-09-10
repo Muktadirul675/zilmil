@@ -1,116 +1,119 @@
 <template>
-  <div class="w-full lg:w-[50%] mx-auto flex flex-col items-center">
+  <div class="w-full lg:w-1/2 mx-auto flex flex-col items-center">
     <Loading v-if="loading" />
-    <div v-else-if="product" class="flex flex-col md:flex-row gap-4 w-full" :key="product.id">
-      <KeepAlive>
-        <div class="w-full lg:w-1/2">
-          <h1 class="text-xl font-semibold my-3 px-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
-          <div class="w-[98vw] mx-auto h-[1px] my-1 bg-red-500 opacity-30"></div>
-          <Carousel v-if="product.images.length && product.images.every((i) => i.image)"
-            :images="product.images.map((i) => i.image)" />
-        </div>
-      </KeepAlive>
+    <div v-else-if="product" class="w-full" :key="product.id">
+      <h1 class="text-xl font-semibold my-3 px-2 lg:p-0 lg:my-3">{{ product.name }}</h1>
+      <div class="w-[98%] lg:w-full mx-auto h-[1px] my-1 mb-2 bg-red-500 opacity-30"></div>
 
-      <!-- Right: Selections -->
-      <div class="flex flex-col gap-2 lg:gap-4">
-        <!-- <h1 class="text-xl font-semibold hidden lg:block">{{ product.name }}</h1> -->
-
-        <div class="flex items-center space-x-2 mt-2 lg:mt-12 text-lg px-2 lg:px-0">
-          <span v-if="product.net_price" class="text-red-500 font-semibold text-2xl flex items-center">
-            <BDT :amount="parseFloat(product.net_price)" />
-          </span>
-          <span class="line-through text-gray-500" v-if="product.net_price">
-            {{ formatBDT(product.price) }}
-          </span>
-
-          <span v-else class="text-red-500 font-semibold text-2xl flex items-center">
-            <BDT :amount="parseFloat(product.price)" />
-          </span>
-          <span v-if="!product.net_price" class="line-through text-gray-500">
-            {{ formatBDT(product.compared_price) }}
-          </span>
-        </div>
-
-        <!-- Variants -->
-        <div v-if="product.variants?.length" class="flex p-2 lg:p-0 flex-wrap gap-2">
-          <div v-for="variant in product.variants" :key="variant.id"
-            class="px-3 py-1 text-white transition-all rounded cursor-pointer bg-red-500 hover:bg-red-600"
-            :class="{ 'ring-2 ring-black': selectedVariant === variant.id }" @click="selectedVariant = variant.id">
-            <i class="pi pi-check me-2" v-if="selectedVariant === variant.id"></i>
-            {{ variant.name }}
+      <div class="w-full flex flex-col md:flex-row gap-4 ">
+        <KeepAlive>
+          <div class="w-full lg:w-1/2">
+            <Carousel v-if="product.images.length && product.images.every((i) => i.image)"
+              :images="product.images.map((i) => i.image)" />
           </div>
-        </div>
-
-        <!-- Colors -->
-        <div v-if="product.colors?.length" class="flex p-2 lg:p-0 flex-wrap gap-4">
-          <div v-for="color in product.colors" :key="color.id"
-            class="flex flex-col items-center cursor-pointer hover:scale-105 transition"
-            @click="selectedColor = color.id">
-            <div class="w-10 h-10 rounded-full border-2"
-              :class="selectedColor === color.id ? 'ring-2 ring-black' : 'border-gray-300'"
-              :style="{ backgroundColor: color.hex_code }" />
-            <span class="text-sm mt-1">{{ color.name }}</span>
+        </KeepAlive>
+  
+        <!-- Right: Selections -->
+        <div class="flex flex-col gap-2 lg:gap-4">
+          <!-- <h1 class="text-xl font-semibold hidden lg:block">{{ product.name }}</h1> -->
+  
+          <div class="flex items-center space-x-2 mt-2 text-lg px-2 lg:px-0">
+            <span v-if="product.net_price" class="text-red-500 font-semibold text-2xl flex items-center">
+              <BDT :amount="parseFloat(product.net_price)" />
+            </span>
+            <span class="line-through text-gray-500" v-if="product.net_price">
+              {{ formatBDT(product.price) }}
+            </span>
+  
+            <span v-else class="text-red-500 font-semibold text-2xl flex items-center">
+              <BDT :amount="parseFloat(product.price)" />
+            </span>
+            <span v-if="!product.net_price" class="line-through text-gray-500">
+              {{ formatBDT(product.compared_price) }}
+            </span>
           </div>
-        </div>
-
-        <!-- Quantity + Add to Cart -->
-        <div class="flex gap-2 w-full p-2 lg:p-0">
-          <div class="flex border flex-[1.5] md:flex-1 border-gray-300 rounded-md w-full overflow-hidden">
-            <button :disabled="quantity === 1" class="px-3 py-1 text-2xl cursor-pointer"
-              @click="quantity = Math.max(1, quantity - 1)">-</button>
-            <input disabled type="number" class="w-full text-center outline-none appearance-none"
-              v-model.number="quantity" min="1" />
-            <button :disabled="quantity === product.stock" class="px-3 py-1 text-2xl cursor-pointer"
-              @click="quantity = Math.min(quantity + 1, maxStock)">+</button>
+  
+          <!-- Variants -->
+          <div v-if="product.variants?.length" class="flex p-2 lg:p-0 flex-wrap gap-2">
+            <div v-for="variant in product.variants" :key="variant.id"
+              class="px-3 py-1 text-white transition-all rounded cursor-pointer bg-red-500 hover:bg-red-600"
+              :class="{ 'ring-2 ring-black': selectedVariant === variant.id }" @click="selectedVariant = variant.id">
+              <i class="pi pi-check me-2" v-if="selectedVariant === variant.id"></i>
+              {{ variant.name }}
+            </div>
           </div>
-          <button
-            class="bg-red-500 cursor-pointer flex-[0.8] md:flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
-            :disabled="addingToCart" @click="handleAddToCart">
-            <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
-            <template v-else>
-              <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">কার্টে যোগ করুন</span>
+  
+          <!-- Colors -->
+          <div v-if="product.colors?.length" class="flex p-2 lg:p-0 flex-wrap gap-4">
+            <div v-for="color in product.colors" :key="color.id"
+              class="flex flex-col items-center cursor-pointer hover:scale-105 transition"
+              @click="selectedColor = color.id">
+              <div class="w-10 h-10 rounded-full border-2"
+                :class="selectedColor === color.id ? 'ring-2 ring-black' : 'border-gray-300'"
+                :style="{ backgroundColor: color.hex_code }" />
+              <span class="text-sm mt-1">{{ color.name }}</span>
+            </div>
+          </div>
+  
+          <!-- Quantity + Add to Cart -->
+          <div class="flex gap-2 w-full p-2 lg:p-0">
+            <div class="flex border flex-[1.5] md:flex-1 border-gray-300 rounded-md w-full overflow-hidden">
+              <button :disabled="quantity === 1" class="px-3 py-1 text-2xl cursor-pointer"
+                @click="quantity = Math.max(1, quantity - 1)">-</button>
+              <input disabled type="number" class="w-full text-center outline-none appearance-none"
+                v-model.number="quantity" min="1" />
+              <button :disabled="quantity === product.stock" class="px-3 py-1 text-2xl cursor-pointer"
+                @click="quantity = Math.min(quantity + 1, maxStock)">+</button>
+            </div>
+            <button
+              class="bg-gray-400 cursor-pointer flex-[0.8] md:flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
+              :disabled="addingToCart || !canPurchase" @click="handleAddToCart">
+              <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
+              <template v-else>
+                <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">কার্টে যোগ করুন</span>
+              </template>
+            </button>
+            <button
+              class="bg-red-500 cursor-pointer flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
+              :disabled="buyingNow || !canPurchase" @click="handleBuyNow">
+              <i class="pi pi-spin pi-spinner" v-if="buyingNow"></i>
+              <template v-else>
+                <span class="bn">
+                  <i class="pi pi-shopping-bag me-2"></i> অর্ডার করুন
+                </span>
+              </template>
+            </button>
+          </div>
+          <p v-if="errorMessage" class="text-sm text-red-500 px-2">{{ errorMessage }}</p>
+  
+          <!-- Contact Options -->
+          <div class="flex gap-1 flex-col p-1 lg:p-0">
+            <a :href="`tel:${settings.get('contact_number')}`" target="_blank"
+              class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
+              <Phone class="w-4 h-4" /> ফোনে অর্ডার করুন {{ settings.get('contact_number') && ': ' }} {{
+                settings.get('contact_number') }}
+            </a>
+            <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
+              class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 p-2 cursor-pointer flex-wrap">
+              <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{
+                settings.get('whatsapp_number').replace('+88', '')
+              }}
+            </a>
+            <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
+              class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
+              <FacebookIcon class="w-4 h-4" /> ম্যাসেজের মাধ্যমে অর্ডার করতে ক্লিক করুন
+            </a>
+          </div>
+          <!-- Categories -->
+          <div class="my-2 px-2 lg:px-0">
+            Categories:
+            <template v-for="(cat, index) in product.categories" :key="cat.id">
+              <RouterLink :to="`/category/${cat.slug}`" class="text-red-500 hover:text-red-700 cursor-pointer">
+                {{ cat.name }}
+              </RouterLink>
+              <span v-if="index !== product.categories.length - 1" class="text-gray-500">, </span>
             </template>
-          </button>
-          <button
-            class="bg-red-500 cursor-pointer flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
-            :disabled="buyingNow" @click="handleBuyNow">
-            <i class="pi pi-spin pi-spinner" v-if="buyingNow"></i>
-            <template v-else>
-              <span class="bn">
-                <i class="pi pi-shopping-bag me-2"></i> অর্ডার করুন
-              </span>
-            </template>
-          </button>
-        </div>
-        <p v-if="errorMessage" class="text-sm text-red-500 px-2">{{ errorMessage }}</p>
-
-        <!-- Contact Options -->
-        <div class="flex gap-1 flex-col p-1 lg:p-0">
-          <a :href="`tel:${settings.get('contact_number')}`" target="_blank"
-            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <Phone class="w-4 h-4" /> ফোনে অর্ডার করুন {{ settings.get('contact_number') && ': ' }} {{
-              settings.get('contact_number') }}
-          </a>
-          <a :href="`https://wa.me/${settings.get('whatsapp_number')}?text=${wp_message}`" target="_blank"
-            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 p-2 cursor-pointer flex-wrap">
-            <MessageSquare class="w-4 h-4" /> হোয়্যাটসআ্যপ এ অর্ডার করুন: {{
-              settings.get('whatsapp_number').replace('+88', '')
-            }}
-          </a>
-          <a :href="`https://m.me/${settings.get('messenger_link')}`" target="_blank"
-            class="text-white bn rounded bg-red-500 hover:bg-red-600 transition-all flex items-center gap-2 p-2 cursor-pointer justify-center">
-            <FacebookIcon class="w-4 h-4" /> ম্যাসেজের মাধ্যমে অর্ডার করতে ক্লিক করুন
-          </a>
-        </div>
-        <!-- Categories -->
-        <div class="my-2 px-2 lg:px-0">
-          Categories:
-          <template v-for="(cat, index) in product.categories" :key="cat.id">
-            <RouterLink :to="`/category/${cat.slug}`" class="text-red-500 hover:text-red-700 cursor-pointer">
-              {{ cat.name }}
-            </RouterLink>
-            <span v-if="index !== product.categories.length - 1" class="text-gray-500">, </span>
-          </template>
+          </div>
         </div>
       </div>
     </div>
@@ -168,6 +171,10 @@ const wp_message = computed(() => {
     return msg;
   }
   return ''
+})
+
+const canPurchase = computed(() => {
+  return product.value?.is_active && (product.value?.stock ?? 0) > 0
 })
 
 const maxStock = computed(() => {

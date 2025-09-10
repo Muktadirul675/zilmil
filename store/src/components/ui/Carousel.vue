@@ -15,7 +15,7 @@
             :ref="el => zoomImages[index] = el"
             :src="img"
             :alt="'Image ' + (index + 1)"
-            class="zoom-image h-[400px] w-auto object-contain lg:rounded-md"
+            class="zoom-image w-full lg:rounded-md"
             loading="lazy"
             @mousemove="handleZoom($event, index)"
             @mouseleave="resetZoom(index)"
@@ -27,13 +27,13 @@
       <!-- Navigation buttons -->
       <button
         @click="prev"
-        class="absolute z-10 left-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full"
+        class="absolute z-10 left-2 top-1/2 transform -translate-y-1/2 text-white bg-transparent bg-opacity-50 p-2 rounded-full"
       >
         <i class="pi pi-chevron-left"></i>
       </button>
       <button
         @click="next"
-        class="absolute z-10 right-2 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full"
+        class="absolute z-10 right-2 top-1/2 transform -translate-y-1/2 text-white bg-transparent bg-opacity-50 p-2 rounded-full"
       >
         <i class="pi pi-chevron-right"></i>
       </button>
@@ -114,11 +114,6 @@ onMounted(() => {
 .carousel-inner {
   display: flex;
 }
-
-.carousel-item {
-  height: 400px;
-}
-
 .zoom-image {
   transition: transform 0.3s ease;
   pointer-events: auto;

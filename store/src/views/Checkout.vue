@@ -81,24 +81,26 @@
             </div>
           </template>
         </div>
+        <hr>
         <div class="">
           <div class="flex items-center">
             Subtotal:
             <div class="ms-auto flex items-center">
-              <BDT :amount="parseFloat(subtotal)" />
+              Tk. {{ formatBDT(subtotal) }}
             </div>
           </div>
           <div class="flex items-center">
             Delivery:
             <div class="ms-auto flex items-center">
-              <BDT :amount="parseFloat(deliveryCharge)" />
+              Tk. {{  formatBDT(deliveryCharge) }}
             </div>
           </div>
-          <div class="font-bold text-lg flex items-center">
-            Total:
+          <hr class="mt-2 mb-1">
+          <div class="font-bold flex items-center">
+            Grand Total:
             <div class="ms-auto flex items-center">
-              <span class="text-red-500">
-                <BDT :amount="parseFloat(total)" />
+              <span class="">
+                Tk. {{ formatBDT(total) }}
               </span>
             </div>
           </div>
