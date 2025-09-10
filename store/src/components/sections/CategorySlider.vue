@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex justify-center bg-slate-50" v-if="slides.length">
-    <div class="w-full lg:w-1/2 relative">
+    <div class="w-full lg:w-[65%] relative">
       <!-- Scrollable Container -->
       <div ref="sliderRef"
         class="flex justify-center gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 scrollbar-hide">

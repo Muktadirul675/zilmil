@@ -70,9 +70,17 @@
               :disabled="addingToCart || !canPurchase" @click="handleAddToCart">
               <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
               <template v-else>
-                <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">কার্টে যোগ করুন</span>
+                <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">Add Cart</span>
               </template>
             </button>
+            <!-- <button
+              class="bg-gray-400 cursor-pointer flex-[0.8] md:flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
+              :disabled="addingToCart || !canPurchase" @click="handleAddToCart">
+              <i class="pi pi-spin pi-spinner" v-if="addingToCart"></i>
+              <template v-else>
+                <i class="pi pi-shopping-cart md:me-2"></i> <span class="hidden bn md:inline">কার্টে যোগ করুন</span>
+              </template>
+            </button> -->
             <button
               class="bg-red-500 cursor-pointer flex-2 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full flex justify-center items-center gap-2"
               :disabled="buyingNow || !canPurchase" @click="handleBuyNow">

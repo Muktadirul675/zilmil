@@ -65,7 +65,7 @@ watch(category, (newCategory) => {
 </script>
 
 <template>
-    <div class="w-full md:w-1/2 mx-auto p-2 lg:px-4 lg:py-6">
+    <div class="w-full md:w-[65%] mx-auto p-2 lg:px-4 lg:py-6">
         <Loading v-if="loading" />
         <div v-else>
             <div class="flex items-center gap-2 mb-6">

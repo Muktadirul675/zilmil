@@ -1,6 +1,6 @@
 <template>
   <div class="w-full bg-red-500 text-white py-6 px-4">
-    <div class="w-full lg:w-1/2 mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+    <div class="w-full lg:w-[65%] mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-6">
       <!-- Left Side: Logo + Info -->
       <div class="flex flex-col items-start gap-2 w-full md:w-1/3 text-left">
         <img v-if="section.args?.logo" :src="`${BACKEND_URL}${section.args.logo}`" alt="Logo"

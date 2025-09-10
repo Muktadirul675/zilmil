@@ -9,7 +9,7 @@ const { section } = defineProps({
 
 <template>
   <div class="hidden lg:flex justify-center items-center bg-red-500 text-white" v-if="section?.categories?.length">
-    <div class="w-full lg:w-1/2 flex">
+    <div class="w-full lg:w-[65%] flex">
       <div class="relative group border-l-[0.5px] last:border-r border-gray-300">
         <div class="px-3 py-2 cursor-pointer hover:bg-red-600">All Categories</div>
         <Transition name="fade">
