@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full lg:w-1/2 mx-auto m-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  <div class="w-full lg:w-[65%] mx-auto m-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <div
       v-for="n in count"
       :key="n"

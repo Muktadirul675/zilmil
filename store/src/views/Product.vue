@@ -135,7 +135,7 @@
     <div v-if="similars.length && !loading" class="mt-10 p-1">
       <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Similar Products</div>
       <div class="flex flex-row flex-wrap p-1">
-        <ProductCard v-for="product in similars" :key="product.id" :product="product" />
+        <ProductCard :cols="4" v-for="product in similars" :key="product.id" :product="product" />
       </div>
     </div>
     <!-- Error -->

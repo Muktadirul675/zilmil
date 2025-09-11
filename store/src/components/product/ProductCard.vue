@@ -1,10 +1,10 @@
 <script setup>
-import { computed, ref, toRefs } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCartStore } from '@/stores/cart'
-import BDT from '../ui/BDT.vue'
+
 import { useToast } from '@/lib/toast'
 import { formatBDT } from '@/lib/utils'
+import { useCartStore } from '@/stores/cart'
+import { computed, ref, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -12,6 +12,10 @@ const props = defineProps({
   product: {
     type: Object,
     required: true
+  },
+  cols: {
+    type: Number,
+    default: 5
   }
 })
 
@@ -109,10 +113,20 @@ const handleBuyNow = async () => {
     loading.value = false
   }
 }
+
+const lgWidth = computed(()=>{
+  if(props.cols === 4){
+    return 100 / 4;
+  }else if (props.cols === 5){
+    return 100 / 5;
+  }
+})
+
 </script>
 
 <template>
-  <div class="relative w-1/2 md:w-1/3 lg:w-1/5 p-1">
+  <div class="hidden w-[2t%] lg:w-[20%]"></div>
+  <div :class="`relative w-1/2 md:w-1/3 lg:w-[${lgWidth}%] p-1`">
     <div class="absolute inset-0 z-5 rounded m-1" v-if="unavailable">
       <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>
       <div class="mt-[20%] bg-red-500 text-white font-semibold px-3 py-2 w-fit min-w-1/2 text-center z-6">Unavailable
