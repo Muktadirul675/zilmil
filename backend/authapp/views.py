@@ -21,6 +21,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.contrib.auth.models import User, Group
 from rest_framework import status
+from rest_framework import status
+from django.contrib.auth.models import User
+
 
 class MakeStaffView(APIView):
     def post(self, request, user_id):
@@ -44,6 +47,8 @@ class RemoveStaffView(APIView):
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         except Group.DoesNotExist:
             return Response({"error": "Staff group not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -93,3 +98,35 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return Response({"message": "Logged out"})
+
+class UserRolesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        roles = request.user.groups.values_list('name', flat=True)
+        return Response({"roles": list(roles)})
+    
+class ChangeUserPassword(APIView):
+    def post(self, request):
+        user_id = request.query_params.get('user_id')
+        new_password = request.data.get('new_password')
+
+        if not user_id or not new_password:
+            return Response(
+                {"detail": "user_id and new_password are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Set new password directly
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)

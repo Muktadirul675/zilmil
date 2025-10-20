@@ -35,7 +35,7 @@ class ProductOrderReport(APIView):
 
         filtered_orderitems = (
             OrderItem.objects
-            .filter(orderitem_filter)
+            .filter(orderitem_filter,order__status='confirmed')
             .values('product')
             .annotate(count=Count('id'))
             .values('count')

@@ -16,11 +16,12 @@ STORE_ID = settings.PATHAO_STORE_ID # Or fetch from settings if dynamic
 
 def is_order_ready(order):
     if order.status == CONFIRM_STATUS and not order.sent_to_courier:
-        return (
-            order.full_name and order.shipping_address and order.phone
-            and order.city_id and order.zone_id
-            and order.items.exists()
-        )
+        # return (
+        #     order.full_name and order.shipping_address and order.phone
+        #     and order.city_id and order.zone_id
+        #     and order.items.exists()
+        # )
+        return True
     return False
 
 def send_order_to_courier(order_id):
@@ -51,25 +52,16 @@ def send_order_to_courier(order_id):
             }
         try:
             courier_response = client.create_order(
-                store_id=STORE_ID,
                 order_id=str(order.id),
-                sender_name=get_setting("courier_sender_name"),
-                sender_phone=get_setting("courier_sender_phone"),
                 recipient_name=order.full_name,
                 recipient_phone=order.phone,
-                address=order.shipping_address,
-                city_id=str(order.city_id),
-                zone_id=str(order.zone_id),
-                area_id=str(order.area_id) if order.area_id else '',
+                recipient_address=order.shipping_address,
                 special_instruction=order.note if hasattr(order, 'note') else 'None',
                 item_quantity=str(sum(item.quantity for item in order.items.all())),
-                item_weight=1,  # Constant as you mentioned
                 amount_to_collect=float(order.total_price),
-                item_description='None',
-                delivery_type=DELIVERY_TYPE,
-                item_type=ITEM_TYPE,
+                item_description='None'
             )
-            consignment_id = courier_response.get("consignment_id")
+            consignment_id = courier_response.get('data').get("consignment_id")
             # consignment_id = str(random.randint(1000,5000))
             # pass
         except Exception as e:

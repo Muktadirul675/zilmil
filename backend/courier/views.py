@@ -102,12 +102,9 @@ def get_delivery_charge(request):
         return Response({"detail": "city_id and zone_id are required."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        response = client.get_delivery_cost(
+        response = client.get_delivery_charge(
             city_id=int(city_id),
-            zone_id=int(zone_id),
-            delivery_type=48,
-            item_type='2',
-            store_id=settings.PATHAO_STORE_ID
+            zone_id=int(zone_id)
         )
         return Response(response, status=status.HTTP_200_OK)
 
@@ -153,16 +150,25 @@ def create_dummy_order(request):
 
 class CityListAPIView(APIView):
     def get(self, request):
+        print("loading cities")
         pathao_courier_cache_key = 'courier:pathao:cities'
         timeout = 3600
+        client = get_pathao_client()
+        print("client loaded")
         try:
+            print("loading cache")
             cached_cities = cache.get(pathao_courier_cache_key)
+            print("loaded cache")
             if cached_cities:
+                print("cache found")
                 return Response(cached_cities, status=status.HTTP_200_OK)
+            print("Cache not found\nLoading from pathao")
             cities = client.get_city_list()
+            print("loaded from pathao")
             cache.set(pathao_courier_cache_key, cities, timeout=timeout)
             return Response(cities, status=status.HTTP_200_OK)
         except Exception as e:
+            print(f"Error: {e}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ZoneListAPIView(APIView):

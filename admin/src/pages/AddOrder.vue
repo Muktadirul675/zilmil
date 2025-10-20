@@ -77,9 +77,9 @@
               Total Price:
               <BDT :amount="totalPrice" />
             </div>
-            <div class="my-3">
+            <div class="my-3 flex justify-center w-full">
               <button type="submit"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
+                class="bg-green-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
                 <i class="pi pi-check mr-1" /> Add Order
               </button>
               <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
@@ -142,23 +142,36 @@ const cities = ref([])
 const zones = ref([])
 const areas = ref([])
 
+const fetchingCities = ref(false)
+const fetchingZones = ref(false)
+const fetchingAreas = ref(false)
+
 const fetchCities = async () => {
+  fetchingCities.value = true
   const res = await api.get('/courier/cities/')
-  cities.value = res.data?.data || []
+  cities.value = res.data?.data.data || []
+  fetchingCities.value = false
 }
+
 const fetchZones = async () => {
+  fetchingZones.value = true
   order.value.zone_id = null
   order.value.area_id = null
   if (!order.value.city_id) return
   const res = await api.get(`/courier/zones/?city_id=${order.value.city_id}`)
-  zones.value = res.data?.data || []
+  zones.value = res.data?.data.data || []
+  fetchingZones.value = false
 }
+
 const fetchAreas = async () => {
+  fetchingAreas.value = true
   order.value.area_id = null
   if (!order.value.zone_id) return
   const res = await api.get(`/courier/areas/?zone_id=${order.value.zone_id}`)
-  areas.value = res.data?.data || []
+  areas.value = res.data?.data.data || []
+  fetchingAreas.value = false
 }
+
 
 fetchCities()
 
@@ -175,7 +188,8 @@ watch(
             zone_id: zoneId,
           },
         })
-        order.value.delivery_charge = res.data?.price || 0
+        // console.log(res.data)
+        order.value.delivery_charge = res.data?.data?.final_price || 0
       } catch (err) {
         console.error('Failed to fetch delivery charge:', err)
       } finally {
@@ -218,6 +232,12 @@ async function submitOrder() {
     error.value = 'Name, phone, address, and status are required.'
     loading.value = false
     return
+  }
+
+  if(order.value.items.length <=0 ){
+    toast.error("At least one item is required")
+    loading.value = false;
+    return;
   }
 
   try {

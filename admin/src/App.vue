@@ -19,8 +19,9 @@ const activity = useActivityStore()
 const visits = useVisitsAnalyticsStore()
 const settings = useSettingsStore()
 
-onBeforeMount(() => {
-  auth.fetchUser()
+onBeforeMount(async () => {
+  await auth.fetchUser()
+  if(!auth.isAuthenticated) auth.logout()
 })
 
 onMounted(async() => {
@@ -37,6 +38,24 @@ onMounted(async() => {
   setInterval(()=>{
     visits.fetchAll()
   },1000*60*2)
+  setInterval(async ()=>{
+    const wasAdmin = auth.isAdmin;
+    const wasStaff = auth.isStaff;
+    await auth.fetchUser()
+    if(wasAdmin){
+      if(!auth.isAdmin){
+        auth.logout()
+      }
+    }
+    if(wasStaff){
+      if(!auth.isStaff){
+        auth.logout()
+      }
+    }
+    if(!auth.isAuthenticated){
+      auth.logout()
+    }
+  },1000*60*5)
 })
 
 </script>

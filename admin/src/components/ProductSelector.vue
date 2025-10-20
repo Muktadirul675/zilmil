@@ -16,7 +16,6 @@
             <th class="px-4 py-2">Variant</th>
             <th class="px-4 py-2">Color</th>
             <th class="px-4 py-2">Qty</th>
-            <th class="px-4 py-2">Price</th>
             <th class="px-4 py-2 text-right">Action</th>
           </tr>
         </thead>
@@ -31,7 +30,7 @@
               <div class="text-xs text-gray-400">Stock: {{ product.stock }}</div>
             </td>
             <td class="px-4 py-2">
-              <select v-model="productInputs[product.id].variant_id"
+              <select v-if="product.variants.length" v-model="productInputs[product.id].variant_id"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 <option disabled value="">Select</option>
                 <option v-for="v in product.variants" :key="v.id" :value="v.id">
@@ -40,7 +39,7 @@
               </select>
             </td>
             <td class="px-4 py-2">
-              <select v-model="productInputs[product.id].color_id"
+              <select v-if="product.colors.length" v-model="productInputs[product.id].color_id"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 <option disabled value="">Select</option>
                 <option v-for="c in product.colors" :key="c.id" :value="c.id">
@@ -53,16 +52,16 @@
                 @input="updatePrice(product.id, product.price)"
                 class="w-[80px] border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </td>
-            <td class="px-4 py-2">
+            <!-- <td class="px-4 py-2">
               <input disabled type="number" min="0" step="0.01" v-model.number="productInputs[product.id].price_at_purchase"
                 class="w-[150px] border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
               <div v-if="product.net_price" class="text-xs text-gray-500 mt-1">
                 Price: {{ product.price }}, Discount: {{ product.discount }}
               </div>
-            </td>
+            </td> -->
             <td class="px-4 py-2 text-right">
               <button @click="add(product)" type="button"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                class="w-full border border-gray-300 bg-blue-500 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-white">
                 Add
               </button>
             </td>

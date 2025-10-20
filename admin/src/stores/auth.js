@@ -1,14 +1,24 @@
 // stores/authStore.js
 import { defineStore } from 'pinia'
 import axios from '@/services/api' // this should have your Axios instance with auth interceptor
+import { useRoute, useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
         user: null,
         access: localStorage.getItem('access') || null,
         refresh: localStorage.getItem('refresh') || null,
-        isAuthenticated: !!localStorage.getItem('access'),
+        isAuthenticated: false
     }),
+
+    getters:{
+        isAdmin:(state)=>{
+            return state.user?.groups?.some((group)=>group.name === 'Admin') || false
+        },
+        isStaff:(state)=>{
+            return state.user?.groups?.some((group)=>group.name === 'Staff') || false
+        }
+    },
 
     actions: {
         async login(credentials) {
@@ -39,8 +49,8 @@ export const useAuthStore = defineStore('authStore', {
                         Authorization: `Bearer ${this.access}`,
                     },
                 })
-                this.user = res.data
-                this.isAuthenticated = true
+                this.user = res.data || null
+                this.isAuthenticated = this.user !== null ? true : false
             } catch {
                 this.logout()
             }

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { nextTick } from 'vue'
 
 // â Lazy-load layouts
 const DefaultLayout = () => import('@/layouts/DefaultLayout.vue')
@@ -60,6 +61,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (!auth.isAuthenticated) {
     await auth.fetchUser()
+    await nextTick()
   }
 
   const isLoggedIn = auth.isAuthenticated
@@ -67,7 +69,19 @@ router.beforeEach(async (to, from, next) => {
   if (to.path === '/login') {
     isLoggedIn ? next('/dashboard') : next()
   } else {
-    isLoggedIn ? next() : next('/login')
+    if(isLoggedIn){
+      if(to.path === '/orders' || to.path === '/couriers'){
+        next()
+      }else{
+        if(auth.isAdmin){
+          next()
+        }else{
+          next('/orders')
+        }
+      }
+    }else{
+      next('/login')
+    }
   }
 })
 
