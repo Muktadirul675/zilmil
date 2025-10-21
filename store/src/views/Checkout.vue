@@ -132,6 +132,7 @@ import { useToast } from '@/lib/toast'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
 import { formatBDT, truncate } from '@/lib/utils'
+import { trackInitiateCheckout, trackPurchase } from '@/lib/pixel'
 
 useHead({
   title: "Checkout - Zilmil.com.bd"
