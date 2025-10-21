@@ -139,7 +139,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ new Date(order.created_at).toLocaleDateString() }}
+                {{ new Date(order.created_at).toLocaleDateString() }} <br/>
                 <span v-if="order.source">[{{ capitalize(convert_to_normal_word(order.source)) }}]</span>
                 <br>
               </td>

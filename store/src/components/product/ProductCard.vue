@@ -1,5 +1,6 @@
 <script setup>
 
+import { trackAddToCart } from '@/lib/pixel'
 import { useToast } from '@/lib/toast'
 import { formatBDT } from '@/lib/utils'
 import { useCartStore } from '@/stores/cart'
@@ -113,6 +114,14 @@ const handleBuyNow = async () => {
   try {
     await cartStore.addToCart({
       product: product.value.id,
+      quantity: 1
+    })
+    trackAddToCart({
+      content_name: product.value.name,
+      content_ids: [product.value.id],
+      content_type: 'product',
+      value: parseFloat(product.value.net_price || product.value.price),
+      currency: 'BDT',
       quantity: 1
     })
     router.push(`/checkout/`)
