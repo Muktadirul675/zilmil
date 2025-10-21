@@ -3,6 +3,7 @@ defineOptions({ name: 'HomeView' })
 
 import Loading from '@/components/ui/Loading.vue'
 import ProductGridSkeleton from '@/components/ui/ProductGridSkeleton.vue'
+import { trackPageView } from '@/lib/pixel'
 import { useFeedStore } from '@/stores/feed'
 import { useHead } from '@vueuse/head'
 import { defineAsyncComponent, onActivated, onMounted } from 'vue'
@@ -27,6 +28,11 @@ onActivated(()=>{
   })
 })
 
+onMounted(()=>{
+  trackPageView({
+    content_name: 'Home Page'
+  })
+})
 </script>
 
 <template>

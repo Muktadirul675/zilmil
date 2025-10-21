@@ -30,6 +30,7 @@
           </div>
   
           <button
+            v-if="!disabled"
             @click="$emit('remove', index)"
             type="button"
             class="text-sm text-red-500 hover:text-red-600 hover:underline sm:ml-auto mt-2 sm:mt-0"
@@ -44,7 +45,15 @@
   <script setup>
 import BDT from './ui/BDT.vue';
 
-  defineProps(['items'])
+  defineProps({
+    items:{
+      type: Object
+    },
+    disabled:{
+      type:Boolean,
+      default: false
+    }
+  })
   defineEmits(['remove'])
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   </script>

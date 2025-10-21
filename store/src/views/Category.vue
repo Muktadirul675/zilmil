@@ -7,6 +7,7 @@ import Loading from '@/components/ui/Loading.vue'
 import BackButton from '@/components/ui/BackButton.vue'
 import { toast } from '@/lib/toast'
 import { useHead } from '@vueuse/head'
+import { trackPageView, trackViewCategory } from '@/lib/pixel'
 
 const route = useRoute()
 const category = ref(null)
@@ -18,9 +19,21 @@ async function fetchCategory(slug) {
     const { data: catData } = await api.get(`/categories/${slug}`)
     category.value = catData
 
+    trackPageView({
+        content_name: `Category Page: ${category.value.name}`,
+        content_category: 'Products'
+    })
+
     const { data: prodData } = await api.get(`/categories/${slug}/products`)
     products.value = prodData
     loading.value = false
+
+    trackViewCategory({
+        content_name: category.value.name,
+        content_category: category.value.name,
+        content_ids: products.value.map(p => p.id), // Array of product IDs in category
+        content_type: 'product_group'
+    })
 }
 
 onMounted(async () => {
@@ -45,22 +58,22 @@ onBeforeRouteUpdate((to, from, next) => {
 })
 
 watch(category, (newCategory) => {
-  if (!newCategory) return
+    if (!newCategory) return
 
-  useHead({
-    title: `${newCategory.name} - Buy Products Online`,
-    meta: [
-      {
-        name: 'description',
-        content: newCategory.description || `Browse ${newCategory.name} products online.`
-      },
-      { property: 'og:title', content: newCategory.name },
-      {
-        property: 'og:description',
-        content: newCategory.description || ''
-      }
-    ]
-  })
+    useHead({
+        title: `${newCategory.name} - Buy Products Online`,
+        meta: [
+            {
+                name: 'description',
+                content: newCategory.description || `Browse ${newCategory.name} products online.`
+            },
+            { property: 'og:title', content: newCategory.name },
+            {
+                property: 'og:description',
+                content: newCategory.description || ''
+            }
+        ]
+    })
 })
 </script>
 

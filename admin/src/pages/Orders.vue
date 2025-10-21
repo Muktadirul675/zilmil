@@ -54,7 +54,7 @@
             class="border border-gray-300 rounded cursor-pointer px-3 py-2 focus:ring-2 focus:ring-indigo-500">
             <option disabled value="">Change Status</option>
             <option class="cursor-pointer" v-for="status in statusOptions" :key="status" :value="status">
-              {{ capitalize(status) }}
+              {{ capitalize(convert_to_normal_word(status)) }}
             </option>
           </select>
         </div>
@@ -140,6 +140,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {{ new Date(order.created_at).toLocaleDateString() }}
+                <span v-if="order.source">[{{ capitalize(convert_to_normal_word(order.source)) }}]</span>
                 <br>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -184,7 +185,7 @@
                 <div class="flex flex-col items-starts gap-1">
                   <span class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"
                     :class="statusClass(order.status)">
-                    <i :class="statusIcon(order.status)" /> {{ capitalize(order.status) }}
+                    <i :class="statusIcon(order.status)" /> {{ capitalize(convert_to_normal_word(order.status)) }}
                     <span v-if="order.collected_amount > 0">[{{ parseInt(order.collected_amount) }}]</span>
                   </span>
                   <div v-if="order.courier_status && order.courier_status !== 'pending'"
@@ -283,6 +284,7 @@
 import FraudRatio from '@/components/FraudRatio.vue'
 import BDT from '@/components/ui/BDT.vue'
 import TapToShowText from '@/components/ui/TapToShowText.vue'
+import { convert_to_normal_word } from '@/services/utils'
 import { useOrderStore } from '@/stores/orders'
 import { useHead } from '@vueuse/head'
 import { computed, ref } from 'vue'
@@ -316,7 +318,9 @@ const statusOptions = [
   'delivered',
   'cancelled',
   'returned',
-  'failed'
+  'failed',
+  'partially_delivered',
+  'partially_returned',
 ]
 
 function statusIcon(status) {
@@ -324,6 +328,7 @@ function statusIcon(status) {
     case 'pending': return 'pi pi-clock';
     case 'shipped': return 'pi pi-send';
     case 'delivered': return 'pi pi-check-circle';
+    case 'partially_delivered': return 'pi pi-check-circle';
     case 'cancelled': return 'pi pi-times-circle';
     case 'failed': return 'pi pi-times-circle';
     default: return 'pi pi-info-circle';

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/lib/api'
 import { useToast } from '../lib/toast'
+import { trackAddToCart } from '@/lib/pixel'
 
 export const useCartStore = defineStore('cartStore', () => {
     const cart = ref(null)

@@ -76,8 +76,17 @@ const handleAddToCart = async () => {
       product: product.value.id,
       quantity: 1
     })
+    trackAddToCart({
+      content_name: product.value.name,
+      content_ids: [product.value.id],
+      content_type: 'product',
+      value: parseFloat(product.value.net_price || product.value.price),
+      currency: 'BDT',
+      quantity: 1
+    })
+    toast.success("Product Added to Cart")
   } catch (err) {
-    alert('Failed to add to cart.')
+    toast.error('Failed to add to cart.')
   } finally {
     loading.value = false
   }

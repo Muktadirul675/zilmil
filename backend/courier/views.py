@@ -80,6 +80,8 @@ class CourierWebhookView(APIView):
             order.status = 'partially_returned'
         elif event_key == 'picked':
             order.status = 'shipped'
+        elif event_key == 'pickup-cancelled':
+            order.status = 'cancelled'
         elif event_key == 'created':
             order.status = 'processing'
 

@@ -9,89 +9,181 @@
       <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
         <div class="flex items-center justify-between my-2 mb-3">
           <div class="flex flex-row items-center gap-2">
-            <BackButton />
+            <BackButton/>
             <h2 class="text-2xl font-semibold">Edit Order</h2>
           </div>
         </div>
+
         <div class="flex flex-col md:flex-row gap-6">
           <!-- Left (Compact Inputs) -->
           <div class="w-full md:w-1/3 space-y-4">
-            <FormInput label="Full Name" icon="user" v-model="order.full_name" required />
-            <FormInput label="Phone" icon="phone" v-model="order.phone" required />
+            <FormInput
+              label="Full Name"
+              icon="user"
+              v-model="order.full_name"
+              required
+              :disabled="isDisabled"
+            />
+
+            <FormInput
+              label="Phone"
+              icon="phone"
+              v-model="order.phone"
+              required
+              :disabled="isDisabled"
+            />
 
             <div>
               <FormLabel icon="home">Shipping Address</FormLabel>
-              <textarea v-model="order.shipping_address" required placeholder="Shipping Address"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+              <textarea
+                v-model="order.shipping_address"
+                required
+                placeholder="Shipping Address"
+                :disabled="isDisabled"
+                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
             </div>
 
             <div>
               <FormLabel icon="tag">Status</FormLabel>
-              <select v-model="order.status"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                <option v-for="s in statusOptions" :key="s" :value="s">{{ capitalize(s) }}</option>
+              <select
+                v-model="order.status"
+                :disabled="isDisabled"
+                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option v-for="s in statusOptions" :key="s" :value="s">
+                  {{ capitalize(s) }}
+                </option>
               </select>
             </div>
 
             <div>
               <FormLabel icon="info-circle">Note</FormLabel>
-              <textarea v-model="order.note" placeholder="Note"
-                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+              <textarea
+                v-model="order.note"
+                placeholder="Note"
+                :disabled="isDisabled"
+                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
             </div>
 
-            <SearchSelect label="District" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
-              v-model="order.city_id" @change="fetchZones" />
+            <SearchSelect
+              label="District"
+              icon="map-marker"
+              :items="cities"
+              itemKey="city_id"
+              itemLabel="city_name"
+              v-model="order.city_id"
+              @change="fetchZones"
+              :disabled="isDisabled"
+            />
+
             <div v-if="fetchingCities" class="text-slate-800">
               <i class="pi pi-spin pi-spinner me-2"></i>
               Fetching districts
             </div>
+
             <div class="flex flex-row items-center justify-start gap-1">
               <div class="flex-1">
-                <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
-                  itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
+                <SearchSelect
+                  v-if="zones.length"
+                  label="Zone"
+                  icon="globe"
+                  :items="zones"
+                  itemKey="zone_id"
+                  itemLabel="zone_name"
+                  v-model="order.zone_id"
+                  @change="fetchAreas"
+                  :disabled="isDisabled || !order.city_id"
+                />
                 <div v-if="fetchingZones" class="text-slate-800">
                   <i class="pi pi-spin pi-spinner me-2"></i>
                   Fetching zones
                 </div>
               </div>
+
               <div class="flex-1">
-                <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
-                  itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
+                <SearchSelect
+                  v-if="areas.length"
+                  label="Area"
+                  icon="location-arrow"
+                  :items="areas"
+                  itemKey="area_id"
+                  itemLabel="area_name"
+                  v-model="order.area_id"
+                  :disabled="isDisabled || !order.zone_id"
+                />
                 <div v-if="fetchingAreas" class="text-slate-800">
                   <i class="pi pi-spin pi-spinner me-2"></i>
                   Fetching areas
                 </div>
               </div>
             </div>
+
             <div class="flex flex-row flex-wrap gap-2 items-start">
               <div class="flex-1">
-                <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
+                <FormInput
+                  label="Discount"
+                  icon="percentage"
+                  v-model="order.order_discount"
+                  type="number"
+                  :disabled="isDisabled"
+                />
               </div>
               <div class="flex-1">
-                <FormInput label="Delivery Charge" icon="dollar" v-model="order.delivery_charge" type="number" />
-                <p v-if="isCalculatingDelivery" class="text-xs text-gray-500 mt-1">Calculating delivery charge...</p>
+                <FormInput
+                  label="Delivery Charge"
+                  icon="dollar"
+                  v-model="order.delivery_charge"
+                  type="number"
+                  :disabled="isDisabled"
+                />
+                <p
+                  v-if="isCalculatingDelivery"
+                  class="text-xs text-gray-500 mt-1"
+                >
+                  Calculating delivery charge...
+                </p>
               </div>
             </div>
+
             <!-- Total Price -->
             <div class="text-sm font-medium pt-2 flex items-center">
               Total Price:
               <BDT :amount="totalPrice" />
             </div>
+
             <div class="my-3 flex justify-center w-full">
-              <button type="submit"
-                class="bg-green-600 mx-auto hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer">
+              <button
+                type="submit"
+                :disabled="isDisabled"
+                class="bg-green-600 mx-auto hover:bg-indigo-700 text-white px-6 py-2 rounded transition cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
                 <i class="pi pi-check mr-1" /> Update Order
               </button>
               <p v-if="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
-              <p v-if="success" class="text-green-600 text-sm mt-2">Order updated successfully!</p>
+              <p
+                v-if="success"
+                class="text-green-600 text-sm mt-2"
+              >
+                Order updated successfully!
+              </p>
             </div>
           </div>
 
           <!-- Right (Wider Product Section) -->
           <div class="w-full md:w-2/3 space-y-4">
             <FraudChecker v-if="order.phone" :number="order.phone" />
-            <OrderItemPreview :items="order.items" @remove="i => order.items.splice(i, 1)" />
-            <ProductSelector @add="item => order.items.push(item)" />
+            <OrderItemPreview
+              :items="order.items"
+              @remove="i => order.items.splice(i, 1)"
+              :disabled="isDisabled"
+            />
+            <ProductSelector
+              v-if="!isDisabled"
+              @add="item => order.items.push(item)"
+              :disabled="isDisabled"
+            />
           </div>
         </div>
       </form>
@@ -140,6 +232,9 @@ const order = ref({
 const isFetchingOrder = ref(true)
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
 const success = ref(false)
+const isDisabled = computed(()=>{
+  return isFetchingOrder || ['delivered','partially_delivered'].includes(order.value.status)
+})
 const error = ref('')
 const loading = ref(false)
 const isCalculatingDelivery = ref(false)
@@ -196,6 +291,7 @@ const fetchOrder = async () => {
       area_id: data.area_id,
       items: data.items || [],
     }
+
     fetchCities()
   } catch (err) {
     error.value = 'Failed to load order data.'

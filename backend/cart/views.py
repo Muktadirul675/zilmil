@@ -167,6 +167,9 @@ class CartViewSet(viewsets.ViewSet):
                 "quantity": quantity
             })
 
+        num_items = 0
+        product_ids = []
+
         # ð§  Atomic block
         with transaction.atomic():
             order = Order.objects.create(
@@ -187,11 +190,16 @@ class CartViewSet(viewsets.ViewSet):
                     price_at_purchase=item['product'].net_price or item['product'].price
                 )
             order.save()
+            for item in items:
+                num_items += item['quantity']
+                product_ids.append(item['product'].id)
             # Clear cart only after successful order creation
             cart.items.all().delete()
 
         return Response({
             "success": True,
             "message": "Order created successfully.",
-            "order_id": order.id
+            "order_id": order.id,
+            "num_items": num_items,
+            "product_ids":product_ids
         }, status=status.HTTP_201_CREATED)

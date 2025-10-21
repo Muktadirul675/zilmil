@@ -15,7 +15,7 @@ ITEM_TYPE = '2'
 STORE_ID = settings.PATHAO_STORE_ID # Or fetch from settings if dynamic
 
 def is_order_ready(order):
-    if order.status == CONFIRM_STATUS and not order.sent_to_courier:
+    if order.status == CONFIRM_STATUS:
         # return (
         #     order.full_name and order.shipping_address and order.phone
         #     and order.city_id and order.zone_id

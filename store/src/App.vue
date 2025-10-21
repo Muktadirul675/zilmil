@@ -11,6 +11,7 @@ import Navbar from './components/sections/Navbar.vue';
 import Notices from './components/sections/Notices.vue';
 import { useSettingsStore } from './stores/settings';
 import Toaster from './components/composables/Toaster.vue';
+import { loadFacebookPixel } from './lib/pixel';
 
 const feed = useFeedStore()
 const cart = useCartStore()
@@ -66,6 +67,7 @@ router.afterEach((to) => {
 
 onMounted(async () => {
   saveUTMSource()
+  loadFacebookPixel(import.meta.env.VITE_PIXEL_ID)
   await Promise.all([
     feed.fetchFeed(),
     cart.fetchCart(),
