@@ -19,7 +19,7 @@
         <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{orderStore.filterStatus = ''; orderStore.fetchOrders()}">All</button>
         <template v-for="status in statusOptions" :key="status" >
           <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{orderStore.filterStatus = status; orderStore.fetchOrders()}">
-            {{ capitalize(status) }}
+            {{ capitalize(convert_to_normal_word(status)) }}
           </button>
         </template>
       </div>
@@ -125,7 +125,7 @@
               <td class="pl-4 py-4 w-10" v-if="orderStore.processing_orders.includes(order.id)"><i
                   class="pi pi-spin pi-cog"></i></td>
               <td class="pl-4 py-4 w-10" v-else>
-                <input type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
+                <input  v-if="!(['delivered','partially_delivered'].includes)(order.status)" type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
                   @change.stop="orderStore.toggleOrderSelection(order.id)" @click.stop />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
