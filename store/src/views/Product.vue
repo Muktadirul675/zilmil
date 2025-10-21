@@ -149,12 +149,12 @@ import BDT from '@/components/ui/BDT.vue'
 import Carousel from '@/components/ui/Carousel.vue'
 import Loading from '@/components/ui/Loading.vue'
 import api from '@/lib/api'
-import { trackAddToCart } from '@/lib/pixel'
+import { trackAddToCart, trackViewContent } from '@/lib/pixel'
 import { formatBDT } from '@/lib/utils'
 import { useCartStore } from '@/stores/cart'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
-import { FacebookIcon, MessageSquare, Phone } from 'lucide-vue-next'
+import { MessageSquare, Phone } from 'lucide-vue-next'
 import { computed, KeepAlive, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteUpdate, RouterLink, useRoute, useRouter } from 'vue-router'
 
@@ -216,11 +216,6 @@ const fetchProduct = async (slug) => {
     const { data } = await api.get(`/products/${slug || route.params.slug}/`)
     product.value = data
     fetchSimilars(data.id)
-    // PageView for product page
-    trackPageView({
-      content_name: `Product Page: ${product.value.name}`,
-      content_category: 'Product'
-    })
     trackViewContent({
       content_name: `Product: ${product.value.name}`,
       content_ids: [product.value.id],

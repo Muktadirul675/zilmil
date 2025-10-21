@@ -78,6 +78,9 @@
                   {{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
                     item.quantity }}
                 </div>
+                <div @click="cart.removeItem(item.id)" class="p-1 text-red-500 hover:text-red-600 hover:bg-red-300/50 transition-all">
+                      <i class="pi pi-trash"></i>
+                    </div>
               </div>
             </div>
           </template>
