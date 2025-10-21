@@ -38,6 +38,7 @@ const router = useRouter()
 async function visit(path, source) {
   try {
     console.log('visiting')
+    console.log('source: '+source)
     await api.post('/visits/', { path: path, source:source })
     console.log('visited')
   } catch (e) {
@@ -56,6 +57,7 @@ function saveUTMSource() {
 
 
 router.afterEach((to) => {
+  saveUTMSource()
   let source = sessionStorage.getItem('source')
   if(!source){
     source = 'organic'

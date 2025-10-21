@@ -84,6 +84,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             self.request.session.create()
             session_id = self.request.session.session_key
         origin = cache.get(f'origin:{get_client_ip(self.request)}')
+        print(f"ORIGIN: {origin}")
         source = 'organic'
         if origin:
             source = origin
