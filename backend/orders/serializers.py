@@ -72,7 +72,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'order_discount', 'delivery_charge', 'status', 'courier', 'c_id', 'courier_status','collected_amount',
             'total_price','courier_reason', 'created_at', 'updated_at', 'items', 'note','source'
         ]
-        read_only_fields = ['created_at', 'updated_at', 'session_id', 'total_price','courier_reason','courier', 'c_id', 'courier_status','source']
+        read_only_fields = ['created_at', 'updated_at', 'session_id', 'total_price','courier_reason','courier', 'c_id', 'courier_status']
 
     def validate(self, data):
         items = data.get('items', [])

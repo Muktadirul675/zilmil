@@ -301,17 +301,23 @@ const handleAddToCart = async (buying = false) => {
 
 async function handleBuyNow() {
   buyingNow.value = true
-  await handleAddToCart()
-  trackAddToCart({
-    content_name: product.value.name,
-    content_ids: [product.value.id],
-    content_type: 'product',
-    value: parseFloat(product.value.net_price || product.value.price),
-    currency: 'BDT',
-    quantity: quantity.value
-  })
-  router.push("/checkout")
-  buyingNow.value = false
+  try{
+    await handleAddToCart()
+    trackAddToCart({
+      content_name: product.value.name,
+      content_ids: [product.value.id],
+      content_type: 'product',
+      value: parseFloat(product.value.net_price || product.value.price),
+      currency: 'BDT',
+      quantity: quantity.value
+    })
+    router.push("/checkout")
+  }catch(e){
+    console.error(e)
+  }
+  finally{
+    buyingNow.value = false
+  }
 }
 
 let slideInterval = null;

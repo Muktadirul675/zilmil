@@ -13,7 +13,7 @@
       <img class="h-[70px] w-[70px]" src="/delivery_processing.gif" alt="">
       <div class="text-lg">Confirming your order</div>
     </div>
-    <div class="max-w-xl mx-auto text-center py-12 text-gray-500" v-else-if="cart.loading">
+    <div class="max-w-xl mx-auto text-center py-12 text-gray-500" v-else-if="cart.loading && !noPageLoad">
       <i class="pi pi-spin pi-spinner text-4xl mb-4"></i>
       <p class="text-lg font-medium">Loading your cart...</p>
     </div>
@@ -78,10 +78,13 @@
                   {{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
                     item.quantity }}
                 </div>
-                <div @click="cart.removeItem(item.id)" class="p-1 text-red-500 hover:text-red-600 hover:bg-red-300/50 transition-all">
-                      <i class="pi pi-trash"></i>
-                    </div>
-              </div>
+                <div v-if="!removingItemsId.includes(item.id)" @click="removeItem(item.id)" class="p-1 text-red-500 hover:text-red-600 hover:bg-red-300/50 transition-all">
+                  <i class="pi pi-trash"></i>
+                </div>
+                <div v-else>
+                  <i class="pi pi-spinner pi-spin text-red-500"></i>
+                </div>
+              </div> 
             </div>
           </template>
         </div>
@@ -144,11 +147,13 @@ useHead({
 const cart = useCartStore()
 const settings = useSettingsStore()
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
-
+const noPageLoad = ref(false)
 const name = ref('')
 const address = ref('')
 const phone = ref('')
 const location = ref('outside')
+
+const removingItemsId = ref([])
 
 const loading = ref(false)
 const error = ref(null)
@@ -173,6 +178,19 @@ function prodImage(url) {
   if (url.startsWith(BACKEND_URL)) return url;
   return `${BACKEND_URL}${url}`
 }
+
+async function removeItem(itemId){
+  noPageLoad.value = true;
+  removingItemsId.value.push(itemId)
+  try{
+    await cart.removeItem(itemId)
+    if(cart.cart.items.length <= 0) window.scrollTo({top:0})
+  }catch(e){
+    console.error("Failed to remove item")
+  }finally{
+    removingItemsId.value = removingItemsId.value.filter((id)=>id!==itemId)
+  }
+} 
 
 const submitOrder = async () => {
   if (!isFormValid.value) return

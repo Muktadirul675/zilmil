@@ -131,7 +131,8 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <div class="flex flex-col gap-1">
                   <div>
-                    #{{ order.id }}
+                    #{{ order.id }}<br/>
+                <span v-if="order.source">[{{ capitalize(convert_to_normal_word(order.source)) }}]</span>
                   </div>
                   <div v-if="order.c_id" class="text-xs">
                     <TapToShowText :text="order.c_id" />
@@ -139,12 +140,14 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ new Date(order.created_at).toLocaleDateString() }} <br/>
-                <span v-if="order.source">[{{ capitalize(convert_to_normal_word(order.source)) }}]</span>
+                {{ new Date(order.created_at).toLocaleDateString() }} 
                 <br>
+                {{ new Date(order.created_at).toLocaleTimeString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {{ new Date(order.updated_at).toLocaleDateString() }}
+                <br>
+                {{ new Date(order.updated_at).toLocaleTimeString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 <div class="flex flex-col gap-2">
