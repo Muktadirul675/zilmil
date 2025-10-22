@@ -143,7 +143,7 @@ const lgWidth = computed(()=>{
 </script>
 
 <template>
-  <div class="hidden w-[2t%] lg:w-[20%]"></div>
+  <div class="hidden w-[25%] lg:w-[20%]"></div>
   <div :class="`relative w-1/2 md:w-1/3 lg:w-[${lgWidth}%] p-1`">
     <div class="absolute inset-0 z-5 rounded m-1" v-if="unavailable">
       <div class="absolute bg-gray-300 opacity-50 rounded inset-0"></div>

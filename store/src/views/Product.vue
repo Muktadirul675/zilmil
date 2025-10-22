@@ -134,7 +134,7 @@
     <!-- Similar Products -->
     <div v-if="similars.length && !loading" class="mt-10 p-1">
       <div class="text-lg font-semibold mb-2 w-full bg-red-500 text-white text-center p-2">Similar Products</div>
-      <div class="flex flex-row flex-wrap p-1">
+      <div class="flex flex-row flex-wrap p-1 relative">
         <ProductCard :cols="4" v-for="product in similars" :key="product.id" :product="product" />
       </div>
     </div>
@@ -154,7 +154,7 @@ import { formatBDT } from '@/lib/utils'
 import { useCartStore } from '@/stores/cart'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
-import { MessageSquare, Phone } from 'lucide-vue-next'
+import { FacebookIcon, MessageSquare, Phone } from 'lucide-vue-next'
 import { computed, KeepAlive, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteUpdate, RouterLink, useRoute, useRouter } from 'vue-router'
 
@@ -215,17 +215,20 @@ const fetchProduct = async (slug) => {
     loading.value = true
     const { data } = await api.get(`/products/${slug || route.params.slug}/`)
     product.value = data
+    // console.log(product.value)
+    if(product.value){
+      trackViewContent({
+        content_name: `Product: ${product.value.name}`,
+        content_ids: [product.value.id],
+        content_type: 'product',
+        value: product.value.net_price || product.value.price,
+        currency: 'BDT',
+      })
+    }
     fetchSimilars(data.id)
-    trackViewContent({
-      content_name: `Product: ${product.value.name}`,
-      content_ids: [product.value.id],
-      content_type: 'product',
-      content_category: product.value.category.name,
-      value: product.value.net_price || product.value.price,
-      currency: 'BDT',
-    })
   } catch (e) {
     error.value = 'Failed to load product'
+    alert(e)
   } finally {
     loading.value = false
   }

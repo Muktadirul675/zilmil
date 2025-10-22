@@ -15,8 +15,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import send_order_to_courier, is_order_ready
-from visits.utils import get_client_ip
-from django.core.cache import cache
 
 class SendToCourierView(APIView):
     def post(self, request, *args, **kwargs):
@@ -83,12 +81,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not session_id: 
             self.request.session.create()
             session_id = self.request.session.session_key
-        origin = cache.get(f'origin:{get_client_ip(self.request)}')
-        print(f"ORIGIN: {origin}")
-        source = 'organic'
-        if origin:
-            source = origin
-        order = serializer.save(session_id=session_id, source=source)
+        # origin = cache.get(f'origin:{get_client_ip(self.request)}')
+        # print(f"ORIGIN: {origin}")
+        # source = 'organic'
+        # if origin:
+        #     source = origin
+        order = serializer.save(session_id=session_id)
 
         log_activity(
             user=self.request.user,

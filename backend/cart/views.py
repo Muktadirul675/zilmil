@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from orders.models import Order, OrderItem
 from django.db import transaction
+from visits.utils import get_client_ip
+from django.core.cache import cache
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -126,6 +128,12 @@ class CartViewSet(viewsets.ViewSet):
         phone = data.get("phone")
         shipping_address = data.get("shipping_address")
         note = data.get("note", "")
+        ip = get_client_ip(request)
+        origin = cache.get(f'origin:{ip}')
+        print(f"ORIGIN: {origin}")
+        source = 'organic'
+        if origin:
+            source = origin
 
         if not all([full_name, phone, shipping_address]):
             return Response(
@@ -177,7 +185,8 @@ class CartViewSet(viewsets.ViewSet):
                 phone=phone,
                 shipping_address=shipping_address,
                 note=note,
-                session_id=cart.session_id
+                session_id=cart.session_id,
+                source=source
             )
 
             for item in items:

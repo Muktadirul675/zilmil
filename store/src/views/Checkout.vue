@@ -207,6 +207,8 @@ const submitOrder = async () => {
     })
     success.value = true
     order_id.value = res.data.order_id
+    cart.fetchCart()
+    window.scrollTo({ behavior: 'smooth', top: 0 })
     trackPurchase({
       value: total.value,
       currency: 'BDT',
@@ -215,8 +217,6 @@ const submitOrder = async () => {
       num_items: res.data.num_items,
       order_id: order_id.value
     })
-    cart.fetchCart()
-    window.scrollTo({ behavior: 'smooth', top: 0 })
     // Optional: Clear the form or cart here
   } catch (err) {
     error.value = 'Failed to place order. Please try again.'
@@ -227,19 +227,14 @@ const submitOrder = async () => {
   }
 }
 
-effect(()=>{
-  if(cart.cart){
-    trackInitiateCheckout({
-      value: total.value,
-      currency: 'BDT',
-      content_ids: cart.cart.items.map((i)=>i.product.id), // array of product IDs in cart
-      content_type: 'product',
-      num_items: cart.cart.total_items
-    })
-  }
-})
-
 onMounted(() => {
   window.scrollTo({ top: 0 });
+  trackInitiateCheckout({
+    value: total.value,
+    currency: 'BDT',
+    content_ids: cart.cart.items.map((i)=>i.product.id), // array of product IDs in cart
+    content_type: 'product',
+    num_items: cart.cart.total_items
+  })
 })
 </script>
