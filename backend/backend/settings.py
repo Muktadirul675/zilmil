@@ -138,6 +138,7 @@ CORS_ALLOW_METHODS = list(default_methods)  # This already includes GET, POST, O
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://api.zilmil.com.bd"
 ]
 
 TEMPLATES = [
