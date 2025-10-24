@@ -65,12 +65,12 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
 # Pathao API credentials
-PATHAO_CLIENT_ID = "JxboV5Nagw"
-PATHAO_CLIENT_SECRET = "J5Nnm9TjdqWOhm5jttHOErXR18SEx6HbAvZHUag9"
-PATHAO_USERNAME = "fashionbikebd@gmail.com"
-PATHAO_PASSWORD = "pathao123**"
+PATHAO_CLIENT_ID = "K9b69XzaEv"
+PATHAO_CLIENT_SECRET = "xkGEQkevczpkUf5akTiPPCGdaaoRJZUYe73M51iD"
+PATHAO_USERNAME = "zilmilonlineshop@gmail.com"
+PATHAO_PASSWORD = "Zilmil123**"
 PATHAO_BASE_URL = "https://api-hermes.pathao.com"
-PATHAO_STORE_ID = "113409"
+PATHAO_STORE_ID = "260144"
 
 CHANNEL_LAYERS = {
     "default": {
