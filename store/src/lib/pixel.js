@@ -1,5 +1,6 @@
 // src/utils/pixel.js
 export function loadFacebookPixel(pixelId) {
+return;
   if (window.fbq) return; // Already loaded
   
   // Load Facebook Pixel script
