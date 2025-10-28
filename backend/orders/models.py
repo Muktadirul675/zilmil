@@ -30,7 +30,7 @@ class Order(models.Model):
     sent_to_courier = models.BooleanField(default=False)
     c_id = models.CharField(max_length=255, null=True, blank=True)
     courier_status = models.CharField(
-        max_length=20,
+        max_length=50,
         default='pending'
     )
     city_id = models.PositiveIntegerField(null=True, blank=True)

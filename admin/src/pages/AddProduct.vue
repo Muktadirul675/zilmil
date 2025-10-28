@@ -10,6 +10,7 @@ import RichTextControls from '@/components/RichTextControls.vue'
 import { toast } from '@/services/toast'
 import BackButton from '@/components/ui/BackButton.vue'
 import { useHead } from '@vueuse/head'
+import { showDrfErrors } from '@/lib/drf'
 
 useHead({title:`Add Product - Zilmil.com.bd`})
 
@@ -59,6 +60,15 @@ const removeVariant = (i) => form.variants.splice(i, 1)
 const addColor = () => form.colors.push({ name: '', hex_code: '#000000', stock: 0 })
 const removeColor = (i) => form.colors.splice(i, 1)
 
+const delCategory = async (id) =>{
+  try{
+    const res = await api.delete(`/categories/${id}`)
+    toast.info("Category Deleted")
+  }catch(e){
+    showDrfErrors(e)
+  }
+}
+
 const addNewCategory = async () => {
   const name = newCategoryName.value.trim()
   if (!name) return
@@ -67,7 +77,6 @@ const addNewCategory = async () => {
 
   addingCategory.value = true
   try {
-    console.log('adding')
     const response = await api.post('/categories/', { name })
     const newCat = response.data
     categories.value.push(newCat)
@@ -236,10 +245,13 @@ onBeforeUnmount(() => {
           class="flex flex-col divide-y max-h-[150px] overflow-auto rounded border border-gray-300 divide-gray-300">
           <template v-for="cat in categories" :key="cat.id">
             <div @click="toggleCategory(cat.id)" :class="[
-              'p-2 cursor-pointer',
+              'p-2 cursor-pointer flex justify-between',
               form.categories.includes(cat.id) ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
             ]">
               {{ cat.name }}
+              <div @click="()=>delCategory(cat.id)" class="text-red-500 hover:bg-red-500/50 p-1">
+                <i class="pi pi-trash"></i>
+              </div>
             </div>
           </template>
         </div>

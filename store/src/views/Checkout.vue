@@ -4,7 +4,9 @@
     <div v-if="success" id="success"
       class="min-h-[50vh] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
       <img src="/order_confirmed.gif" class="w-[70px] h-[70px]" alt="">
-      <div class="text-3xl text-green-500 text-center">আপনার অর্ডার গ্রহণ করা হয়েছে!</div>
+      <div class="text-3xl text-red-500 text-center">Thank You</div>
+      <div class="text-xl text-green-500 text-center">আপনার অর্ডার গ্রহণ করা হয়েছে!</div>
+      <div class="text-green-500 text-center">Customer Support</div>
       <div class="text-lg text-green-500 text-center"> Order id: #{{ order_id }}</div>
       <RouterLink to="/" class="btn"> <i class="pi pi-shopping-cart me-2"></i> Continue Shopping</RouterLink>
     </div>

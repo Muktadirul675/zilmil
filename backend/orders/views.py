@@ -14,7 +14,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .utils import send_order_to_courier, is_order_ready
+from .utils import send_order_to_courier
+from rest_framework.exceptions import ValidationError
 
 class SendToCourierView(APIView):
     def post(self, request, *args, **kwargs):
@@ -59,6 +60,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
     
     def perform_update(self, serializer):
+        if serializer.instance.status in ['delivered','partially_delivered']:
+            raise ValidationError("Can't edit order that has been delivered or partially delivered") 
         old_status = serializer.instance.status  # previous status before save
         order = serializer.save()
 

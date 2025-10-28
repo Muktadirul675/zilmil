@@ -29,6 +29,7 @@ WEBHOOK_SECRET = "f3992ecc-59da-4cbe-a049-a13da2018d51"
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CourierWebhookView(APIView):
+    authentication_classes = []
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -78,7 +79,7 @@ class CourierWebhookView(APIView):
             order.status = 'failed'
         elif event_key == 'partial-returned':
             order.status = 'partially_returned'
-        elif event_key == 'picked':
+        elif event_key == 'picked' or event_key == 'in-transit':
             order.status = 'shipped'
         elif event_key == 'pickup-cancelled':
             order.status = 'cancelled'
