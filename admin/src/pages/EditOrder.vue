@@ -233,7 +233,7 @@ const isFetchingOrder = ref(true)
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
 const success = ref(false)
 const isDisabled = computed(()=>{
-  return isFetchingOrder.value || ['delivered','partially_delivered'].includes(order.value.status)
+  return isFetchingOrder.value || ['delivered','partially_delivered','returned','cancelled','failed','partially_returned'].includes(order.value.status)
 })
 const error = ref('')
 const loading = ref(false)

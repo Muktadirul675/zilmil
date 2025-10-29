@@ -125,7 +125,7 @@
               <td class="pl-4 py-4 w-10" v-if="orderStore.processing_orders.includes(order.id)"><i
                   class="pi pi-spin pi-cog"></i></td>
               <td class="pl-4 py-4 w-10" v-else>
-                <input  v-if="!(['delivered','partially_delivered'].includes)(order.status)" type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
+                <input  v-if="!(['delivered','partially_delivered','returned','cancelled','failed','partially_returned'].includes)(order.status)" type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
                   @change.stop="orderStore.toggleOrderSelection(order.id)" @click.stop />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
