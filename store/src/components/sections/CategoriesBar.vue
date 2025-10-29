@@ -13,10 +13,10 @@ const { section } = defineProps({
       <div class="relative group border-l-[0.5px] last:border-r border-gray-300">
         <div class="px-3 py-2 cursor-pointer hover:bg-red-600">All Categories</div>
         <Transition name="fade">
-          <div v-if="section.args.all_categories.length"
+          <div v-if="section?.args?.all_categories?.length"
             class="absolute top-full rounded left-0 bg-white text-black shadow-md z-10 flex flex-col min-w-[200px] divide-y divide-gray-300 transition-opacity duration-200 ease-out group-hover:flex opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto">
 
-            <template v-for="cat in section.args.all_categories" :key="cat.uid">
+            <template v-for="cat in section?.args?.all_categories" :key="cat.uid">
               <div class="relative hover:bg-gray-100 group/sub transition-all duration-150 ease-in-out">
                 <div v-if="cat.children && cat.children.length"
                   class="flex w-full px-4 py-2 flex-row items-center justify-between transition-all cursor-pointer hover:bg-red-500 hover:text-white">

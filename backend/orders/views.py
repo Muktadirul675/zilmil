@@ -14,6 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.core.cache import cache
 from .utils import send_order_to_courier
 from rest_framework.exceptions import ValidationError
 
@@ -81,21 +82,36 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         session_id = self.request.session.session_key
-        if not session_id: 
+        if not session_id:
             self.request.session.create()
             session_id = self.request.session.session_key
-        # origin = cache.get(f'origin:{get_client_ip(self.request)}')
-        # print(f"ORIGIN: {origin}")
-        # source = 'organic'
-        # if origin:
-        #     source = origin
+
         order = serializer.save(session_id=session_id)
+
+        # â Save Redis key for thank-you verification (expires in 1 minute)
+        cache.set(f"order:thank-you:{order.id}", True, timeout=60)
 
         log_activity(
             user=self.request.user,
             action='order.create',
             message=f"Order #{order.id} created for {order.full_name}"
         )
+
+    @action(detail=False, methods=['get'])
+    def verify(self, request):
+        order_id = request.query_params.get('order_id')
+
+        if not order_id:
+            return Response({'valid': False,'reason':'Order id missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+        key = f"order:thank-you:{order_id}"
+        exists = cache.get(key)
+
+        if exists:
+            cache.delete(key)
+            return Response({'valid': True}, status=status.HTTP_200_OK)
+        else:
+            return Response({'valid': False}, status=status.HTTP_200_OK)
 
     # â Add this custom action
     @action(detail=True, methods=['post'])

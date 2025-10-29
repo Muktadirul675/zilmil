@@ -50,6 +50,16 @@ const router = createRouter({
       name: 'terms-and-conditions',
       component: () => import('@/views/TermsAndConditions.vue'), // lazy load
     },
+    {
+      path: '/not-found',
+      name: 'not-found',
+      component: ()=> import('@/views/404.vue')
+    },
+    {
+      path: '/thank-you',
+      name:'thank-you',
+      component: () => import('@/views/ThankYou.vue')
+    }
   ],
 })
 

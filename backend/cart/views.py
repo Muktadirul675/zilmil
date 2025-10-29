@@ -203,6 +203,7 @@ class CartViewSet(viewsets.ViewSet):
                 num_items += item['quantity']
                 product_ids.append(item['product'].id)
             # Clear cart only after successful order creation
+            cache.set(f"order:thank-you:{order.id}", True, timeout=60)
             cart.items.all().delete()
 
         return Response({

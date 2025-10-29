@@ -1,16 +1,7 @@
 <template>
   <!-- Loading state -->
   <div class="max-w-xl mx-auto p-2 lg:p-3 mb-12">
-    <div v-if="success" id="success"
-      class="min-h-[50vh] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
-      <img src="/order_confirmed.gif" class="w-[70px] h-[70px]" alt="">
-      <div class="text-3xl text-red-500 text-center">ধন্যবাদ!</div>
-      <div class="text-xl text-green-500 text-center">আপনার অর্ডার গ্রহণ করা হয়েছে</div>
-      <div class="text-green-500 text-center">কিছুক্ষণের মধ্যে আমাদের একজন প্রতিনিধি আপনার সাথে যোগাযোগ করে অর্ডারটি কনফার্ম করবে।</div>
-      <div class="text-lg text-green-500 text-center"> Order id: Z-#{{ order_id }}</div>
-      <RouterLink to="/" class="btn"> <i class="pi pi-shopping-cart me-2"></i> Continue Shopping</RouterLink>
-    </div>
-    <div v-else-if="loading"
+    <div v-if="loading"
       class="min-h-[200px] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
       <img class="h-[70px] w-[70px]" src="/delivery_processing.gif" alt="">
       <div class="text-lg">Confirming your order</div>
@@ -135,7 +126,7 @@ import { ref, computed, onMounted, effect } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import api from '@/lib/api'
 import BDT from '@/components/ui/BDT.vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useToast } from '@/lib/toast'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
@@ -154,6 +145,7 @@ const name = ref('')
 const address = ref('')
 const phone = ref('')
 const location = ref('outside')
+const router = useRouter()
 
 const removingItemsId = ref([])
 
@@ -210,15 +202,16 @@ const submitOrder = async () => {
     success.value = true
     order_id.value = res.data.order_id
     cart.fetchCart()
-    window.scrollTo({ behavior: 'smooth', top: 0 })
-    trackPurchase({
-      value: total.value,
-      currency: 'BDT',
-      content_ids: res.data.product_ids, // array of product IDs in order
-      content_type: 'product',
-      num_items: res.data.num_items,
-      order_id: order_id.value
-    })
+    router.push(`/thank-you?order_id=${order_id.value}`)
+    // window.scrollTo({ behavior: 'smooth', top: 0 })
+    // trackPurchase({
+    //   value: total.value,
+    //   currency: 'BDT',
+    //   content_ids: res.data.product_ids, // array of product IDs in order
+    //   content_type: 'product',
+    //   num_items: res.data.num_items,
+    //   order_id: order_id.value
+    // })
     // Optional: Clear the form or cart here
   } catch (err) {
     error.value = 'Failed to place order. Please try again.'

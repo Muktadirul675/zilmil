@@ -62,8 +62,8 @@ const removeColor = (i) => form.colors.splice(i, 1)
 
 const delCategory = async (id) =>{
   try{
-    const res = await api.delete(`/categories/${id}`)
-    toast.info("Category Deleted")
+    const res = await api.delete(`/categories/${id}/`)
+/    toast.info("Category Deleted")
   }catch(e){
     showDrfErrors(e)
   }

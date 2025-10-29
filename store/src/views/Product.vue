@@ -209,14 +209,13 @@ async function fetchSimilars(id) {
   const suggestionsRes = await api.get(`/products/${id}/suggestions`)
   similars.value = suggestionsRes.data
 }
-
 const fetchProduct = async (slug) => {
   try {
     loading.value = true
     const { data } = await api.get(`/products/${slug || route.params.slug}/`)
     product.value = data
-    // console.log(product.value)
-    if(product.value){
+
+    if (product.value) {
       trackViewContent({
         content_name: `Product: ${product.value.name}`,
         content_ids: [product.value.id],
@@ -225,10 +224,16 @@ const fetchProduct = async (slug) => {
         currency: 'BDT',
       })
     }
+
     fetchSimilars(data.id)
   } catch (e) {
-    error.value = 'Failed to load product'
-    alert(e)
+    if (e.response && e.response.status === 404) {
+      router.push('/not-found') // redirect to your 404 page
+    } else {
+      error.value = 'Failed to load product'
+      console.error(e)
+      alert(e)
+    }
   } finally {
     loading.value = false
   }
