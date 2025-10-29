@@ -209,11 +209,11 @@ const submitOrder = async () => {
       phone: phone.value,
       inside_dhaka : location.value === 'inside'
     })
+    window.scrollTo({ behavior: 'smooth', top: 0 })
     success.value = true
     order_id.value = res.data.order_id
     cart.fetchCart()
     router.push(`/thank-you?order_id=${order_id.value}`)
-    // window.scrollTo({ behavior: 'smooth', top: 0 })
     // trackPurchase({
     //   value: total.value,
     //   currency: 'BDT',
