@@ -192,6 +192,7 @@ const submitOrder = async () => {
   loading.value = true
   error.value = null
   success.value = false
+  noPageLoad.value = true;
 
   try {
     const res = await api.post('/cart/checkout/', {

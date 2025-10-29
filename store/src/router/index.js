@@ -1,5 +1,6 @@
 import HomeView from '@/views/HomeView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import api from '@/lib/api'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,30 @@ const router = createRouter({
       component: () => import('@/views/ThankYou.vue')
     }
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  console.log('Route guard')
+  if (to.name === 'thank-you') {
+    const order_id = to.query.order_id
+
+    if (!order_id) return next('/not-found')
+
+    try {
+      const res = await api.get(`/orders/verify?order_id=${order_id}`)
+      console.log(`Route guard: ${res.data.valid}`)
+      if (res.data?.valid) {
+        next() // proceed to ThankYou.vue
+      } else {
+        next('/not-found') // invalid key
+      }
+    } catch (err) {
+      console.error('Order verification failed:', err)
+      next('/not-found')
+    }
+  } else {
+    next() // all other routes proceed normally
+  }
 })
 
 export default router

@@ -13,7 +13,7 @@
     <h1 class="text-7xl font-extrabold text-white mb-4">404</h1>
     <h2 class="text-2xl font-semibold mb-3">Page Not Found</h2>
     <p class="text-gray-400 mb-8 max-w-md">
-      The page youâre looking for doesnât exist or has been moved.<br />
+      The page you're looking for doesn't exist or has been moved.<br />
       If this was unexpected, please <a href="/contact" class="text-blue-400 hover:underline">contact us</a>.
     </p>
 
