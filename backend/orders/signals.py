@@ -31,7 +31,6 @@ POSITIVE_STATUSES = [
     'delivered',
 ]
 
-@receiver([post_save, post_delete], sender=OrderItem)
 @receiver(post_save, sender=Order)
 def manage_ready_for_courier(sender, instance, **kwargs):
     order = instance.order if isinstance(instance, OrderItem) else instance
