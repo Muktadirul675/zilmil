@@ -74,7 +74,7 @@ class CourierWebhookView(APIView):
         elif event_key == 'returned':
             order.status = 'returned'
         elif event_key == 'paid-return':
-            order.status = 'paid_returned'
+            order.status = 'partially_returned'
         elif event_key in ['delivery-failed', 'pickup-failed']:
             order.status = 'failed'
         elif event_key == 'partial-returned':
