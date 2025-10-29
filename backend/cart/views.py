@@ -10,6 +10,7 @@ from django.db import transaction
 from visits.utils import get_client_ip
 from django.core.cache import cache
 from site_settings.utils import get_setting
+from decimal import Decimal
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -192,7 +193,7 @@ class CartViewSet(viewsets.ViewSet):
                 note=note,
                 session_id=cart.session_id,
                 source=source,
-                delivery_charge=inside_dhaka_dc if inside_dhaka else outside_dhaka_dc
+                delivery_charge=Decimal(str(inside_dhaka_dc)) if inside_dhaka else Decimal(str(outside_dhaka_dc))
             )
 
             for item in items:
