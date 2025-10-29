@@ -106,9 +106,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({'valid': False,'reason':'Order id missing'}, status=status.HTTP_400_BAD_REQUEST)
 
         key = f"order:thank-you:{str(order_id)}"
-        print(f"KEY: {key}")
+        # print(f"KEY: {key}")
         exists = cache.get(key) == 1
-        print(f"{key} EXISTS -> {exists}\n")
+        # print(f"{key} EXISTS -> {exists}\n")
 
         if exists:
             cache.delete(key)

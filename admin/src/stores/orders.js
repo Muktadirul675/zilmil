@@ -102,15 +102,11 @@ export const useOrderStore = defineStore('orderStore', {
     // Selection
     toggleOrderSelection(id) {
       const o = this.orders.find((ord)=>ord.id === o)
-      if(o){
-        if(['delivered','partially_delivered','returned','cancelled','failed','partially_returned'].includes(o.status)){
-          this.selectedOrderIds = this.selectedOrderIds.filter(oid => oid !== id)
-        }else if (this.selectedOrderIds.includes(id)) {
+      if (this.selectedOrderIds.includes(id)) {
           this.selectedOrderIds = this.selectedOrderIds.filter(oid => oid !== id)
         } else {
           this.selectedOrderIds.push(id)
         }
-      }
     },
     toggleSelectAll() {
       if (this.areAllSelected) {
