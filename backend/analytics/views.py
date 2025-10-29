@@ -21,26 +21,41 @@ from products.serializers import ProductOrderReportSerializer
 from django.db.models import OuterRef, Subquery, Count, IntegerField
 from django.db.models.functions import Coalesce
 
+from django.db.models import Q, OuterRef, Subquery, Count, IntegerField
+from django.db.models.functions import Coalesce
+from django.utils.dateparse import parse_date
+
 class ProductOrderReport(APIView):
     def get(self, request):
         start_date = request.query_params.get("start")
         end_date = request.query_params.get("end")
 
+        # Base filter for OrderItem
         orderitem_filter = Q(product=OuterRef('pk'))
 
+        # Filter by date
         if start_date:
             orderitem_filter &= Q(order__created_at__date__gte=parse_date(start_date))
         if end_date:
             orderitem_filter &= Q(order__created_at__date__lte=parse_date(end_date))
 
+        # Status filter:
+        # Include only orders that are NOT 'pending' AND NOT 'cancelled'
+        # OR orders with courier_status='pickup-cancelled'
+        orderitem_filter &= Q(
+            Q(order__status__in=['pending', 'cancelled']) == False  # exclude pending/cancelled
+        ) | Q(order__courier_status='pickup-cancelled')  # include pickup-cancelled
+
+        # Subquery to count order items per product
         filtered_orderitems = (
             OrderItem.objects
-            .filter(orderitem_filter,order__status='confirmed')
+            .filter(orderitem_filter)
             .values('product')
             .annotate(count=Count('id'))
             .values('count')
         )
 
+        # Annotate products with order count
         products = Product.objects.annotate(
             order_count=Coalesce(Subquery(filtered_orderitems, output_field=IntegerField()), 0)
         ).order_by('-order_count')
