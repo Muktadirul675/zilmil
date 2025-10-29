@@ -89,9 +89,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         order = serializer.save(session_id=session_id)
 
         # â Save Redis key for thank-you verification (expires in 1 minute)
-        cache.set(f"order:thank-you:{str(order.id)}", '1', timeout=60)
+        cache.set(f"order:thank-you:{str(order.id)}", '1', timeout=300)
         v = cache.get(f"order:thank-you:{str(order.id)}")
-        print(f"VEFIFYING: {v}")
+        print(f"VERIFYING: {v}")
         log_activity(
             user=self.request.user,
             action='order.create',
