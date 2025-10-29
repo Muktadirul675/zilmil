@@ -130,7 +130,6 @@ class CartViewSet(viewsets.ViewSet):
         note = data.get("note", "")
         ip = get_client_ip(request)
         origin = cache.get(f'origin:{ip}')
-        print(f"ORIGIN: {origin}")
         source = 'organic'
         if origin:
             source = origin
@@ -199,11 +198,11 @@ class CartViewSet(viewsets.ViewSet):
                     price_at_purchase=item['product'].net_price or item['product'].price
                 )
             order.save()
+            cache.set(f"order:thank-you:{order.id}", True, timeout=60)
             for item in items:
                 num_items += item['quantity']
                 product_ids.append(item['product'].id)
             # Clear cart only after successful order creation
-            cache.set(f"order:thank-you:{order.id}", True, timeout=60)
             cart.items.all().delete()
 
         return Response({

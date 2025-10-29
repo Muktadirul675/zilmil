@@ -106,6 +106,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         key = f"order:thank-you:{order_id}"
         exists = cache.get(key)
+        print(f"{key} EXISTS -> {exists}\n")
 
         if exists:
             cache.delete(key)
