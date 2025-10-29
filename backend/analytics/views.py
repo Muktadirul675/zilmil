@@ -24,6 +24,8 @@ from django.db.models.functions import Coalesce
 from django.db.models import Q, OuterRef, Subquery, Count, IntegerField
 from django.db.models.functions import Coalesce
 from django.utils.dateparse import parse_date
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 class ProductOrderReport(APIView):
     def get(self, request):
@@ -42,9 +44,7 @@ class ProductOrderReport(APIView):
         # Status filter:
         # Include only orders that are NOT 'pending' AND NOT 'cancelled'
         # OR orders with courier_status='pickup-cancelled'
-        orderitem_filter &= Q(
-            Q(order__status__in=['pending', 'cancelled']) == False  # exclude pending/cancelled
-        ) | Q(order__courier_status='pickup-cancelled')  # include pickup-cancelled
+        orderitem_filter &= ~Q(order__status__in=['pending', 'cancelled']) | Q(order__courier_status='pickup-cancelled')
 
         # Subquery to count order items per product
         filtered_orderitems = (

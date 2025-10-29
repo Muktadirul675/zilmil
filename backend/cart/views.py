@@ -198,7 +198,7 @@ class CartViewSet(viewsets.ViewSet):
                     price_at_purchase=item['product'].net_price or item['product'].price
                 )
             order.save()
-            cache.set(f"order:thank-you:{str(order.id)}", True, timeout=60)
+            cache.set(f"order:thank-you:{str(order.id)}", '1', timeout=60)
             for item in items:
                 num_items += item['quantity']
                 product_ids.append(item['product'].id)
