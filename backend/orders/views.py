@@ -89,7 +89,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         order = serializer.save(session_id=session_id)
 
         # â Save Redis key for thank-you verification (expires in 1 minute)
-        cache.set(f"order:thank-you:{str(order.id)}", '1', timeout=300)
+        cache.set(f"order:thank-you:{str(order.id)}", 1, timeout=300)
         v = cache.get(f"order:thank-you:{str(order.id)}")
         print(f"VERIFYING: {v}")
         log_activity(
@@ -106,7 +106,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({'valid': False,'reason':'Order id missing'}, status=status.HTTP_400_BAD_REQUEST)
 
         key = f"order:thank-you:{str(order_id)}"
-        exists = cache.get(key) == '1'
+        print(f"KEY: {key}")
+        exists = cache.get(key) == 1
         print(f"{key} EXISTS -> {exists}\n")
 
         if exists:
