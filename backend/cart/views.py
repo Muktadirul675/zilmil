@@ -9,6 +9,7 @@ from orders.models import Order, OrderItem
 from django.db import transaction
 from visits.utils import get_client_ip
 from django.core.cache import cache
+from site_settings.utils import get_setting
 
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -124,6 +125,7 @@ class CartViewSet(viewsets.ViewSet):
             return Response({"detail": "Cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
 
         data = request.data
+        inside_dhaka = data.get("inside_dhaka")
         full_name = data.get("full_name")
         phone = data.get("phone")
         shipping_address = data.get("shipping_address")
@@ -139,6 +141,10 @@ class CartViewSet(viewsets.ViewSet):
                 {"detail": "Missing required fields: full_name, phone, or shipping_address"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+
+        outside_dhaka_dc = get_setting('delivery_charge_outside_dhaka')
+        inside_dhaka_dc = get_setting('delivery_charge_inside_dhaka')
 
         # Validate stock and prepare order items
         items = []
@@ -185,7 +191,8 @@ class CartViewSet(viewsets.ViewSet):
                 shipping_address=shipping_address,
                 note=note,
                 session_id=cart.session_id,
-                source=source
+                source=source,
+                delivery_charge=inside_dhaka_dc if inside_dhaka else outside_dhaka_dc
             )
 
             for item in items:

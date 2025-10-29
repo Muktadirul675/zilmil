@@ -130,7 +130,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useToast } from '@/lib/toast'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
-import { formatBDT, truncate } from '@/lib/utils'
+import { formatBDT, truncate, validateBDPhoneNumber } from '@/lib/utils'
 import { trackInitiateCheckout, trackPurchase } from '@/lib/pixel'
 
 useHead({
@@ -194,11 +194,20 @@ const submitOrder = async () => {
   success.value = false
   noPageLoad.value = true;
 
+  const isValidNumber = validateBDPhoneNumber(phone.value)
+  if(!isValidNumber){
+    loading.value = false;
+    noPageLoad.value = true;
+    toast.error("Please provide a valid phone number")
+    return;
+  }
+
   try {
     const res = await api.post('/cart/checkout/', {
       full_name: name.value,
       shipping_address: address.value,
       phone: phone.value,
+      inside_dhaka : location.value === 'inside'
     })
     success.value = true
     order_id.value = res.data.order_id
@@ -219,7 +228,8 @@ const submitOrder = async () => {
     console.log(err)
     toast.error('Failed to place order. Please try again.')
   } finally {
-    loading.value = false
+    loading.value = false;
+    noPageLoad.value = false;
   }
 }
 

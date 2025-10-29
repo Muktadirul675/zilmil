@@ -8,6 +8,7 @@ from .utils import adjust_stock, get_stock_action, NEGATIVE_STATUSES
 # serializers.py
 from rest_framework import serializers
 from .models import ReadyForCourier
+from site_settings.utils import get_setting
 
 class ReadyForCourierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,7 +71,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'session_id', 'full_name', 'phone', 'shipping_address',
             'order_discount', 'delivery_charge', 'status', 'courier', 'c_id', 'courier_status','collected_amount',
-            'total_price','courier_reason', 'created_at', 'updated_at', 'items', 'note','source'
+            'total_price','courier_reason', 'created_at', 'updated_at', 'items', 'note','source', 'inside_dhaka'
         ]
         read_only_fields = ['created_at', 'updated_at', 'session_id', 'total_price','courier_reason','courier', 'c_id', 'courier_status']
 
@@ -120,7 +121,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
         for item_data in items_data:
             OrderItem.objects.create(order=order, **item_data)
-
+        # order.delivery_charge = inside_dhaka_dc if order.inside_dhaka else outside_dhaka_dc
         order.total_price = self.calculate_total(order)
         order.save(update_fields=['total_price'])
 

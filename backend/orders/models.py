@@ -22,7 +22,7 @@ class Order(models.Model):
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
     shipping_address = models.TextField()
-    
+    inside_dhaka = models.BooleanField(default=False) 
     order_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
 
