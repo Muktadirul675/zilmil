@@ -101,7 +101,6 @@ export const useOrderStore = defineStore('orderStore', {
 
     // Selection
     toggleOrderSelection(id) {
-      const o = this.orders.find((ord)=>ord.id === o)
       if (this.selectedOrderIds.includes(id)) {
           this.selectedOrderIds = this.selectedOrderIds.filter(oid => oid !== id)
         } else {
