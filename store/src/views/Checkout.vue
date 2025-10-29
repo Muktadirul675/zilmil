@@ -165,7 +165,7 @@ const total = computed(() => parseFloat(subtotal.value) + parseFloat(deliveryCha
 const toast = useToast()
 
 const isFormValid = computed(() =>
-  name.value && address.value && phone.value && location.value
+  name.value && address.value && phone.value && location.value && validateBDPhoneNumber(phone.value)
 )
 
 function prodImage(url) {
