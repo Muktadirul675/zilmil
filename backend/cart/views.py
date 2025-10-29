@@ -199,6 +199,8 @@ class CartViewSet(viewsets.ViewSet):
                 )
             order.save()
             cache.set(f"order:thank-you:{str(order.id)}", '1', timeout=60)
+            v = cache.get(f"order:thank-you:{str(order.id)}")
+            print(f"VEFIFYING: {v}")
             for item in items:
                 num_items += item['quantity']
                 product_ids.append(item['product'].id)
