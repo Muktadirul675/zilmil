@@ -11,7 +11,7 @@
             <div class="text-3xl text-red-500 text-center">ধন্যবাদ!</div>
             <div class="text-xl text-green-500 text-center">আপনার অর্ডার গ্রহণ করা হয়েছে</div>
             <div class="text-green-500 text-center">কিছুক্ষণের মধ্যে আমাদের একজন প্রতিনিধি আপনার সাথে যোগাযোগ করে অর্ডারটি কনফার্ম করবে।</div>
-            <div class="text-lg text-green-500 text-center"> Order id: Z-#{{ order_id }}</div>
+            <div class="text-lg text-green-500 text-center"> Order id: #Z-{{ order_id }}</div>
             <RouterLink to="/" class="btn"> <i class="pi pi-shopping-cart me-2"></i> Continue Shopping</RouterLink>
         </div>
         <div v-else>
