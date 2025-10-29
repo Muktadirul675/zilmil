@@ -90,7 +90,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # â Save Redis key for thank-you verification (expires in 1 minute)
         cache.set(f"order:thank-you:{str(order.id)}", True, timeout=60)
-
+        v = cache.get(f"order:thank-you:{str(order.id)}")
+        print(f"VEFIFYING: {v}")
         log_activity(
             user=self.request.user,
             action='order.create',
@@ -104,7 +105,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not order_id:
             return Response({'valid': False,'reason':'Order id missing'}, status=status.HTTP_400_BAD_REQUEST)
 
-        key = f"order:thank-you:{order_id}"
+        key = f"order:thank-you:{str(order_id)}"
         exists = cache.get(key)
         print(f"{key} EXISTS -> {exists}\n")
 
