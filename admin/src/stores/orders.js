@@ -160,7 +160,7 @@ export const useOrderStore = defineStore('orderStore', {
     initOrderSocket() {
       if (this.socket) return
 
-      this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
+      this.socket = new WebSocket(`${'ws'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
 
       this.socket.onmessage = (event) => {
         const message = JSON.parse(event.data)

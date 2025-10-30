@@ -151,10 +151,12 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 <div class="flex flex-col gap-2">
-                  <div>
+                  <div class="flex items-center gap-2">
+                    <i class="pi font-semibold pi-user"></i>
                     {{ order.full_name }}
                   </div>
-                  <div>
+                  <div class="flex items-center gap-2">
+                    <i class="pi font-semibold pi-phone"></i>
                     {{ order.phone }}
                   </div>
                 </div>

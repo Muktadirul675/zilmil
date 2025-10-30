@@ -23,7 +23,15 @@ from django.contrib.auth.models import User, Group
 from rest_framework import status
 from rest_framework import status
 from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from .utils import get_user_activity
 
+@api_view(["GET"])
+def active_users_view(request):
+    data = get_user_activity()
+    return Response(data)
 
 class MakeStaffView(APIView):
     def post(self, request, user_id):

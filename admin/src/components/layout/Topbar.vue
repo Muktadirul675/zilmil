@@ -6,7 +6,15 @@
      </RouterLink>
 
     <!-- User Info -->
-    <div class="flex items-center gap-1 text-sm text-gray-700">
+    <div class="flex items-center gap-2 text-sm text-gray-700">
+      <div class="px-2 border-gray-300 border-l border-r">
+        <Clock/>
+      </div>
+      <template v-if="auth.isAdmin">
+        <div class="mx-2">
+          <ActiveBadge/>
+        </div>
+      </template>
       <i class="pi pi-user text-gray-500 text-base"></i>
       <span>Welcome,</span>
       <span class="font-semibold">{{ user?.username || 'User' }}</span>
@@ -24,6 +32,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { RouterLink, useRouter } from 'vue-router'
 import { computed } from 'vue'
+import ActiveBadge from '../active/ActiveBadge.vue'
+import Clock from '../Clock.vue'
 
 const auth = useAuthStore()
 const router = useRouter()

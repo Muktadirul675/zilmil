@@ -70,9 +70,14 @@ router.beforeEach(async (to, from, next) => {
     isLoggedIn ? next('/dashboard') : next()
   } else {
     if(isLoggedIn){
-      if(to.path === '/orders' || to.path === '/couriers'){
-        next()
-      }else{
+      if (
+        to.path === '/orders' ||
+        to.path.startsWith('/orders/') ||
+        to.path === '/couriers' ||
+        to.path.startsWith('/couriers/')
+      ) {
+      next()
+    }else{
         if(auth.isAdmin){
           next()
         }else{

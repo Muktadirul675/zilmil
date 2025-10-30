@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import axios from '@/services/api' // this should have your Axios instance with auth interceptor
 import { useRoute, useRouter } from 'vue-router'
+import { useActiveUsersStore } from './active'
 
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
@@ -51,6 +52,10 @@ export const useAuthStore = defineStore('authStore', {
                 })
                 this.user = res.data || null
                 this.isAuthenticated = this.user !== null ? true : false
+                if(this.user?.groups?.some((group)=>group.name === 'Admin')){
+                    const activeStore = useActiveUsersStore()
+                    activeStore.startPolling()
+                }
             } catch {
                 this.logout()
             }

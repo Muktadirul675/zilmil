@@ -1,16 +1,23 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/users'
 import { ref } from 'vue'
 import api from '@/services/api'
 import { useHead } from '@vueuse/head'
 import { toast } from '@/services/toast'
+import { useActiveUsersStore } from '@/stores/active'
+import UserActiveStatus from '@/components/active/UserActiveStatus.vue'
 
 useHead({
   title: 'Users - Zilmil.com.bd'
 })
 
 const userStore = useUserStore()
+const actives = useActiveUsersStore()
+
+const totalUsersWithActive = computed(()=>{
+  return [...actives.activeUsers,...actives.inactiveUsers]
+})
 
 onMounted(() => {
   userStore.fetchUsers()
@@ -136,6 +143,7 @@ const removeStaff = async (userId) => {
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Username</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Role</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Actions</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase">Status</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
@@ -145,7 +153,11 @@ const removeStaff = async (userId) => {
                 @change="userStore.toggleUserSelection(user.id)" />
             </td>
 
-            <td class="px-6 py-4">{{ user.username }}</td>
+            <td class="px-6 py-4">
+              <h5>
+                {{ user.username }}
+              </h5>
+            </td>
 
             <td class="px-6 py-4">
               <span v-if="user.groups.some(g => g.name === 'Staff')"
@@ -156,7 +168,7 @@ const removeStaff = async (userId) => {
               <span v-else class="text-gray-500">Regular</span>
             </td>
 
-            <td class="px-6 py-4 space-x-2 flex gap-2">
+            <td class="px-6 py-4 flex items-center gap-2">
               <button v-if="!user.groups.some(g => g.name === 'Staff')" @click="setStaff(user.id)"
                 class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
                 <i class="pi pi-user-edit"></i>
@@ -172,6 +184,9 @@ const removeStaff = async (userId) => {
                 <i class="pi pi-key"></i>
                 Change Password
               </button>
+            </td>
+            <td class="py-2"> 
+              <UserActiveStatus v-if="totalUsersWithActive.length" :user_id="user.id" :all_users="totalUsersWithActive"/>
             </td>
           </tr>
 

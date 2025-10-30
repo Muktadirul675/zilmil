@@ -62,7 +62,7 @@ export const useActivityStore = defineStore('activity', {
       if (this.socket) return
 
       const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
-      const wsUrl = `${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/activities/`
+      const wsUrl = `${'ws'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/activities/`
       this.socket = new WebSocket(wsUrl)
 
       this.socket.onmessage = (event) => {

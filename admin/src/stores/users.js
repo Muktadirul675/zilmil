@@ -1,6 +1,8 @@
 // stores/userStore.js
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { toast } from '@/services/toast'
+import { useActiveUsersStore } from './active'
 
 export const useUserStore = defineStore('userStore', {
   state: () => ({
@@ -52,6 +54,8 @@ export const useUserStore = defineStore('userStore', {
           password,
         })
         await this.fetchUsers()
+        const actives = useActiveUsersStore()
+        actives.fetchActiveUsers()
         return res.data
       } catch (err) {
         this.error = err.response?.data || 'Failed to register user'
@@ -79,5 +83,13 @@ export const useUserStore = defineStore('userStore', {
     clearSelection() {
       this.selectedUserIds = []
     },
+    async getActiveUsers(){
+      try{
+        const res = await api.get('/auth/active-users')
+        return res.data
+      }catch(e){
+        toast.error("Error loading active users")
+      }
+    }
   },
 })

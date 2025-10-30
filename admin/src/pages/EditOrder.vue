@@ -8,9 +8,12 @@
 
       <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
         <div class="flex items-center justify-between my-2 mb-3">
-          <div class="flex flex-row items-center gap-2">
+          <div class="flex w-full flex-row items-center gap-2">
             <BackButton/>
             <h2 class="text-2xl font-semibold">Edit Order</h2>
+            <div class="ms-auto">
+              <PageViewers :viewers="viewers" v-if="viewers.length"/>
+            </div>
           </div>
         </div>
 
@@ -207,10 +210,13 @@ import { debounce } from 'lodash'
 import { handleError } from '@/services/errors'
 import { toast } from '@/services/toast'
 import { useHead } from '@vueuse/head'
+import { usePageWS } from '@/composables/activeWs'
+import PageViewers from '@/components/active/PageViewers.vue'
 
 const router = useRouter()
 const route = useRoute()
 const orderId = route.params.id
+const {viewers} = usePageWS(route.path)
 
 useHead({
   title: `Edit Order #${orderId} - Zilmil.com.bd`
