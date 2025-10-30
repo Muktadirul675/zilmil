@@ -1,5 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from urllib.parse import parse_qs
 
 active_users = {}  # { safe_path: set(usernames) }
 
@@ -9,9 +10,13 @@ class PageActivityConsumer(AsyncWebsocketConsumer):
         self.safe_path = raw_path.replace("/", "_")
         self.group_name = f"page_{self.safe_path}"
         user = self.scope["user"]
-        print(user)
 
-        if user.is_authenticated:
+        # Parse query params
+        query_params = parse_qs(self.scope["query_string"].decode())
+        include_param = query_params.get("include", ["true"])[0].lower()  # default true
+
+        # Only include user if include != "false"
+        if user.is_authenticated and include_param != "false":
             active_users.setdefault(self.safe_path, set()).add(user.username)
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)

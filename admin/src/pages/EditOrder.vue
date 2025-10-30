@@ -7,6 +7,7 @@
       </div>
 
       <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
+        <input type="submit" value="" class="hidden">
         <div class="flex items-center justify-between my-2 mb-3">
           <div class="flex w-full flex-row items-center gap-2">
             <BackButton/>

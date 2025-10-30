@@ -159,6 +159,7 @@
                     <i class="pi font-semibold pi-phone"></i>
                     {{ order.phone }}
                   </div>
+                  <OrderPulse :id="order.id"/>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -287,8 +288,11 @@
 
 <script setup>
 import FraudRatio from '@/components/FraudRatio.vue'
+import OrderPulse from '@/components/orders/OrderPulse.vue'
 import BDT from '@/components/ui/BDT.vue'
+import CircularPulse from '@/components/ui/CircularPulse.vue'
 import TapToShowText from '@/components/ui/TapToShowText.vue'
+import { usePageWS } from '@/composables/activeWs'
 import { convert_to_normal_word } from '@/services/utils'
 import { useOrderStore } from '@/stores/orders'
 import { useHead } from '@vueuse/head'

@@ -44,6 +44,19 @@ export function timeAgo(dateTime) {
   return `${timePart} (${formattedDate})`
 }
 
+export function getProtocol() {
+  if (typeof window !== "undefined") {
+    return window.location.protocol === "https:" ? "https" : "http";
+  }
+  // fallback for non-browser environments
+  return "http";
+}
+
+export function getWsProtocol(){
+  const httpProtocol = getProtocol()
+  if(httpProtocol === 'https') return 'wss';
+  return 'ws'
+}
 
 export function convert_to_snake_word(string){
     let s = String(string).trim()

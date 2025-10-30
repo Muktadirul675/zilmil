@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import api from '@/services/api'
 import { handleError } from '@/services/errors'
 import { toast } from '@/services/toast'
+import { getWsProtocol } from '@/services/utils'
 
 export const useProductStore = defineStore('productStore', {
     state: () => ({
@@ -189,7 +190,7 @@ export const useProductStore = defineStore('productStore', {
         initProductSocket() {
             if (this.socket) return
 
-            this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
+            this.socket = new WebSocket(`${getWsProtocol()}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
 
             this.socket.onmessage = (event) => {
                 const message = JSON.parse(event.data)

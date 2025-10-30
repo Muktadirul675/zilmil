@@ -7,6 +7,7 @@
       </div>
 
       <form v-if="!loading" @submit.prevent="submitOrder">
+        <input type="submit" value="" class="hidden">
         <div class="flex items-center justify-between my-2 mb-3">
           <div class="flex flex-row items-center gap-2">
             <BackButton />

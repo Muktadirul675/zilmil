@@ -4,6 +4,7 @@ import api from '@/services/api'
 import { toast } from '@/services/toast'
 import { beep } from '@/services/beep'
 import { handleError } from '@/services/errors'
+import { getWsProtocol } from '@/services/utils'
 
 export const useOrderStore = defineStore('orderStore', {
   state: () => ({
@@ -160,7 +161,7 @@ export const useOrderStore = defineStore('orderStore', {
     initOrderSocket() {
       if (this.socket) return
 
-      this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
+      this.socket = new WebSocket(`${getWsProtocol()}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/orders/`)
 
       this.socket.onmessage = (event) => {
         const message = JSON.parse(event.data)
