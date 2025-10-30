@@ -1,5 +1,6 @@
 <template>
   <button
+  type="button"
     @click="handleBack"
     class="flex items-center cursor-pointer text-blue-500 hover:text-black transition-colors"
     aria-label="Back"
