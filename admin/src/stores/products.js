@@ -189,7 +189,7 @@ export const useProductStore = defineStore('productStore', {
         initProductSocket() {
             if (this.socket) return
 
-            this.socket = new WebSocket(`${'ws'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
+            this.socket = new WebSocket(`${'wss'}://${import.meta.env.VITE_BACKEND_URL_BASE}/ws/products/`)
 
             this.socket.onmessage = (event) => {
                 const message = JSON.parse(event.data)

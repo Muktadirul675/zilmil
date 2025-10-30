@@ -6,7 +6,7 @@ export function usePageWS(path) {
     const viewers = ref([])
     const auth = useAuthStore()
     const BACKEND_URL_BASE = import.meta.env.VITE_BACKEND_URL_BASE
-    const protocol = 'ws'
+    const protocol = 'wss'
     const token = localStorage.getItem('access')
 
     onMounted(() => {
