@@ -3,14 +3,14 @@ from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-
+from authapp.permissions import OnlyAdmin
 from .models import FeedSection
 from .serializers import FeedSectionSerializer
 
 class FeedSectionViewSet(viewsets.ModelViewSet):
     queryset = FeedSection.objects.filter(is_active=True)
     serializer_class = FeedSectionSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [OnlyAdmin]
     pagination_class = None
 
     def list(self, request, *args, **kwargs):

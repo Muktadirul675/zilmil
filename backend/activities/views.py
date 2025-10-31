@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAdminUser
 from .models import Activity
 from .serializers import ActivitySerializer
 from django_filters import rest_framework as dj_filters
-
+from authapp.permissions import OnlyAdmin
 
 class ActivityFilterSet(dj_filters.FilterSet):
     start_date = dj_filters.DateFilter(field_name="created_at", lookup_expr='gte')
@@ -20,7 +20,7 @@ class ActivityFilterSet(dj_filters.FilterSet):
 class ActivityListView(generics.ListAPIView):
     queryset = Activity.objects.select_related('user').all()
     serializer_class = ActivitySerializer
-    permission_classes = []
+    permission_classes = [OnlyAdmin]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ActivityFilterSet

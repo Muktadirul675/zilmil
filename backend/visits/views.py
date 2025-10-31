@@ -12,8 +12,11 @@ from django.utils.timezone import now
 from .models import Visit
 from django.db.models import Count
 from site_settings.utils import get_setting
+from authapp.permissions import OnlyAdmin
 
 class VisitOriginsView(APIView):
+    permission_classes = [OnlyAdmin]
+
     def get(self, request):
         today = now().date()
         data = (
@@ -29,6 +32,8 @@ class VisitOriginsView(APIView):
         })
     
 class ActiveUsersView(APIView):
+    permission_classes = [OnlyAdmin]
+
     def get(self, request):
         ip = get_client_ip(request)
         key = f"active_user:{ip}"
@@ -65,6 +70,8 @@ class VisitView(APIView):
 
 
 class TodaysVisitStatsView(APIView):
+    permission_classes = [OnlyAdmin]
+
     def get(self, request):
         today = now().date()
         visits_today = Visit.objects.filter(visited_at=today)

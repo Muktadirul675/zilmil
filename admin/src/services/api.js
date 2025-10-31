@@ -28,7 +28,11 @@ api.interceptors.response.use(
     const originalRequest = error.config
 
     // If 401 error AND not already retried
-    if (
+    if (error.response?.status === 403){
+        const auth = useAuthStore()
+        auth.logout(false)
+    }
+    else if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       localStorage.getItem('refresh')
@@ -54,7 +58,7 @@ api.interceptors.response.use(
       } catch (refreshErr) {
         // Refresh failed â log out
         const authStore = useAuthStore()
-        authStore.logout()
+        authStore.logout(false)
         return Promise.reject(refreshErr)
       }
     }

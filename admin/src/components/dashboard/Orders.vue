@@ -83,7 +83,7 @@
 
       <!-- Chart: Top Ordered Products (Bar) -->
       <div class="bg-white flex-2 border border-gray-300 rounded-lg shadow-sm p-6">
-        <h3 class="text-sm font-semibold text-gray-700 mb-2 ">Top Confirmed Products ({{ store.productOrdersReport.total_quantity }}) </h3>
+        <h3 class="text text-gray-700 mb-2 font-semibold border-b border-gray-300">Top Confirmed Products ({{ store.productOrdersReport.total_quantity }}) </h3>
         <div class="divide-y space-y-2 divide-gray-300" v-if="store.productOrdersReport.results.length">
           <template v-for="product in store.productOrdersReport.results" :key="product.id">
             <div v-if="product.order_count > 0" class="flex p-3 items-center gap-2">

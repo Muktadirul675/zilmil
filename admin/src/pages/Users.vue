@@ -7,6 +7,7 @@ import { useHead } from '@vueuse/head'
 import { toast } from '@/services/toast'
 import { useActiveUsersStore } from '@/stores/active'
 import UserActiveStatus from '@/components/active/UserActiveStatus.vue'
+import { showDrfErrors } from '@/lib/drf'
 
 useHead({
   title: 'Users - Zilmil.com.bd'
@@ -15,8 +16,8 @@ useHead({
 const userStore = useUserStore()
 const actives = useActiveUsersStore()
 
-const totalUsersWithActive = computed(()=>{
-  return [...actives.activeUsers,...actives.inactiveUsers]
+const totalUsersWithActive = computed(() => {
+  return [...actives.activeUsers, ...actives.inactiveUsers]
 })
 
 onMounted(() => {
@@ -72,13 +73,39 @@ const register = async () => {
   }
 }
 
+const lockUser = async (userId) =>{
+  try{
+    await api.post(`/auth/users/${userId}/lock/`)
+    await userStore.fetchUsers()
+  }catch(e){
+    showDrfErrors(e)
+  }
+}
+
+const forceLogout = async (userId) =>{
+  try{
+    await api.post(`/auth/users/${userId}/force-logout/`)
+    await userStore.fetchUsers()
+  }catch(e){
+    showDrfErrors(e)
+  }
+}
+
+const unLockUser = async (userId) =>{
+  try{
+    await api.delete(`/auth/users/${userId}/lock/`)
+    await userStore.fetchUsers()
+  }catch(e){
+    showDrfErrors(e)
+  }
+}
+
 const setStaff = async (userId) => {
   try {
     await api.post(`/auth/users/${userId}/make-staff/`)
     await userStore.fetchUsers()
   } catch (e) {
-    alert('Failed to make staff')
-    console.error(e)
+    showDrfErrors(e)
   }
 }
 
@@ -87,8 +114,7 @@ const removeStaff = async (userId) => {
     await api.post(`/auth/users/${userId}/remove-staff/`)
     await userStore.fetchUsers()
   } catch (e) {
-    alert('Failed to remove staff')
-    console.error(e)
+    showDrfErrors(e)
   }
 }
 </script>
@@ -154,39 +180,68 @@ const removeStaff = async (userId) => {
             </td>
 
             <td class="px-6 py-4">
-              <h5>
-                {{ user.username }}
+              <h5 class="font-semibold">
+                {{ user.username }} 
+                <template v-if="user.is_locked">
+                  [ <i class="pi pi-lock text-red-500"></i> <span class="text-red-500">Locked</span>  ]
+                </template>
               </h5>
+              <h6>Confirmed Orders: {{ user.total_confirmed_orders }}</h6>
             </td>
 
-            <td class="px-6 py-4">
-              <span v-if="user.groups.some(g => g.name === 'Staff')"
+            <td class="px-6 py-4 w-fit gap-2">
+              <span v-if="user.groups.some(g => g.name === 'Admin')"
                 class="text-green-600 font-medium flex items-center gap-1">
                 <i class="pi pi-shield"></i>
+                Admin
+              </span>
+              <span v-if="user.groups.some(g => g.name === 'Staff')"
+                class="text-blue-600 font-medium flex items-center gap-1">
+                <i class="pi pi-user"></i>
                 Staff
               </span>
               <span v-else class="text-gray-500">Regular</span>
             </td>
 
-            <td class="px-6 py-4 flex items-center gap-2">
-              <button v-if="!user.groups.some(g => g.name === 'Staff')" @click="setStaff(user.id)"
-                class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
-                <i class="pi pi-user-edit"></i>
-                Make Staff
-              </button>
-              <button v-else @click="removeStaff(user.id)"
-                class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
-                <i class="pi pi-user-minus"></i>
-                Remove Staff
-              </button>
-              <button @click="openChangePassword(user.id)"
-                class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
-                <i class="pi pi-key"></i>
-                Change Password
-              </button>
+            <td class="px-6 py-4 flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <button v-if="!user.groups.some(g => g.name === 'Staff')" @click="setStaff(user.id)"
+                  class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-user-edit"></i>
+                  Make Staff
+                </button>
+                <button v-else @click="removeStaff(user.id)"
+                  class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-user-minus"></i>
+                  Remove Staff
+                </button>
+                <button @click="openChangePassword(user.id)"
+                  class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-key"></i>
+                  Change Password
+                </button>
+              </div>
+              <div class="flex items-center gap-2">
+                <button @click="forceLogout(user.id)"
+                  class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-ban"></i>
+                  Force Logout
+                </button>
+                <button v-if="!user.is_locked" @click="lockUser(user.id)"
+                  class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-lock"></i>
+                  Lock
+                </button>
+                <button v-else @click="unLockUser(user.id)"
+                  class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded flex items-center gap-1">
+                  <i class="pi pi-user-minus"></i>
+                  Unlock
+                </button>
+              </div>
             </td>
-            <td class="py-2"> 
-              <UserActiveStatus v-if="totalUsersWithActive.length" :user_id="user.id" :all_users="totalUsersWithActive"/>
+            <td class="py-2">
+              <UserActiveStatus v-if="totalUsersWithActive.length" :user_id="user.id"
+                :all_users="totalUsersWithActive" />
             </td>
           </tr>
 

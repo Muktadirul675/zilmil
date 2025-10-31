@@ -19,8 +19,10 @@ from .utils import send_order_to_courier
 from rest_framework.exceptions import ValidationError
 from datetime import datetime
 from django.utils import timezone
+from authapp.permissions import OnlyAdminOrStaff
 
 class SendToCourierView(APIView):
+    permission_classes = [OnlyAdminOrStaff]
     def post(self, request, *args, **kwargs):
         order_id = request.data.get("order_id")
 
@@ -44,6 +46,7 @@ class ReadyForCourierListView(generics.ListAPIView):
         'order__city_id': ['exact'],
         'order__zone_id': ['exact'],
     }
+    permission_classes = [OnlyAdminOrStaff]
     
     # Searching
     search_fields = [
@@ -61,6 +64,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     search_fields = ['full_name', 'phone','id', 'shipping_address', 'c_id']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
+    permission_classes = [OnlyAdminOrStaff]
     
 
     def perform_update(self, serializer):
@@ -124,7 +128,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             message=f"Order #{order.id} created for {order.full_name}"
         )
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[])
     def verify(self, request):
         order_id = request.query_params.get('order_id')
 

@@ -12,7 +12,7 @@
 
         <div class="bg-green-600 text-white p-4 rounded-lg shadow-md">
           <div class="text-3xl font-bold">{{ store.active?.active_users ?? 0 }}</div>
-          <div class="text-lg font-semibold">Active Users Now</div>
+          <div class="text-lg font-semibold">Active Visitors Now</div>
         </div>
       </div>
 

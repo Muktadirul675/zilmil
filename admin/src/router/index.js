@@ -85,6 +85,7 @@ router.beforeEach(async (to, from, next) => {
         }
       }
     }else{
+      console.log("REDIRECT TO LOGIN")
       next('/login')
     }
   }

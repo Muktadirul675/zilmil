@@ -1,5 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def broadcast_logout(user_id):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "logout",
+        {
+            "type": "send_logout",
+            "data": {"logout": user_id}
+        }
+    )
+    print("BROADCAST")
 
 def get_user_activity():
     User = get_user_model()

@@ -7,15 +7,18 @@ from .serializers import SiteSettingSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import SiteSetting
+from authapp.permissions import OnlyAdmin
 
 class SiteSettingsListView(APIView):
+    permission_classes = [OnlyAdmin]
+
     def get(self, request):
         settings = SiteSetting.objects.all()
         data = {s.key: s.value for s in settings}
         return Response(data)
     
 class UpdateSiteSettingView(APIView):
-    permission_classes = []
+    permission_classes = [OnlyAdmin]
 
     def post(self, request):
         data = request.data  # { key1: value1, key2: value2 }

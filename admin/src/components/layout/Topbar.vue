@@ -20,7 +20,7 @@
       <span class="font-semibold">{{ user?.username || 'User' }}</span>
 
       <!-- Logout Button -->
-      <button @click="logout" class="ml-4 text-red-500 cursor-pointer hover:text-red-600 transition-all text-xs flex items-center gap-1">
+      <button @click="auth.toggleLogoutModal(true)" class="ml-4 text-red-500 cursor-pointer hover:text-red-600 transition-all text-xs flex items-center gap-1">
         <i class="pi pi-sign-out"></i>
         Logout
       </button>

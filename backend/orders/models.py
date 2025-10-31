@@ -40,6 +40,7 @@ class Order(models.Model):
     zone_id = models.PositiveIntegerField(null=True, blank=True)
     area_id = models.PositiveIntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
+    order_note = models.TextField(null=True, blank=True, default='N/A')
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     collected_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)

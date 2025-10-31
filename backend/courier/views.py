@@ -8,6 +8,7 @@ from rest_framework import status
 from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from django.core.cache import cache
 from django.http import JsonResponse, HttpResponse
@@ -22,6 +23,7 @@ from decimal import Decimal
 from orders.models import Order
 import json
 from rest_framework.permissions import AllowAny
+from authapp.permissions import OnlyAdminOrStaff, in_any_group
 
 client = get_pathao_client()
 
@@ -98,6 +100,8 @@ class CourierWebhookView(APIView):
 
 @api_view(['GET'])
 def get_delivery_charge(request):
+    if not in_any_group(request.user, ['Admin','Staff']):
+        return PermissionDenied('Protected Route')
     city_id = request.query_params.get('city_id')
     zone_id = request.query_params.get('zone_id')
 
@@ -116,6 +120,8 @@ def get_delivery_charge(request):
 
 @api_view(['GET'])
 def get_stores(request):
+    if not in_any_group(request.user, ['Admin','Staff']):
+        return PermissionDenied('Protected Route')
     try:
         stores = client.get_stores()
         return Response(stores, status=status.HTTP_200_OK)
@@ -125,6 +131,8 @@ def get_stores(request):
 
 @api_view(['POST'])
 def create_dummy_order(request):
+    if not in_any_group(request.user, ['Admin','Staff']):
+        return PermissionDenied('Protected Route')
     try:
 
         result = client.create_order(
@@ -152,6 +160,7 @@ def create_dummy_order(request):
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class CityListAPIView(APIView):
+    permission_classes = [OnlyAdminOrStaff]
     def get(self, request):
         print("loading cities")
         pathao_courier_cache_key = 'courier:pathao:cities'
@@ -175,6 +184,7 @@ class CityListAPIView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ZoneListAPIView(APIView):
+    permission_classes = [OnlyAdminOrStaff]
     def get(self, request):
         city_id = request.query_params.get('city_id')
         if not city_id:
@@ -193,6 +203,7 @@ class ZoneListAPIView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AreaListAPIView(APIView):
+    permission_classes = [OnlyAdminOrStaff]
     def get(self, request):
         zone_id = request.query_params.get('zone_id')
         if not zone_id:

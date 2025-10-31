@@ -8,6 +8,24 @@ def in_any_group(user, group_names):
     # print(user.groups)
     return user.is_authenticated and user.groups.filter(name__in=group_names).exists()
 
+class OnlyAdminOrStaff(BasePermission):
+    """
+    Read: Everyone
+    Write: Only users in 'Admin' group
+    """
+    def has_permission(self, request, view):
+        return in_any_group(request.user, ['Admin','Staff'])
+    
+class OnlyAdminOrStaffOrReadOnly(BasePermission):
+    """
+    Read: Everyone
+    Write: Only users in 'Admin' group
+    """
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return in_any_group(request.user, ['Admin','Staff'])
+    
 class OnlyAdminOrReadOnly(BasePermission):
     """
     Read: Everyone

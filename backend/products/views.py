@@ -19,8 +19,10 @@ from activities.utils import log_activity
 from site_settings.utils import get_setting
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from authapp.permissions import OnlyAdminOrReadOnly, OnlyAdmin
 
 class StockAddView(APIView):
+    permission_classes = [OnlyAdmin]
     def post(self, request):
         serializer = ProductAddStockSerializer(data=request.data, many=True)
         if not serializer.is_valid():
@@ -66,7 +68,7 @@ class StockAddView(APIView):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [OnlyAdminOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]  
     filterset_class = ProductFilter  
@@ -120,7 +122,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        if in_any_group(user, ['Admin', 'Staff']):
+        if in_any_group(user, ['Admin']):
             return self.queryset  # Admin sees all products (even soft-deleted)
         
         return self.queryset.filter(is_active=True, stock__gt=0, is_deleted=False)
@@ -149,14 +151,14 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
         return Response({'detail': 'Product soft-deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[OnlyAdmin])
     def all(self, request):
         """Return all products (admin view)."""
         products = Product.objects.all()
         serializer = ProductListSerializer(products, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'], url_path='low-stocks')
+    @action(detail=False, methods=['get'], url_path='low-stocks', permission_classes=[OnlyAdmin])
     def low_stocks(self, request):
         try:
             threshold = int(get_setting('stock_alert_at', 10))
@@ -185,7 +187,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 'products': ProductListSerializer(out_of_stock_qs, many=True).data
             }
         })
-    @action(detail=True, methods=['get'], url_path='suggestions')
+    @action(detail=True, methods=['get'], url_path='suggestions', permission_classes=[])
     def suggest_products(self, request, pk=None):
         product = self.get_object()
         product_categories = product.categories.all()

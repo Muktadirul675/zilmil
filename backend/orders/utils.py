@@ -51,6 +51,14 @@ def send_order_to_courier(order_id):
                 "order_id": order_id
             }
         try:
+            description = ''
+            for item in order.items.all():
+                description += f'{item.product.name}'
+                if item.variant:
+                    description += f'| {item.variant.name}'
+                if item.color:
+                    description += f'| {item.color.name}'
+                description += f"X {item.quantity}\n"
             courier_response = client.create_order(
                 order_id=str(order.id),
                 recipient_name=order.full_name,
@@ -59,7 +67,7 @@ def send_order_to_courier(order_id):
                 special_instruction=order.note if hasattr(order, 'note') else 'None',
                 item_quantity=str(sum(item.quantity for item in order.items.all())),
                 amount_to_collect=float(order.total_price),
-                item_description='None'
+                item_description=description
             )
             consignment_id = courier_response.get('data').get("consignment_id")
             # consignment_id = str(random.randint(1000,5000))

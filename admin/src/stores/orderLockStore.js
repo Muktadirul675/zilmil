@@ -12,17 +12,13 @@ export const useOrderLockStore = defineStore('orderLock', () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL_BASE
     const wsUrl = `${wsProtocol}://${BACKEND_URL}/ws/order/lock/`
     const ws = new WebSocket(wsUrl)
-    console.log('Lock Store')
     ws.onmessage = (event) => {
-      console.log('Lock message')
       try {
         const data = JSON.parse(event.data)
         // Expecting: { locks: { orderId: username } }
         if (data) {
           locks.value = data
         }
-        console.log(`Locks: ${JSON.stringify(locks.value)}`)
-        console.log(`Locks D: ${JSON.stringify(data)}`)
       } catch (err) {
         console.error('Invalid WS message', err)
       }

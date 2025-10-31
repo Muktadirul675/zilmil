@@ -27,6 +27,14 @@
             <div class="ms-auto">
               <PageViewers :viewers="viewers" v-if="viewers.length"/>
             </div>
+            <div v-if="order.confirmed_by_name" class="mx-2">
+              <!-- <TapToShowText :text="order.confirmed_by_name" /> -->
+                <div class="px-2 py-1 rounded text-xs font-semibold border border-green-300 flex items-center gap-2 w-fit bg-green-300 text-slate-700">
+                <i class="pi pi-check"></i>
+                Confirmed by {{ order.confirmed_by_name }} 
+                <br> {{ new Date(order.confirmed_by_date).toLocaleString() }}
+                </div>
+            </div>
           </div>
         </div>
 
@@ -52,6 +60,7 @@
             <div>
               <FormLabel icon="home">Shipping Address</FormLabel>
               <textarea
+                rows="2"
                 v-model="order.shipping_address"
                 required
                 placeholder="Shipping Address"
@@ -74,9 +83,21 @@
             </div>
 
             <div>
-              <FormLabel icon="info-circle">Note</FormLabel>
+              <FormLabel icon="info-circle">Pathao Note</FormLabel>
               <textarea
+                rows="2"
                 v-model="order.note"
+                placeholder="Note"
+                :disabled="isDisabled"
+                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+
+            <div>
+              <FormLabel icon="info-circle">Order Note</FormLabel>
+              <textarea
+                rows="2"
+                v-model="order.order_note"
                 placeholder="Note"
                 :disabled="isDisabled"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -246,10 +267,14 @@ const order = ref({
   delivery_charge: 0,
   status: 'pending',
   note: '',
+  order_note: '',
   city_id: null,
   zone_id: null,
   area_id: null,
   items: [],
+  confirmed_by_name: '',
+  confirmed_by_date: '',
+  order_note: ''
 })
 // const adminUnlocks 
 const orderLockStore = useOrderLockStore()
@@ -330,6 +355,9 @@ const fetchOrder = async () => {
       zone_id: data.zone_id,
       area_id: data.area_id,
       items: data.items || [],
+      confirmed_by_name: data.confirmed_by_name,
+      confirmed_by_date: data.confirmed_by_date,
+      order_note: data.order_note
     }
 
     fetchCities()

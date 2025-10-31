@@ -113,7 +113,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Updated</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Customer</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Success Rate</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Note</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Order Note</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Items</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total</th>
@@ -171,7 +171,7 @@
                 <FraudRatio :number="order.phone" />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{order.courier_reason}}
+                {{order.order_note}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 <div v-for="item in order.items" class="flex mb-1 gap-2 items-center">
@@ -207,15 +207,10 @@
                     class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit bg-slate-100 text-slate-600">
                     <i class="pi pi-truck text-indigo-800"></i>
                     {{ capitalize(order.courier_status.replace("-", " ")) }}
-                  </div>
-                  <div v-if="order.confirmed_by_name">
-                    <!-- <TapToShowText :text="order.confirmed_by_name" /> -->
-                     <div class="px-2 py-1 rounded text-xs font-semibold border border-slate-300 flex items-center gap-2 w-fit bg-slate-300 text-slate-700">
-                      <i class="pi pi-check"></i>
-                      {{ order.confirmed_by_name }} 
-                      <!-- <br> {{ new Date(order.confirmed_by_date).toLocaleString() }} -->
-                     </div>
                   </div> 
+                  <div class="mt-1" v-if="order.courier_reason">
+                    <TapToShowText :text="order.courier_reason"/>
+                  </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

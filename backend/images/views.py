@@ -10,6 +10,7 @@ from datetime import datetime
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+from authapp.permissions import OnlyAdminOrReadOnly
 
 def compress_image(image_file, format='WEBP', quality=80):
     image = Image.open(image_file)
@@ -41,7 +42,7 @@ def compress_image(image_file, format='WEBP', quality=80):
 
 class UploadImageView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-
+    permission_classes = [OnlyAdminOrReadOnly]
     def post(self, request, format=None):
         if 'image' not in request.FILES:
             return Response({"error": "No image provided."}, status=status.HTTP_400_BAD_REQUEST)

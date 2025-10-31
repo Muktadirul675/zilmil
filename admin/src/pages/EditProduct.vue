@@ -163,6 +163,15 @@ const handleUpdate = async () => {
   }
 }
 
+const delCategory = async (id) =>{
+  try{
+    const res = await api.delete(`/categories/${id}/`)
+    toast.info("Category Deleted")
+  }catch(e){
+    showDrfErrors(e)
+  }
+}
+
 onMounted(async () => {
   editor.value = new Editor({
     extensions: [StarterKit],
@@ -198,12 +207,17 @@ onBeforeUnmount(() => editor.value?.destroy())
       <!-- Categories -->
       <div>
         <label class="block font-medium mb-1"><i class="pi pi-th-large mr-1"></i> Categories *</label>
-        <div class="flex flex-col divide-y divide-gray-300 max-h-[150px] overflow-auto border border-gray-300 rounded">
-          <div v-for="cat in categories" :key="cat.id" @click="toggleCategory(cat.id)"
-            :class="['p-2 cursor-pointer', form.categories.includes(cat.id) ? 'bg-blue-500 text-white' : 'hover:bg-gray-100']">
-            {{ cat.name }}
-          </div>
-        </div>
+        <template v-for="cat in categories" :key="cat.id">
+            <div @click="toggleCategory(cat.id)" :class="[
+              'p-2 cursor-pointer flex justify-between',
+              form.categories.includes(cat.id) ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
+            ]">
+              {{ cat.name }}
+              <div @click="()=>delCategory(cat.id)" class="text-red-500 hover:bg-red-500/50 p-1">
+                <i class="pi pi-trash"></i>
+              </div>
+            </div>
+          </template>
         <p v-if="errors.categories" class="text-red-500 text-sm mt-1">{{ errors.categories }}</p>
       </div>
 

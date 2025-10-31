@@ -22,7 +22,7 @@
 
             <div>
               <FormLabel icon="home">Shipping Address</FormLabel>
-              <textarea v-model="order.shipping_address" required placeholder="Shipping Address"
+              <textarea rows="2" v-model="order.shipping_address" required placeholder="Shipping Address"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </div>
 
@@ -35,8 +35,14 @@
             </div>
 
             <div>
-              <FormLabel icon="info-circle">Note</FormLabel>
-              <textarea v-model="order.note" placeholder="Note"
+              <FormLabel icon="info-circle">Pathao Note</FormLabel>
+              <textarea rows="2=" v-model="order.note" placeholder="Note"
+                class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+            </div>
+
+            <div>
+              <FormLabel icon="info-circle">Order Note</FormLabel>
+              <textarea rows="2" v-model="order.order_note" placeholder="Note"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </div>
 
@@ -131,6 +137,7 @@ const order = ref({
   zone_id: null,
   area_id: null,
   items: [],
+  order_note: ''
 })
 
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']

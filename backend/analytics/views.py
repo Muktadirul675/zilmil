@@ -32,8 +32,10 @@ from django.db.models.functions import Coalesce
 from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from authapp.permissions import OnlyAdmin
 
 class ProductOrderReport(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start_date = request.query_params.get("start")
         end_date = request.query_params.get("end")
@@ -88,6 +90,7 @@ class ProductOrderReport(APIView):
         })
     
 class ProductPerformanceView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start_raw = request.query_params.get('start')
         end_raw = request.query_params.get('end')
@@ -129,6 +132,7 @@ class ProductPerformanceView(APIView):
         return Response(result)
 
 class ProductSalesCountReportView(APIView): 
+    permission_classes = [OnlyAdmin]
     def get(self, request): 
         start = request.query_params.get('start') 
         end = request.query_params.get('end')
@@ -179,6 +183,7 @@ ORDER_STATUSES = [
 ]
 
 class OrderStatsView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start_date = request.query_params.get("start")
         end_date = request.query_params.get("end")
@@ -200,6 +205,7 @@ class OrderStatsView(APIView):
         return Response(stats)
 
 class OrderOriginSummaryView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start_date = request.query_params.get("start")
         end_date = request.query_params.get("end")
@@ -225,6 +231,7 @@ class OrderOriginSummaryView(APIView):
 
 
 class OrderReportView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start = request.query_params.get('start')
         end = request.query_params.get('end')
@@ -267,6 +274,7 @@ class OrderReportView(APIView):
         return Response(full_data)
         
 class SalesReportView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start = request.query_params.get('start')
         end = request.query_params.get('end')
@@ -313,6 +321,7 @@ class SalesReportView(APIView):
         return Response(full_data)
     
 class SalesSummaryView(APIView):
+    permission_classes = [OnlyAdmin]
     def get(self, request):
         start = request.query_params.get('start')
         end = request.query_params.get('end')
