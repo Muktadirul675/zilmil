@@ -83,11 +83,11 @@
 
       <!-- Chart: Top Ordered Products (Bar) -->
       <div class="bg-white flex-2 border border-gray-300 rounded-lg shadow-sm p-6">
-        <h3 class="text-sm font-semibold text-gray-700 mb-2 ">Top Confirmed Products</h3>
-        <div class="divide-y space-y-2 divide-gray-300" v-if="store.productOrdersReport.length">
-          <template v-for="product in store.productOrdersReport" :key="product.id">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2 ">Top Confirmed Products ({{ store.productOrdersReport.total_quantity }}) </h3>
+        <div class="divide-y space-y-2 divide-gray-300" v-if="store.productOrdersReport.results.length">
+          <template v-for="product in store.productOrdersReport.results" :key="product.id">
             <div v-if="product.order_count > 0" class="flex p-3 items-center gap-2">
-              <img :src="`${BACKEND_URL}${product.image.image}`" l0ading="lazy" alt="" class="rounded-md w-18 h-18">
+              <img :src="`${BACKEND_URL}${product.image.image}`" l0ading="lazy" alt="" class="rounded-md w-6 h-6w-6">
               <div class="text-lg font-semibold">
                 {{ product.name }}
               </div>
@@ -182,11 +182,11 @@ const pieData = computed(() => ({
 }))
 
 const barData = computed(() => ({
-  labels: store.productOrdersReport.map(p => p.name),
+  labels: store.productOrdersReport.results.map(p => p.name),
   datasets: [
     {
       label: 'Orders',
-      data: store.productOrdersReport.map(p => p.order_count),
+      data: store.productOrdersReport.results.map(p => p.order_count),
       backgroundColor: '#4F46E5'
     }
   ]

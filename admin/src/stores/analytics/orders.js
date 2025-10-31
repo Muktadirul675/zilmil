@@ -7,7 +7,9 @@ export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
     summary: null,
     report: [],
     originsReport: {},
-    productOrdersReport: [],
+    productOrdersReport: {
+      total_quantity: 0,
+      results: []},
     startDate: '',
     endDate: '',
     loading: false,

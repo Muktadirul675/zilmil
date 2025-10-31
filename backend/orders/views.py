@@ -17,6 +17,8 @@ from rest_framework import status
 from django.core.cache import cache
 from .utils import send_order_to_courier
 from rest_framework.exceptions import ValidationError
+from datetime import datetime
+from django.utils import timezone
 
 class SendToCourierView(APIView):
     def post(self, request, *args, **kwargs):
@@ -60,25 +62,42 @@ class OrderViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_at']
     ordering = ['-created_at']
     
-    def perform_update(self, serializer):
-        if serializer.instance.status in ['delivered','partially_delivered']:
-            raise ValidationError("Can't edit order that has been delivered or partially delivered") 
-        old_status = serializer.instance.status  # previous status before save
-        order = serializer.save()
 
+    def perform_update(self, serializer):
+        order = serializer.instance
+
+        # Prevent editing delivered or partially delivered orders
+        if order.status in ['delivered', 'partially_delivered']:
+            raise ValidationError("Can't edit order that has been delivered or partially delivered")
+
+        old_status = order.status
+        user = self.request.user
+
+        updated_order = serializer.save()
+
+        # Set confirmation info if not already set
+        if not updated_order.confirmed_by_name and updated_order.status == 'confirmed':
+            updated_order.confirmed_by = user
+            updated_order.confirmed_by_name = user.username
+            updated_order.confirmed_by_date = timezone.localtime(timezone.now())
+            updated_order.save(update_fields=['confirmed_by', 'confirmed_by_name','confirmed_by_date'])
+
+        # Log general update
         log_activity(
-            user=self.request.user,
+            user=user,
             action='order.update',
-            message=f"Order #{order.id} updated"
+            message=f"Order #{updated_order.id} updated"
         )
 
-    # If status changed, log it specifically
-        if old_status != order.status:
+        # Log status change specifically
+        if old_status != updated_order.status:
             log_activity(
-                user=self.request.user,
+                user=user,
                 action='order.status.change',
-                message=f"Order #{order.id} status changed from {old_status} to {order.status}"
+                message=f"Order #{updated_order.id} status changed from {old_status} to {updated_order.status}"
             )
+
+        return updated_order
 
     def perform_create(self, serializer):
         session_id = self.request.session.session_key
@@ -87,6 +106,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             session_id = self.request.session.session_key
 
         order = serializer.save(session_id=session_id)
+        user = self.request.user
+
+        if not order.confirmed_by_name and order.status == 'confirmed':
+            order.confirmed_by = user
+            order.confirmed_by_name = user.username
+            order.confirmed_by_date = timezone.localtime(timezone.now())
+            order.save(update_fields=['confirmed_by', 'confirmed_by_name','confirmed_by_date'])
 
         # â Save Redis key for thank-you verification (expires in 1 minute)
         cache.set(f"order:thank-you:{str(order.id)}", 1, timeout=45)

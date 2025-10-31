@@ -27,6 +27,12 @@ from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.db.models import Q, Sum, OuterRef, Subquery, IntegerField
+from django.db.models.functions import Coalesce
+from django.utils.dateparse import parse_date
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 class ProductOrderReport(APIView):
     def get(self, request):
         start_date = request.query_params.get("start")
@@ -35,34 +41,52 @@ class ProductOrderReport(APIView):
         # Base filter for OrderItem
         orderitem_filter = Q(product=OuterRef('pk'))
 
-        # Filter by date
+        # Date filter
         if start_date:
             orderitem_filter &= Q(order__created_at__date__gte=parse_date(start_date))
         if end_date:
             orderitem_filter &= Q(order__created_at__date__lte=parse_date(end_date))
 
-        # Status filter:
-        # Include only orders that are NOT 'pending' AND NOT 'cancelled'
-        # OR orders with courier_status='pickup-cancelled'
-        orderitem_filter &= ~Q(order__status__in=['pending', 'cancelled']) | Q(order__courier_status='pickup-cancelled')
+        # Status filter
+        orderitem_filter &= (
+            ~Q(order__status__in=['pending', 'cancelled']) |
+            Q(order__courier_status='pickup-cancelled')
+        )
 
-        # Subquery to count order items per product
-        filtered_orderitems = (
+        # Subquery to calculate total quantity per product
+        total_quantity_subquery = (
             OrderItem.objects
             .filter(orderitem_filter)
             .values('product')
-            .annotate(count=Count('id'))
-            .values('count')
+            .annotate(total_quantity=Sum('quantity'))
+            .values('total_quantity')
         )
 
-        # Annotate products with order count
+        total_items_subquery = (
+            OrderItem.objects
+            .filter(orderitem_filter)
+            .values('product')
+            .annotate(total_items=Count('id'))
+            .values('total_items')
+        )
+
         products = Product.objects.annotate(
-            order_count=Coalesce(Subquery(filtered_orderitems, output_field=IntegerField()), 0)
-        ).order_by('-order_count')
+            order_count=Coalesce(Subquery(total_items_subquery, output_field=IntegerField()), 0),
+            total_quantity=Coalesce(Subquery(total_quantity_subquery, output_field=IntegerField()), 0)
+        ).order_by('-total_quantity')
 
+        # Serialize the product list
         serializer = ProductOrderReportSerializer(products, many=True)
-        return Response(serializer.data)
 
+        # Calculate the total sum of all quantities across all products
+        total_quantity = sum(product.total_quantity for product in products)
+
+        # Return serializer data + total quantity
+        return Response({
+            "total_quantity": total_quantity,
+            "results": serializer.data
+        })
+    
 class ProductPerformanceView(APIView):
     def get(self, request):
         start_raw = request.query_params.get('start')

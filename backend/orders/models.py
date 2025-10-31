@@ -1,6 +1,9 @@
 from django.db import models
 from products.models import Product, Variant, Color
 from decimal import Decimal
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 ORDER_STATUS_CHOICES = [
     ('pending', 'Pending'),
@@ -44,6 +47,9 @@ class Order(models.Model):
     courier_reason = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    confirmed_by = models.ForeignKey(User, related_name='confirm_orders', null=True, blank=True, default=None, on_delete=models.SET_NULL)
+    confirmed_by_name = models.TextField(null=True, blank=True, default=None)
+    confirmed_by_date = models.DateTimeField(null=True, blank=True, default=None)
 
     def calculate_total_price(self):
         items_total = sum([item.total_price() for item in self.items.all()])

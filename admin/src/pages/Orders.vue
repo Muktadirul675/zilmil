@@ -163,6 +163,7 @@
                     <i class="pi font-semibold pi-address-book"></i>
                     {{ order.shipping_address }}
                   </div>
+                  
                   <OrderPulse :id="order.id"/>
                 </div>
               </td>
@@ -207,50 +208,21 @@
                     <i class="pi pi-truck text-indigo-800"></i>
                     {{ capitalize(order.courier_status.replace("-", " ")) }}
                   </div>
-                  <!-- <div v-if="order.courier_reason" :class="order.status === 'failed' && 'text-red-500'">
-                    <TapToShowText :text="order.courier_reason" />
-                  </div> -->
+                  <div v-if="order.confirmed_by_name">
+                    <!-- <TapToShowText :text="order.confirmed_by_name" /> -->
+                     <div class="px-2 py-1 rounded text-xs font-semibold border border-slate-300 flex items-center gap-2 w-fit bg-slate-300 text-slate-700">
+                      <i class="pi pi-check"></i>
+                      {{ order.confirmed_by_name }} 
+                      <!-- <br> {{ new Date(order.confirmed_by_date).toLocaleString() }} -->
+                     </div>
+                  </div> 
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- {{ totalPrice(order).toFixed(2) }} -->
                 <BDT :amount="parseFloat(order.total_price)" />
               </td>
-            </tr>
-            <!-- Expanded row for items -->
-            <!-- <tr class="border-b border-gray-300">
-              <td colspan="8" class="px-6 py-4">
-                <table class="min-w-full border border-gray-300 rounded">
-                  <thead class="bg-gray-200 text-gray-700">
-                    <tr>
-                      <th class="px-3 py-1 text-left text-xs font-semibold uppercase">Product</th>
-                      <th class="px-3 py-1 text-left text-xs font-semibold uppercase">Variant</th>
-                      <th class="px-3 py-1 text-left text-xs font-semibold uppercase">Color</th>
-                      <th class="px-3 py-1 text-left text-xs font-semibold uppercase">Quantity</th>
-                      <th class="px-3 py-1 text-left text-xs font-semibold uppercase">Price at Purchase</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in order.items" :key="item.id" class="border-t border-gray-300">
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">
-                        <div class="flex flex-row flex-wrap items-center gap-2">
-                          <img class="h-[50px] w-[50px] rounded" :src="BACKEND_URL+item.product.image.image" alt="">
-                          {{ item.product.name }}
-                        </div>
-                      </td>
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.variant?.name || '-' }}</td>
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.color?.name || '-' }}</td>
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">{{ item.quantity }}</td>
-                      <td class="px-3 py-1 whitespace-nowrap text-sm">
-                        <BDT :amount="parseFloat(item.price_at_purchase)" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="my-1"></div>
-              </td>
-            </tr> -->
-          </template>
+            </tr> </template>
 
           <tr v-if="orderStore.loading">
             <td colspan="8" class="px-6 py-4 text-center text-indigo-600">Loading orders...</td>

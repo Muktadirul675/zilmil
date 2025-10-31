@@ -67,11 +67,13 @@ class ColorSerializer(serializers.ModelSerializer):
 class ProductOrderReportSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
+    total_quantity = serializers.IntegerField()
+
     class Meta:
         model = Product
         fields = [
             'id', 'name', 'slug', 'price', 'net_price', 'compared_price',
-            'discount', 'image', 'stock', 'sku', 'order_count'
+            'discount', 'image', 'stock', 'sku', 'order_count', 'total_quantity'
         ]
 
     def get_image(self, obj):
