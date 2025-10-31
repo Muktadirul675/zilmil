@@ -1,12 +1,24 @@
 <template>
   <div class="max-w-[80%] mx-auto mt-10">
     <div class="bg-white p-6 rounded shadow-md">
-      <div v-if="isFetchingOrder" class="text-center py-10">
+      <div v-if="isLocked">
+        <div class="flex items-center gap-2">
+          <BackButton/>
+          Order Locked
+        </div>
+        <div class="w-full flex flex-col items-center justify-center h-[200px]">
+          <div class="text-3xl text-red-500">
+            <i class="pi pi-lock"></i>
+          </div>
+          <h3 class="text-xl">Order is locked by {{ orderLockStore.isLockedBy(orderId).value }}</h3>
+          <h4 class="text-lg">Please wait till unlock</h4>
+        </div>
+      </div>
+      <div v-else-if="isFetchingOrder" class="text-center py-10">
         <i class="pi pi-spin pi-spinner text-2xl text-indigo-600" />
         <p class="text-sm text-gray-500 mt-2">Loading order...</p>
       </div>
-
-      <form v-if="!isFetchingOrder" @submit.prevent="submitOrder">
+      <form v-else-if="!isFetchingOrder" @submit.prevent="submitOrder">
         <input type="submit" value="" class="hidden">
         <div class="flex items-center justify-between my-2 mb-3">
           <div class="flex w-full flex-row items-center gap-2">
@@ -196,7 +208,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, effect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '@/services/api'
 import ProductSelector from '@/components/ProductSelector.vue'
@@ -213,6 +225,9 @@ import { toast } from '@/services/toast'
 import { useHead } from '@vueuse/head'
 import { usePageWS } from '@/composables/activeWs'
 import PageViewers from '@/components/active/PageViewers.vue'
+import { useOrderLockStore } from '@/stores/orderLockStore'
+import { useAuthStore } from '@/stores/auth'
+import { useOrderLock } from '@/composables/useOrderLock'
 
 const router = useRouter()
 const route = useRoute()
@@ -235,6 +250,23 @@ const order = ref({
   zone_id: null,
   area_id: null,
   items: [],
+})
+// const adminUnlocks 
+const orderLockStore = useOrderLockStore()
+const authStore = useAuthStore()
+const isLocked = computed(()=>{
+  if(orderLockStore.isLocked(orderId).value){
+    if(orderLockStore.isLockedBy(orderId).value === authStore.user.username){
+      return false;
+    }
+    return true;
+  }
+  return false;
+})
+effect(()=>{
+  if(!isLocked.value){
+    useOrderLock(orderId)
+  }
 })
 const isFetchingOrder = ref(true)
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
@@ -285,6 +317,7 @@ const fetchOrder = async () => {
     isFetchingOrder.value = true
     const res = await api.get(`/orders/${orderId}/`)
     const data = res.data
+    // orderLockStore.subscribeOrder(data.id, 'lock')
     order.value = {
       full_name: data.full_name,
       phone: data.phone,

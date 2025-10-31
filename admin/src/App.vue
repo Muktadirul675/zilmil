@@ -10,6 +10,7 @@ import { useBuilderStore } from './stores/builder';
 import { useOrderStore } from './stores/orders';
 import { useProductStore } from './stores/products';
 import { useSettingsStore } from './stores/settings';
+import { useOrderLockStore } from './stores/orderLockStore';
 
 const auth = useAuthStore()
 const products = useProductStore()
@@ -18,6 +19,7 @@ const builder = useBuilderStore()
 const activity = useActivityStore()
 const visits = useVisitsAnalyticsStore()
 const settings = useSettingsStore()
+const locks = useOrderLockStore()
 
 onBeforeMount(async () => {
   await auth.fetchUser()
@@ -28,6 +30,7 @@ onMounted(async() => {
   products.initProductSocket()
   orders.initOrderSocket()
   activity.connectWebSocket()
+  locks.connect()
   await Promise.all([
     builder.init(),
     activity.fetchActivities(),

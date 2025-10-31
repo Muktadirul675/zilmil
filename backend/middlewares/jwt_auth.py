@@ -1,33 +1,40 @@
 from urllib.parse import parse_qs
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
-from rest_framework_simplejwt.tokens import UntypedToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.contrib.auth import get_user_model
-from django.conf import settings
 import jwt
+from django.conf import settings
 
 User = get_user_model()
 
 
 @database_sync_to_async
 def get_user_from_token(token):
+    """
+    Decode JWT without checking expiration.
+    Returns a User or AnonymousUser.
+    """
     try:
-        decoded_data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        # Decode the token, ignore expiration
+        decoded_data = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=["HS256"],
+            options={"verify_exp": False}  # <-- ignore expiry
+        )
         user_id = decoded_data.get("user_id")
         if user_id:
             return User.objects.get(id=user_id)
-    except (InvalidToken, TokenError, jwt.DecodeError, User.DoesNotExist):
+    except (jwt.DecodeError, User.DoesNotExist):
         pass
     return AnonymousUser()
 
 
 class JWTAuthMiddleware:
     """
-    Custom middleware that authenticates WebSocket users using JWT token.
-    Expected query string: ?token=<access_token>
+    Custom Channels middleware for JWT auth, ignoring expiry.
+    Expects ?token=<access_token>
     """
-
     def __init__(self, inner):
         self.inner = inner
 
@@ -46,6 +53,6 @@ class JWTAuthMiddleware:
 
 def JWTAuthMiddlewareStack(inner):
     """
-    Wrap the JWTAuthMiddleware like AuthMiddlewareStack
+    Wrap like AuthMiddlewareStack
     """
     return JWTAuthMiddleware(inner)

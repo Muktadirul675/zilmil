@@ -113,7 +113,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Updated</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Customer</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Success Rate</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Address</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Note</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Items</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total</th>
@@ -159,13 +159,19 @@
                     <i class="pi font-semibold pi-phone"></i>
                     {{ order.phone }}
                   </div>
+                  <div class="flex items-center gap-2">
+                    <i class="pi font-semibold pi-address-book"></i>
+                    {{ order.shipping_address }}
+                  </div>
                   <OrderPulse :id="order.id"/>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 <FraudRatio :number="order.phone" />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ order.shipping_address || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{order.courier_reason}}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 <div v-for="item in order.items" class="flex mb-1 gap-2 items-center">
                   <img :src="BACKEND_URL + item.product.image.image" alt="" class="h-10 w-10 rounded">
@@ -199,9 +205,9 @@
                     <i class="pi pi-truck text-indigo-800"></i>
                     {{ capitalize(order.courier_status.replace("-", " ")) }}
                   </div>
-                  <div v-if="order.courier_reason" :class="order.status === 'failed' && 'text-red-500'">
+                  <!-- <div v-if="order.courier_reason" :class="order.status === 'failed' && 'text-red-500'">
                     <TapToShowText :text="order.courier_reason" />
-                  </div>
+                  </div> -->
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

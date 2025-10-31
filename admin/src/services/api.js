@@ -45,7 +45,8 @@ api.interceptors.response.use(
 
         // Save new access token
         localStorage.setItem('access', newAccess)
-
+        const auth = useAuthStore()
+        auth.access = newAccess;
         // Update original request with new token
         originalRequest.headers.Authorization = `Bearer ${newAccess}`
 

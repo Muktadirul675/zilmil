@@ -4,7 +4,7 @@
     <div v-if="isLoading" class="text-gray-500 flex items-center gap-1">
       <i class="pi pi-spin pi-spinner text-blue-500"></i> Loading...
     </div>
-    <div v-else-if="typeof data !== 'object'" class="text-red-600 text-center">{{ data }}</div>
+    <div v-else-if="typeof data !== 'object'" class="text-red-600 text-center">{{ 'Error' }}</div>
 
     <div v-else class="flex items-center gap-2">
       <!-- Circular Progress -->

@@ -1,9 +1,9 @@
 <template>
   <div class="flex">
     <Sidebar />
-    <div class="ml-64 w-full">
+    <div class="w-full">
       <Topbar />
-      <main class="p-6 min-h-[calc(100vh-4rem)] bg-gray-50">
+      <main class="p-6 flex-1 min-h-screen bg-gray-50">
         <router-view />
       </main>
     </div>
