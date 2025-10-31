@@ -198,7 +198,7 @@
                   <span class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"
                     :class="statusClass(order.status)">
                     <i :class="statusIcon(order.status)" /> {{ capitalize(convert_to_normal_word(order.status)) }}
-                    <span v-if="order.collected_amount > 0">[{{ parseInt(order.collected_amount) }}]</span>
+                    <span v-if="order.collected_amount > 0"> <br/> [{{ parseInt(order.collected_amount) }}]</span>
                   </span>
                   <div v-if="order.courier_status && order.courier_status !== 'pending'"
                     class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit bg-slate-100 text-slate-600">
