@@ -195,9 +195,11 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <div class="flex flex-col items-starts gap-1">
-                  <span class="px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"
+                  <span class="px-2 py-1 rounded-lg text-xs font-semibold flex flex-col items-center gap-1 w-fit"
                     :class="statusClass(order.status)">
-                    <i :class="statusIcon(order.status)" /> {{ capitalize(convert_to_normal_word(order.status)) }}
+                    <span>
+                      <i :class="statusIcon(order.status)" /> {{ capitalize(convert_to_normal_word(order.status)) }}
+                    </span>
                     <span v-if="order.collected_amount > 0"> <br/> [{{ parseInt(order.collected_amount) }}]</span>
                   </span>
                   <div v-if="order.courier_status && order.courier_status !== 'pending'"
