@@ -197,7 +197,7 @@
                 <div class="flex flex-col items-starts gap-1">
                   <div class="px-2 py-1 rounded-lg text-xs font-semibold gap-1 w-fit"
                     :class="statusClass(order.status)">
-                    <div>
+                    <div class="flex items-center gap-1 w-fit">
                       <i :class="statusIcon(order.status)" /> {{ capitalize(convert_to_normal_word(order.status)) }}
                     </div>
                     <span v-if="order.collected_amount > 0"> [{{ parseInt(order.collected_amount) }}]</span>
