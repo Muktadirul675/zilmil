@@ -1,6 +1,7 @@
 <template>
   <div class="w-full my-2 p-4 bg-white shadow rounded border border-gray-200">
     <!-- Invalid Number -->
+     <!-- {{ data }} -->
     <div v-if="isInvalidBDNumber(number)" class="text-red-500 mb-2">
       Invalid Number
     </div>
@@ -12,7 +13,7 @@
     </div>
 
     <!-- Error -->
-    <div v-else-if="!data.value || Object.keys(data.value).length === 0" class="text-red-600 text-center mb-2">
+    <div v-else-if="!data" class="text-red-600 text-center mb-2">
       Error or no data
     </div>
 
@@ -23,8 +24,8 @@
       <!-- Aggregated Summary of all couriers except Own Records -->
       <div class="text-sm text-gray-700 mb-4 flex flex-wrap gap-4">
         <p><strong>Total:</strong> {{ summary['Total Parcels'] }}</p>
-        <p><strong>Success:</strong> {{ summary['Delivered Parcels'] }}</p>
-        <p><strong>Cancelled:</strong> {{ summary['Canceled Parcels'] }}</p>
+        <p><strong>Success:</strong> {{ summary['Total Delivered'] }}</p>
+        <p><strong>Cancelled:</strong> {{ summary['Total Canceled'] }}</p>
         <p><strong>Success Ratio:</strong> {{ successRatio }}%</p>
       </div>
 
@@ -41,14 +42,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(courier, key) in data.value" :key="key" class="hover:bg-gray-50 transition">
+            <tr v-for="(courier, key) in data" :key="key" class="hover:bg-gray-50 transition">
               <td class="p-2">{{ key }}</td>
               <td class="p-2 text-center">{{ courier['Total Parcels'] || 0 }}</td>
-              <td class="p-2 text-center">{{ courier['Delivered Parcels'] || 0 }}</td>
-              <td class="p-2 text-center">{{ courier['Canceled Parcels'] || 0 }}</td>
+              <td class="p-2 text-center">{{ courier['Total Delivered'] || 0 }}</td>
+              <td class="p-2 text-center">{{ courier['Total Canceled'] || 0 }}</td>
               <td class="p-2 text-center">
                 {{ courier['Total Parcels'] > 0 
-                    ? Math.round((courier['Delivered Parcels'] / courier['Total Parcels']) * 100)
+                    ? Math.round((courier['Total Delivered'] / courier['Total Parcels']) * 100)
                     : 0
                 }}%
               </td>
@@ -83,7 +84,9 @@ const loadData = async (phone) => {
   isLoading.value = true
   try {
     const res = await store.getCouriers(phone)
+    console.log(res)
     data.value = res || {}
+    console.log(data.value)
   } catch (e) {
     console.error('Error fetching courier summary:', e)
     data.value = {}
@@ -110,19 +113,19 @@ const filteredCouriers = computed(() => {
 const summary = computed(() => {
   const couriers = filteredCouriers.value
   const total = Object.values(couriers).reduce((acc, c) => acc + (c['Total Parcels'] || 0), 0)
-  const delivered = Object.values(couriers).reduce((acc, c) => acc + (c['Delivered Parcels'] || 0), 0)
-  const cancelled = Object.values(couriers).reduce((acc, c) => acc + (c['Canceled Parcels'] || 0), 0)
+  const delivered = Object.values(couriers).reduce((acc, c) => acc + (c['Total Delivered'] || 0), 0)
+  const cancelled = Object.values(couriers).reduce((acc, c) => acc + (c['Total Canceled'] || 0), 0)
 
   return {
     'Total Parcels': total,
-    'Delivered Parcels': delivered,
-    'Canceled Parcels': cancelled
+    'Total Delivered': delivered,
+    'Total Canceled': cancelled
   }
 })
 
 // Success ratio
 const successRatio = computed(() => {
-  const delivered = summary.value['Delivered Parcels'] || 0
+  const delivered = summary.value['Total Delivered'] || 0
   const total = summary.value['Total Parcels'] || 0
   return total > 0 ? Math.round((delivered / total) * 100) : 0
 })

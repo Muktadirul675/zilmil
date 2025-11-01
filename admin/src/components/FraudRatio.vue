@@ -38,7 +38,7 @@
 
     <!-- Delivered / Total below the circle -->
     <div v-if="summary" class="text-sm text-gray-700">
-      {{ summary.DeliveredParcels || summary['Delivered Parcels'] || 0 }}
+      {{ summary.DeliveredParcels || summary['Total Delivered'] || 0 }}
       /
       {{ summary.TotalParcels || summary['Total Parcels'] || 0 }}
     </div>
@@ -100,7 +100,7 @@ watch(number, () => {
 // Compute success ratio
 const ratio = computed(() => {
   if (!summary.value) return 0
-  const delivered = summary.value.DeliveredParcels || summary.value['Delivered Parcels'] || 0
+  const delivered = summary.value.DeliveredParcels || summary.value['Total Delivered'] || 0
   const total = summary.value.TotalParcels || summary.value['Total Parcels'] || 0
   return total > 0 ? Math.round((delivered / total) * 100) : 0
 })

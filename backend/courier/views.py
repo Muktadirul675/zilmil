@@ -274,7 +274,7 @@ class CourierSummary(APIView):
             summaries.update(horin_summary)
 
         # Optionally cache the result
-        # cache.set(f'courier-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
+        cache.set(f'courier-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
 
         return Response(summaries, status=status.HTTP_200_OK)
 
@@ -308,7 +308,7 @@ class ParcelSummary(APIView):
             summaries.update(horin_summary)
 
         # Optionally cache the result
-        # cache.set(f'parcel-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
+        cache.set(f'parcel-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
 
         return Response(summaries, status=status.HTTP_200_OK)
 
