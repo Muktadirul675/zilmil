@@ -10,7 +10,7 @@ from .models import SiteSetting
 from authapp.permissions import OnlyAdmin
 
 class SiteSettingsListView(APIView):
-    permission_classes = [OnlyAdmin]
+    permission_classes = []
 
     def get(self, request):
         settings = SiteSetting.objects.all()

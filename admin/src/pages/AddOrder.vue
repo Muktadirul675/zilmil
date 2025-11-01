@@ -120,6 +120,7 @@ import BackButton from '@/components/ui/BackButton.vue'
 import { toast } from '@/services/toast'
 import FraudChecker from '@/components/FraudChecker.vue'
 import { useHead } from '@vueuse/head'
+import { isInvalidBDNumber } from '@/services/utils'
 
 useHead({title:"Add Order - Zilmil.com.bd"})
 
@@ -226,6 +227,10 @@ async function submitOrder() {
   if (isCalculatingDelivery.value) {
     toast.error("Calculating Delivery Charge")
     return
+  }
+  if(isInvalidBDNumber(order.value.phone)){
+    toast.error("Invalid Number")
+    return;
   }
   loading.value = true
   error.value = ''

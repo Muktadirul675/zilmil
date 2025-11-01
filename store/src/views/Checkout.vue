@@ -1,8 +1,7 @@
 <template>
   <!-- Loading state -->
   <div class="max-w-xl mx-auto p-2 lg:p-3 mb-12">
-    <div v-if="loading"
-      class="min-h-[200px] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
+    <div v-if="loading" class="min-h-[200px] flex gap-2 flex-col w-full bg-white rounded justify-center items-center">
       <img class="h-[70px] w-[70px]" src="/delivery_processing.gif" alt="">
       <div class="text-lg">Confirming your order</div>
     </div>
@@ -71,13 +70,14 @@
                   {{ formatBDT(item.product.net_price || item.product.price) }} <i class="pi pi-times text-xs"></i> {{
                     item.quantity }}
                 </div>
-                <div v-if="!removingItemsId.includes(item.id)" @click="removeItem(item.id)" class="p-1 text-red-500 hover:text-red-600 hover:bg-red-300/50 transition-all">
+                <div v-if="!removingItemsId.includes(item.id)" @click="removeItem(item.id)"
+                  class="p-1 text-red-500 hover:text-red-600 hover:bg-red-300/50 transition-all">
                   <i class="pi pi-trash"></i>
                 </div>
                 <div v-else>
                   <i class="pi pi-spinner pi-spin text-red-500"></i>
                 </div>
-              </div> 
+              </div>
             </div>
           </template>
         </div>
@@ -173,18 +173,18 @@ function prodImage(url) {
   return `${BACKEND_URL}${url}`
 }
 
-async function removeItem(itemId){
+async function removeItem(itemId) {
   noPageLoad.value = true;
   removingItemsId.value.push(itemId)
-  try{
+  try {
     await cart.removeItem(itemId)
-    if(cart.cart.items.length <= 0) window.scrollTo({top:0})
-  }catch(e){
+    if (cart.cart.items.length <= 0) window.scrollTo({ top: 0 })
+  } catch (e) {
     console.error("Failed to remove item")
-  }finally{
-    removingItemsId.value = removingItemsId.value.filter((id)=>id!==itemId)
+  } finally {
+    removingItemsId.value = removingItemsId.value.filter((id) => id !== itemId)
   }
-} 
+}
 
 const submitOrder = async () => {
   if (!isFormValid.value) return
@@ -195,9 +195,9 @@ const submitOrder = async () => {
   noPageLoad.value = true;
 
   const isValidNumber = validateBDPhoneNumber(phone.value)
-  if(!isValidNumber){
+  if (!isValidNumber) {
     loading.value = false;
-    noPageLoad.value = true;
+    noPageLoad.value = false;
     toast.error("Please provide a valid phone number")
     return;
   }
@@ -207,40 +207,50 @@ const submitOrder = async () => {
       full_name: name.value,
       shipping_address: address.value,
       phone: phone.value,
-      inside_dhaka : location.value === 'inside'
+      inside_dhaka: location.value === 'inside'
     })
     window.scrollTo({ behavior: 'smooth', top: 0 })
     success.value = true
     order_id.value = res.data.order_id
     cart.fetchCart()
-    router.push(`/thank-you?order_id=${order_id.value}`)
-    // trackPurchase({
-    //   value: total.value,
-    //   currency: 'BDT',
-    //   content_ids: res.data.product_ids, // array of product IDs in order
-    //   content_type: 'product',
-    //   num_items: res.data.num_items,
-    //   order_id: order_id.value
-    // })
+    trackPurchase({
+      transaction_id: `${order_id.value}`,
+      affiliation: 'Online Store',
+      first_name: name.value,
+      phone: phone.value,
+      value: parseInt(total.value),
+      currency: 'BDT',
+      shipping: deliveryCharge.value,
+      items: cart.cart.items.map((item) => ({
+        item_id: item.product.id,
+        item_name: item.product.name,
+        price: parseInt(item.product.net_price || item.product.price),
+        quantity: item.quantity
+      }))
+    })
     // Optional: Clear the form or cart here
+    router.push(`/thank-you?order_id=${order_id.value}`)
   } catch (err) {
     error.value = 'Failed to place order. Please try again.'
     console.log(err)
     toast.error('Failed to place order. Please try again.')
+    noPageLoad.value = false;
   } finally {
     loading.value = false;
-    noPageLoad.value = false;
   }
 }
 
 onMounted(() => {
   window.scrollTo({ top: 0 });
   trackInitiateCheckout({
-    value: total.value,
     currency: 'BDT',
-    content_ids: cart.cart.items.map((i)=>i.product.id), // array of product IDs in cart
-    content_type: 'product',
-    num_items: cart.cart.total_items
+    value: total.value,
+    items: cart.cart.items.map((item) => ({
+      item_id: item.product.id,
+      item_name: item.product.name,
+      price: item.product.net_price || item.product.price,
+      quantity: item.quantity
+    }))
   })
 })
 </script>

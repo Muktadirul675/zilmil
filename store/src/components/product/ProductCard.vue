@@ -78,14 +78,19 @@ const handleAddToCart = async () => {
       quantity: 1
     })
     trackAddToCart({
-      content_name: product.value.name,
-      content_ids: [product.value.id],
-      content_type: 'product',
-      value: parseFloat(product.value.net_price || product.value.price),
       currency: 'BDT',
-      quantity: 1
+      value: parseFloat(product.value.net_price || product.value.price),
+      items: [
+        {
+          item_id: product.value.id,
+          item_name: product.value.name,
+          item_category: product.value.categories[0].name,
+          price: parseFloat(product.value.net_price || product.value.price),
+          quantity: 1
+        }
+      ]
     })
-    toast.success("Product Added to Cart")
+    // toast.success("Product Added to Cart")
   } catch (err) {
     toast.error('Failed to add to cart.')
   } finally {
@@ -117,12 +122,17 @@ const handleBuyNow = async () => {
       quantity: 1
     })
     trackAddToCart({
-      content_name: product.value.name,
-      content_ids: [product.value.id],
-      content_type: 'product',
-      value: parseFloat(product.value.net_price || product.value.price),
       currency: 'BDT',
-      quantity: 1
+      value: parseFloat(product.value.net_price || product.value.price),
+      items: [
+        {
+          item_id: product.value.id,
+          item_name: product.value.name,
+          item_category: product.value.categories[0].name,
+          price: parseFloat(product.value.net_price || product.value.price),
+          quantity: 1
+        }
+      ]
     })
     router.push(`/checkout/`)
   } catch (err) {
@@ -132,10 +142,10 @@ const handleBuyNow = async () => {
   }
 }
 
-const lgWidth = computed(()=>{
-  if(props.cols === 4){
+const lgWidth = computed(() => {
+  if (props.cols === 4) {
     return 100 / 4;
-  }else if (props.cols === 5){
+  } else if (props.cols === 5) {
     return 100 / 5;
   }
 })

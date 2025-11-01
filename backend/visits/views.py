@@ -32,8 +32,9 @@ class VisitOriginsView(APIView):
         })
     
 class ActiveUsersView(APIView):
-    permission_classes = [OnlyAdmin]
-
+    permission_classes = []
+    authentication_classes = []
+    
     def get(self, request):
         ip = get_client_ip(request)
         key = f"active_user:{ip}"
@@ -49,6 +50,8 @@ class ActiveUsersView(APIView):
 
 
 class VisitView(APIView):
+    authentication_classes = []
+    permission_classes=[]
     def post(self, request):
         ip = get_client_ip(request)
         path = request.data.get('path', '/')

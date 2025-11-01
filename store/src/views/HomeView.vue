@@ -30,7 +30,9 @@ onActivated(()=>{
 
 onMounted(()=>{
   trackPageView({
-    content_name: 'Home Page'
+      page_title: 'Home',
+      page_location: window.location.href,
+      page_path: '/'
   })
 })
 </script>

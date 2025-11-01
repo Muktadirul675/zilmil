@@ -13,21 +13,25 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from corsheaders.defaults import default_headers, default_methods
 from datetime import timedelta
-
+from dotenv import load_dotenv
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!ae_bdv_=7st!4pq)gk=kal!2vymwqw%)=v!h24cj!f#qo00xs'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['api.zilmil.com.bd']
 
+if DEBUG:
+    ALLOWED_HOSTS.append('localhost')
 
 # Application definition
 
@@ -67,12 +71,12 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
 # Pathao API credentials
-PATHAO_CLIENT_ID = "K9b69XzaEv"
-PATHAO_CLIENT_SECRET = "xkGEQkevczpkUf5akTiPPCGdaaoRJZUYe73M51iD"
-PATHAO_USERNAME = "zilmilonlineshop@gmail.com"
-PATHAO_PASSWORD = "Zilmil123**"
-PATHAO_BASE_URL = "https://api-hermes.pathao.com"
-PATHAO_STORE_ID = "260144"
+PATHAO_CLIENT_ID = os.getenv('PATHAO_CLIENT_ID')
+PATHAO_CLIENT_SECRET = os.getenv('PATHAO_CLIENT_SECRET')
+PATHAO_USERNAME = os.getenv('PATHAO_USERNAME')
+PATHAO_PASSWORD = os.getenv('PATHAO_PASSWORD')
+PATHAO_BASE_URL = os.getenv('PATHAO_BASE_URL')
+PATHAO_STORE_ID = os.getenv('PATHAO_STORE_ID')
 
 CHANNEL_LAYERS = {
     "default": {
@@ -122,7 +126,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -131,14 +135,16 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:4173",
     "https://zilmil.com.bd",
-    "http://zilmil.com.bd",
     "https://admin.zilmil.com.bd",
-    "http://admin.zilmil.com.bd", 
 ]
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:4173",
+    ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-type',
@@ -148,9 +154,11 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 CORS_ALLOW_METHODS = list(default_methods)  # This already includes GET, POST, OPTIONS, etc.
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
     "https://api.zilmil.com.bd"
 ]
+
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
 
 TEMPLATES = [
     {
@@ -183,9 +191,9 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'zilmil-test',
-#         'USER': 'hasan-test',
-#         'PASSWORD': 'your_secure_password',
+#         'NAME': os.getenv('PG_NAME'),
+#         'USER': os.getenv('PG_USER'),
+#         'PASSWORD': os.getenv('PG_PASS'),
 #         'HOST': '161.248.201.221',  # or your VPS IP
 #         'PORT': '5432',
 #     }

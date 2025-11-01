@@ -249,6 +249,7 @@ import PageViewers from '@/components/active/PageViewers.vue'
 import { useOrderLockStore } from '@/stores/orderLockStore'
 import { useAuthStore } from '@/stores/auth'
 import { useOrderLock } from '@/composables/useOrderLock'
+import { isInvalidBDNumber } from '@/services/utils'
 
 const router = useRouter()
 const route = useRoute()
@@ -411,6 +412,10 @@ const submitOrder = async () => {
   if (isCalculatingDelivery.value) {
     toast.error("Calculating Delivery Charge")
     return
+  }
+  if(isInvalidBDNumber(order.value.phone)){
+    toast.error("Invalid Number")
+    return;
   }
   loading.value = true
   error.value = ''

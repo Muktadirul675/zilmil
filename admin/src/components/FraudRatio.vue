@@ -1,53 +1,62 @@
 <template>
-  <div class="w-full flex items-center justify-start">
-    <!-- Loading or Error -->
-    <div v-if="isLoading" class="text-gray-500 flex items-center gap-1">
+  <div class="w-full flex flex-col items-center gap-2">
+    <!-- Circular Progress -->
+    <div v-if="isInvalidBDNumber(props.number)">
+      <div class="text-red-500">Invalid Number</div>
+    </div>
+    <div v-else class="relative w-16 h-16">
+      <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+        <!-- Background Circle -->
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke="gray"
+          stroke-opacity="0.2"
+          stroke-width="10"
+          fill="none"
+        />
+        <!-- Foreground Circle -->
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke-width="10"
+          fill="none"
+          stroke-linecap="round"
+          :stroke="color"
+          :stroke-dasharray="strokeDashArray"
+          stroke-dashoffset="0"
+        />
+      </svg>
+
+      <!-- Percentage in the center -->
+      <div class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-700">
+        {{ ratio }}%
+      </div>
+    </div>
+
+    <!-- Delivered / Total below the circle -->
+    <div v-if="summary" class="text-sm text-gray-700">
+      {{ summary.DeliveredParcels || summary['Delivered Parcels'] || 0 }}
+      /
+      {{ summary.TotalParcels || summary['Total Parcels'] || 0 }}
+    </div>
+
+    <!-- Loading / Error -->
+    <div v-if="isLoading" class="text-gray-500 flex items-center gap-1 mt-2">
       <i class="pi pi-spin pi-spinner text-blue-500"></i> Loading...
     </div>
-    <div v-else-if="typeof data !== 'object'" class="text-red-600 text-center">{{ 'Error' }}</div>
-
-    <div v-else class="flex items-center gap-2">
-      <!-- Circular Progress -->
-      <div class="relative w-10 h-10">
-        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            stroke="gray"
-            stroke-opacity="0.2"
-            stroke-width="10"
-            fill="none"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            :stroke="color"
-            stroke-width="10"
-            fill="none"
-            stroke-linecap="round"
-            :stroke-dasharray="strokeDashArray"
-            stroke-dashoffset="0"
-          />
-        </svg>
-        <!-- <div class="absolute inset-0 flex items-center justify-center font-semibold text-gray-700">
-          {{ summary.success_ratio || 0 }}%
-        </div> -->
-      </div>
-
-      <!-- Summary Text -->
-      <div class="text-sm text-gray-700 space-y-1">
-          <p><strong>Success:</strong> {{ ratio }}%</p>
-        <p><strong>Orders:</strong> {{ summary.success_parcel || 0 }} / {{ summary.total_parcel || 0  }}</p>
-      </div>
+    <div v-else-if="!summary" class="text-red-600 text-center mt-2">
+      Error
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, toRef } from 'vue'
-import axios from 'axios'
+import { useCourierStore } from '@/stores/courier'
+import { isInvalidBDNumber } from '@/services/utils'
 
 const props = defineProps({
   number: {
@@ -57,38 +66,49 @@ const props = defineProps({
 })
 
 const number = toRef(props, 'number')
-const data = ref(null)
 const isLoading = ref(true)
 
-const api_key = 'hc7ItT27pJ5KsA37oPmfzh7QOVHaRr5vBlNLGQxkzQaqsrR7jdhTtJZMnPlX'
+// Pinia store
+const courierStore = useCourierStore()
+const summary = ref(null)
 
-const fetchFraudRatio = async () => {
-  if (!number.value) return
+// Function to load parcels from store
+const loadParcels = async (phone) => {
+  if (!phone || isInvalidBDNumber(phone)) {
+    isLoading.value = false;
+    return;
+  }
+  isLoading.value = true
   try {
-    isLoading.value = true
-    const res = await axios.post(
-      `https://bdcourier.com/api/courier-check?phone=${number.value}`,
-      {},
-      { headers: { Authorization: `Bearer ${api_key}` } }
-    )
-    data.value = res.data
+    const data = await courierStore.getParcels(phone)
+    summary.value = data
   } catch (e) {
-    data.value = e.message
+    summary.value = null
+    console.error('Error fetching parcels from store:', e)
   } finally {
     isLoading.value = false
   }
 }
 
+// Watch phone number and fetch data when valid
 watch(number, () => {
-  if (number.value.length >= 11) fetchFraudRatio()
+  if (number.value && number.value.length >= 11) {
+    loadParcels(number.value)
+  }
 }, { immediate: true })
 
-const summary = computed(() => data.value?.courierData?.summary || {})
-const ratio = computed(() => Number(summary.value.success_ratio) || 0)
+// Compute success ratio
+const ratio = computed(() => {
+  if (!summary.value) return 0
+  const delivered = summary.value.DeliveredParcels || summary.value['Delivered Parcels'] || 0
+  const total = summary.value.TotalParcels || summary.value['Total Parcels'] || 0
+  return total > 0 ? Math.round((delivered / total) * 100) : 0
+})
+
 const strokeDashArray = computed(() => `${(ratio.value / 100) * 283} 283`)
 const color = computed(() => {
-  if (ratio.value >= 80) return '#22c55e'   // green
-  if (ratio.value >= 50) return '#facc15'   // yellow
-  return '#ef4444'                          // red
+  if (ratio.value >= 80) return '#22c55e' // green
+  if (ratio.value >= 50) return '#facc15' // yellow
+  return '#ef4444'                        // red
 })
 </script>

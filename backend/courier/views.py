@@ -21,22 +21,28 @@ from rest_framework.response import Response
 from rest_framework import status
 from decimal import Decimal
 from orders.models import Order
-import json
 from rest_framework.permissions import AllowAny
 from authapp.permissions import OnlyAdminOrStaff, in_any_group
+import os
+from .utils import get_own_order_records, get_horin_summary, get_horin_parcel_summary
 
 client = get_pathao_client()
 
-WEBHOOK_SECRET = "f3992ecc-59da-4cbe-a049-a13da2018d51"
+WEBHOOK_PATHAO_SECRET = os.getenv('WEBHOOK_PATHAO_SECRET')
+WEBHOOK_PATHAO_ZILMIL_SECRET = os.getenv('WEBHOOK_PATHAO_ZILMIL_SECRET')
+
+# Pathao Webhook Header to be sent via X-PATHAO-Signature
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CourierWebhookView(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
+        signature = request.headers.get('X-PATHAO-Signature')
+        if signature != WEBHOOK_PATHAO_ZILMIL_SECRET:
+            return Response({'error':'Signature mismatched'}, status=status.HTTP_400_BAD_REQUEST)
         data = request.data
-        print(f"COURIER PAYLOAD:\n{(data)}\n")
-        # Extract required fields
         c_id = data.get('consignment_id')
         merchant_order_id = data.get('merchant_order_id')
         event = data.get('event')
@@ -46,7 +52,7 @@ class CourierWebhookView(APIView):
         if event == "webhook_integration":
             return Response({"Sucess":True}, 
                             status=status.HTTP_202_ACCEPTED,
-                            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": "f3992ecc-59da-4cbe-a049-a13da2018d51"}
+                            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": WEBHOOK_PATHAO_SECRET}
                     )
 
         # if not all([c_id, merchant_order_id, event]):
@@ -95,7 +101,7 @@ class CourierWebhookView(APIView):
         return Response(
             {"detail": "Webhook received"},
             status=status.HTTP_202_ACCEPTED,
-            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": "f3992ecc-59da-4cbe-a049-a13da2018d51"}
+            headers={"X-Pathao-Merchant-Webhook-Integration-Secret": WEBHOOK_PATHAO_SECRET}
         )
 
 @api_view(['GET'])
@@ -219,3 +225,90 @@ class AreaListAPIView(APIView):
             return Response(areas, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class CourierSummary(APIView):
+    permission_classes = [OnlyAdminOrStaff]
+
+    def get(self, request):
+        number = request.query_params.get('number')
+        if not number:
+            return Response({'number':'Number is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        cached_val = cache.get(f'courier-summary:{number}')
+        if cached_val is not None:
+            return Response(cached_val, status=status.HTTP_200_OK)
+
+        key = os.getenv('HORIN_API')
+        own_records = get_own_order_records(number)
+
+        # Start with own records
+        summaries = {"Own Records": own_records}
+
+        # If no API key, use placeholder summaries
+        if not key:
+            summaries.update({
+                "Steadfast": {
+                    "Total Parcels": 3,
+                    "Delivered Parcels": 3,
+                    "Canceled Parcels": 0
+                },
+                "RedX": {
+                    "Total Parcels": 10,
+                    "Delivered Parcels": 8,
+                    "Canceled Parcels": 2
+                },
+                "Pathao": {
+                    "Total Delivery": 12,
+                    "Successful Delivery": 12,
+                    "Canceled Delivery": 0
+                },
+                "Paperfly": {
+                    "Total Parcels": 14,
+                    "Delivered Parcels": 14,
+                    "Canceled Parcels": 0
+                }
+            })
+        else:
+            horin_summary = get_horin_summary(number, key)
+            # Merge Hoorin summary directly into summaries
+            summaries.update(horin_summary)
+
+        # Optionally cache the result
+        # cache.set(f'courier-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
+
+        return Response(summaries, status=status.HTTP_200_OK)
+
+class ParcelSummary(APIView):
+    permission_classes = [OnlyAdminOrStaff]
+
+    def get(self, request):
+        number = request.query_params.get('number')
+        if not number:
+            return Response({'number':'Number is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        cached_val = cache.get(f'parcel-summary:{number}')
+        if cached_val is not None:
+            return Response(cached_val, status=status.HTTP_200_OK)
+
+        key = os.getenv('HORIN_API')
+
+        # Start with own records
+        summaries = {}
+
+        # If no API key, use placeholder summaries
+        if not key:
+            summaries.update({
+                "Total Parcels": 46,
+                "Delivered Parcels": 44,
+                "Canceled Parcels": 2
+            })
+        else:
+            horin_summary = get_horin_parcel_summary(number, key)
+            # Merge Hoorin summary directly into summaries
+            summaries.update(horin_summary)
+
+        # Optionally cache the result
+        # cache.set(f'parcel-summary:{number}', summaries, timeout=60*60*3)  # cache 5 minutes
+
+        return Response(summaries, status=status.HTTP_200_OK)
+

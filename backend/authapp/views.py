@@ -70,6 +70,7 @@ class ForceLogoutView(APIView):
             BlacklistedToken.objects.get_or_create(token=token)
         broadcast_logout(user.id)
         return Response({"detail": f"All tokens for user {user.username} have been blacklisted."})
+    
 class LogoutAllView(APIView):
     permission_classes = [IsAuthenticated]
 

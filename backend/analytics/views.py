@@ -179,7 +179,7 @@ class ProductSalesCountReportView(APIView):
 
 ORDER_STATUSES = [
     'pending', 'confirmed', 'processing', 'hold',
-    'shipped', 'delivered', 'cancelled', 'returned', 'failed'
+    'shipped', 'delivered', 'cancelled', 'returned', 'failed', 'partially_delivered', 'partially_returned'
 ]
 
 class OrderStatsView(APIView):

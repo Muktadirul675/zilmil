@@ -6,7 +6,7 @@
         <template v-if="store.summary">
           <!-- Group 1 -->
           <div class="flex flex-col gap-4 w-full lg:w-[calc(50%-10px)]">
-            <div v-for="key in statusKeys.slice(0, 5)" :key="key"
+            <div v-for="key in statusKeys.slice(0, 6)" :key="key"
               class="flex items-center space-x-4 p-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div :class="['p-3 rounded-lg text-white', colorBgMap[key] || 'bg-gray-500']">
                 <component :is="iconMap[key]" class="w-6 h-6" />
@@ -24,7 +24,7 @@
 
           <!-- Group 2 -->
           <div class="flex flex-col gap-4 w-full lg:w-[calc(50%-10px)]">
-            <div v-for="key in statusKeys.slice(5)" :key="key"
+            <div v-for="key in statusKeys.slice(6)" :key="key"
               class="flex items-center space-x-4 p-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div :class="['p-3 rounded-lg text-white', colorBgMap[key] || 'bg-gray-500']">
                 <component :is="iconMap[key]" class="w-6 h-6" />
@@ -257,8 +257,10 @@ const iconMap = {
   hold: PauseCircleIcon,
   shipped: TruckIcon,
   delivered: TruckIcon,
+  partially_delivered: TruckIcon,
   cancelled: XCircleIcon,
   returned: ArrowPathIcon,
+  partially_returned: ArrowPathIcon,
   failed: ExclamationCircleIcon,
   total: CubeIcon,
 }
@@ -270,8 +272,10 @@ const statusKeys = [
   'hold',
   'shipped',
   'delivered',
+  'partially_delivered',
   'cancelled',
   'returned',
+  'partially_returned',
   'failed',
   'total',
 ]

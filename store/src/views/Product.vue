@@ -216,13 +216,14 @@ const fetchProduct = async (slug) => {
     product.value = data
 
     if (product.value) {
-      trackViewContent({
-        content_name: `Product: ${product.value.name}`,
-        content_ids: [product.value.id],
-        content_type: 'product',
-        value: product.value.net_price || product.value.price,
-        currency: 'BDT',
-      })
+      trackViewContent(
+        {
+          content_name: `Product: ${product.value.name}`,
+          content_type: 'product',
+          content_id: product.value.id,
+          currency: BDT,
+          value: parseInt(product.value.net_price || product.value.price)
+        })
     }
 
     fetchSimilars(data.id)
@@ -291,14 +292,18 @@ const handleAddToCart = async (buying = false) => {
   if (!buying) addingToCart.value = true
   try {
     await cart.addToCart(payload)
-
     trackAddToCart({
-      content_name: product.value.name,
-      content_ids: [product.value.id],
-      content_type: 'product',
-      value: parseFloat(product.value.net_price || product.value.price),
       currency: 'BDT',
-      quantity: quantity.value
+      value: parseFloat(product.value.net_price || product.value.price),
+      items: [
+        {
+          item_id: product.value.id,
+          item_name: product.value.name,
+          item_category: product.value.categories[0].name,
+          price: parseFloat(product.value.net_price || product.value.price),
+          quantity: quantity.value
+        }
+      ]
     })
   } catch (e) {
     alert(e.message || 'Failed to add to cart')
@@ -309,21 +314,26 @@ const handleAddToCart = async (buying = false) => {
 
 async function handleBuyNow() {
   buyingNow.value = true
-  try{
+  try {
     await handleAddToCart()
     trackAddToCart({
-      content_name: product.value.name,
-      content_ids: [product.value.id],
-      content_type: 'product',
-      value: parseFloat(product.value.net_price || product.value.price),
       currency: 'BDT',
-      quantity: quantity.value
+      value: parseFloat(product.value.net_price || product.value.price),
+      items: [
+        {
+          item_id: product.value.id,
+          item_name: product.value.name,
+          item_category: product.value.categories[0].name,
+          price: parseFloat(product.value.net_price || product.value.price),
+          quantity: quantity.value
+        }
+      ]
     })
     router.push("/checkout")
-  }catch(e){
+  } catch (e) {
     console.error(e)
   }
-  finally{
+  finally {
     buyingNow.value = false
   }
 }

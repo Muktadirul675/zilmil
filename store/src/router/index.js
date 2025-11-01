@@ -73,7 +73,7 @@ router.beforeEach(async (to, from, next) => {
 
     try {
       const res = await api.get(`/orders/verify?order_id=${order_id}`)
-      console.log(`Route guard: ${res.data.valid}`)
+      // console.log(`Route guard: ${res.data.valid}`)
       if (res.data?.valid) {
         next() // proceed to ThankYou.vue
       } else {

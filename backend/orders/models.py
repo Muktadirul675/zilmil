@@ -2,6 +2,7 @@ from django.db import models
 from products.models import Product, Variant, Color
 from decimal import Decimal
 from django.contrib.auth import get_user_model
+import re
 
 User = get_user_model()
 
@@ -32,10 +33,7 @@ class Order(models.Model):
     courier = models.CharField(max_length=255, null=True, blank=True, default="pathao")
     sent_to_courier = models.BooleanField(default=False)
     c_id = models.CharField(max_length=255, null=True, blank=True)
-    courier_status = models.CharField(
-        max_length=50,
-        default='pending'
-    )
+    courier_status = models.CharField(max_length=50, default='pending')
     city_id = models.PositiveIntegerField(null=True, blank=True)
     zone_id = models.PositiveIntegerField(null=True, blank=True)
     area_id = models.PositiveIntegerField(null=True, blank=True)
@@ -57,10 +55,35 @@ class Order(models.Model):
         total = items_total + (self.delivery_charge or 0)
         return total - self.order_discount if total > self.order_discount else 0
 
+    @staticmethod
+    def normalize_bd_number(number: str) -> str:
+        """
+        Normalize BD phone number to standard 01XXXXXXXXX format
+        """
+        if not number:
+            return ''
+        # Remove all non-digit characters
+        number = re.sub(r'\D', '', number)
+
+        # Remove leading country code variations
+        if number.startswith('8801'):
+            number = '0' + number[3:]
+        elif number.startswith('01'):
+            pass  # already good
+        elif number.startswith('801'):  # rare, 801XXXX
+            number = '0' + number[1:]
+        return number
+
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Save first to ensure order has an ID for items
+        # Normalize phone number before saving
+        self.phone = self.normalize_bd_number(self.phone)
+
+        # Save first to ensure order has an ID for items
+        super().save(*args, **kwargs)
+
+        # Calculate total price
         self.total_price = self.calculate_total_price()
-        super().save(update_fields=['total_price'])
+        super().save(update_fields=['total_price', 'phone'])
 
     def __str__(self):
         return f"Order #{self.id} - {self.full_name}"

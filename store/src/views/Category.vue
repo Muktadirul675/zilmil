@@ -30,10 +30,9 @@ async function fetchCategory(slug) {
 
     trackViewCategory({
         content_name: category.value.name,
-        content_category: category.value.name,
-        content_ids: products.value.map(p => p.id), // Array of product IDs in category
-        content_type: 'product_group'
+        content_ids: products.value.map(p => p.id)
     })
+    
 }
 
 onMounted(async () => {

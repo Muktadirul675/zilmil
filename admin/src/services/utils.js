@@ -1,5 +1,23 @@
 import { capitalize } from "vue"
+/**
+ * Check if a Bangladeshi mobile number is invalid
+ * @param {string} number - Phone number as string
+ * @returns {boolean} true if invalid, false if valid
+ */
+export function isInvalidBDNumber(number) {
+  if (!number || typeof number !== 'string') return true
 
+  // Remove any spaces, dashes, or parentheses
+  const clean = number.replace(/[\s\-()]/g, '')
+
+  // Local format: 11 digits, starts with 01, second digit 1-9
+  const localPattern = /^01[1-9]\d{8}$/
+
+  // International format: +8801XXXXXXXXX
+  const intlPattern = /^\+8801[1-9]\d{8}$/
+
+  return !localPattern.test(clean) && !intlPattern.test(clean)
+}
 export function timeAgo(dateTime) {
   if (!dateTime) return ''
 

@@ -16,39 +16,56 @@ return;
   // Initialize Pixel
   fbq('init', pixelId);
 }
-
 export function trackPageView(pageData = {}) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'PageView', pageData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'PageView',
+      ...pageData
+    });
   }
 }
 
 export function trackViewContent(contentData) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'ViewContent', contentData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'ViewContent',
+      ...contentData
+    });
   }
 }
 
 export function trackViewCategory(categoryData) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'ViewCategory', categoryData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'ViewCategory',
+      ...categoryData
+    });
   }
 }
 
 export function trackAddToCart(productData) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'AddToCart', productData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'AddToCart',
+      ...productData
+    });
   }
 }
 
 export function trackPurchase(orderData) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'Purchase', orderData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'Purchase',
+      ...orderData
+    });
   }
 }
 
 export function trackInitiateCheckout(checkoutData) {
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'InitiateCheckout', checkoutData);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'InitiateCheckout',
+      ...checkoutData
+    });
   }
 }
