@@ -290,6 +290,10 @@ const isLocked = computed(()=>{
   return false;
 })
 effect(()=>{
+  if(isLocked.value){
+    toast.info("Order is locked")
+    router.push('/orders')
+  }
   if(!isLocked.value){
     useOrderLock(orderId)
   }

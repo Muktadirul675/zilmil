@@ -45,9 +45,13 @@
         </button>
 
         <div v-if="orderStore.selectedOrderIds.length" class="flex gap-2 items-center">
+          <button @click="performBulkInvoiceDownloads"
+            class="bg-blue-600 text-white px-2 py-1.5 rounded cursor-pointer hover:bg-blue-700" :disabled="loading">
+            <i class="pi pi-download" />
+          </button>
           <button @click="performBulkDelete"
-            class="bg-red-600 text-white px-3 py-2 rounded cursor-pointer hover:bg-red-700" :disabled="loading">
-            <i class="pi pi-trash mr-2" /> Delete Selected
+            class="bg-red-600 text-white px-2 py-1.5 rounded cursor-pointer hover:bg-red-700" :disabled="loading">
+            <i class="pi pi-trash" />
           </button>
 
           <select v-model="selectedStatus" @change="performBulkStatusChange"
@@ -132,6 +136,9 @@
                 <div class="flex flex-col gap-1">
                   <div>
                     #{{ order.id }}<br/>
+                    <div class="absolute left-[-9999px]">
+                      <Invoice :inject-invoice-ref="injectInvoiceRef" :order="order"/>
+                    </div>
                 <span v-if="order.source">[{{ capitalize(convert_to_normal_word(order.source)) }}]</span>
                   </div>
                   <div v-if="order.c_id" class="text-xs">
@@ -216,6 +223,9 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- {{ totalPrice(order).toFixed(2) }} -->
                 <BDT :amount="parseFloat(order.total_price)" />
+                <div>
+                  <button @click.stop="()=>downloadInvoice(order.id)" class="btn"><i class="pi pi-download"></i></button>
+                </div>
               </td>
             </tr> </template>
 
@@ -263,12 +273,15 @@
 
 <script setup>
 import FraudRatio from '@/components/FraudRatio.vue'
+import Invoice from '@/components/Invoice.vue'
 import OrderPulse from '@/components/orders/OrderPulse.vue'
 import BDT from '@/components/ui/BDT.vue'
 import CircularPulse from '@/components/ui/CircularPulse.vue'
 import TapToShowText from '@/components/ui/TapToShowText.vue'
 import { usePageWS } from '@/composables/activeWs'
+import { toast } from '@/services/toast'
 import { convert_to_normal_word } from '@/services/utils'
+import { useOrderLockStore } from '@/stores/orderLockStore'
 import { useOrderStore } from '@/stores/orders'
 import { useHead } from '@vueuse/head'
 import { computed, ref } from 'vue'
@@ -279,8 +292,13 @@ useHead({
 })
 
 const router = useRouter()
+const orderLockStore = useOrderLockStore()
 
 const goToOrder = (id) => {
+  if(orderLockStore.isLocked(id)){
+    toast.info('Order is locked')
+    return;
+  }
   router.push(`/orders/${id}`)
 }
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -291,6 +309,33 @@ const showFilters = ref(false)
 const loading = ref(false)
 const selectedStatus = ref('')
 const expandedOrders = ref(new Set())
+
+const invoiceRefs = ref({})
+
+function injectInvoiceRef(id, childRef){
+  invoiceRefs.value[id] = childRef
+}
+
+function downloadInvoice(id){
+  // console.log('downloading')
+  if(invoiceRefs.value[id]){
+    console.log(invoiceRefs.value[id])
+    invoiceRefs.value[id].dwnld()
+  }
+}
+
+async function performBulkInvoiceDownloads() {
+  toast.info("Download Started");
+
+  for(const i of orderStore.selectedOrderIds){
+    await downloadInvoice(i)
+  }
+  // const promises = orderStore.selectedOrderIds.map(id => downloadInvoice(id));
+
+  // await Promise.all(promises);
+
+  toast.success("All invoices will be downloaded shortly!");
+}
 
 // Status options for filter and bulk status change
 const statusOptions = [
