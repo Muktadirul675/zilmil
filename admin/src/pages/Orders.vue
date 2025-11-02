@@ -296,7 +296,7 @@ const router = useRouter()
 const orderLockStore = useOrderLockStore()
 const auth = useAuthStore()
 const goToOrder = (id) => {
-  if(orderLockStore.isLocked(id) && orderLockStore.isLockedBy(id) !== auth.user.username){
+  if(orderLockStore.isLocked(id).value && orderLockStore.isLockedBy(id).value && orderLockStore.isLockedBy(id).value !== auth.user.username){
     toast.info('Order is locked')
     return;
   }
