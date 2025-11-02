@@ -281,6 +281,7 @@ import TapToShowText from '@/components/ui/TapToShowText.vue'
 import { usePageWS } from '@/composables/activeWs'
 import { toast } from '@/services/toast'
 import { convert_to_normal_word } from '@/services/utils'
+import { useAuthStore } from '@/stores/auth'
 import { useOrderLockStore } from '@/stores/orderLockStore'
 import { useOrderStore } from '@/stores/orders'
 import { useHead } from '@vueuse/head'
@@ -293,9 +294,9 @@ useHead({
 
 const router = useRouter()
 const orderLockStore = useOrderLockStore()
-
+const auth = useAuthStore()
 const goToOrder = (id) => {
-  if(orderLockStore.isLocked(id)){
+  if(orderLockStore.isLocked(id) && orderLockStore.isLockedBy(id) !== auth.user.username){
     toast.info('Order is locked')
     return;
   }
