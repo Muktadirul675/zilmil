@@ -17,6 +17,7 @@ return;
   fbq('init', pixelId);
 }
 export function trackPageView(pageData = {}) {
+  return;
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
       event: 'PageView',
@@ -28,8 +29,32 @@ export function trackPageView(pageData = {}) {
 export function trackViewContent(contentData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
-      event: 'ViewContent',
-      ...contentData
+      event: 'view_item',
+      eommerce:{
+        ...contentData
+      }
+    });
+  }
+}
+
+export function trackAddPaymentInfo(payload){
+if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'add_payment_info',
+      eommerce:{
+        ...payload
+      }
+    });
+  }
+}
+
+export function trackViewCart(contentData) {
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'view_cart',
+      eommerce:{
+        ...contentData
+      }
     });
   }
 }
@@ -37,8 +62,8 @@ export function trackViewContent(contentData) {
 export function trackViewCategory(categoryData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
-      event: 'ViewCategory',
-      ...categoryData
+      event: 'view_category',
+      ecommerce:{...categoryData}
     });
   }
 }
@@ -46,8 +71,8 @@ export function trackViewCategory(categoryData) {
 export function trackAddToCart(productData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
-      event: 'AddToCart',
-      ...productData
+      event: 'add_to_cart',
+      ecommerce:{...productData}
     });
   }
 }
@@ -55,8 +80,8 @@ export function trackAddToCart(productData) {
 export function trackPurchase(orderData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
-      event: 'Purchase',
-      ...orderData
+      event: 'purchase',
+      ecommerce:{...orderData}
     });
   }
 }
@@ -64,8 +89,8 @@ export function trackPurchase(orderData) {
 export function trackInitiateCheckout(checkoutData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
-      event: 'InitiateCheckout',
-      ...checkoutData
+      event: 'begin_checkout',
+      ecommerce:{...checkoutData}
     });
   }
 }

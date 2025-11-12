@@ -6,6 +6,7 @@ import { onMounted, ref, watch } from 'vue'
 import BDT from '@/components/ui/BDT.vue'
 import { RouterLink } from 'vue-router'
 import { useHead } from '@vueuse/head'
+import { trackViewCart } from '@/lib/pixel'
 
 const cart = useCartStore()
 useHead({
@@ -13,6 +14,16 @@ useHead({
 })
 onMounted(() => {
   window.scrollTo({ top: 0 })
+  trackViewCart({
+    currency: "BDT",
+    value: parseInt(cart.cart.total_price),
+    items: cart.cart.items.map((item)=>({
+      item_id: item.product.id,
+      item_name: item.product.item_name,
+      price: item.product.price,
+      quantity: item.quantity
+    }))
+  })
 })
 </script>
 

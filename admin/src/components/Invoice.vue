@@ -1,24 +1,27 @@
 <template>
   <button class="btn" @click.stop="dwnld">Download</button>
   <div ref="invoice" class="invoice-container relative"
-    style="height:auto;width:800px; background:#ffffff; box-sizing:border-box; font-family:Arial, sans-serif; font-size:14px; overflow:hidden;margin:0;padding:0;">
+    style="height:auto;width:875px; height: 1240px; background:#ffffff; box-sizing:border-box; font-family:Arial, sans-serif; font-size:14px; overflow:hidden;margin:0;padding:0;">
 
     <div
-      style="display:flex; justify-content:space-between; align-items:center; padding:16px 40px; border-bottom:4px solid #4B5563;">
+      style="display:flex; justify-content:space-between; align-items:center; padding:16px 40px; border-bottom:4px solid #4B5563; background-color: #ccd8ca;">
       <div>
         <img src="/logo.png" alt="Logo" style="height:64px; display:block;">
-        <div style="margin-top:8px; font-size:18px; color:#111827;">Zilmil Online Shopping</div>
+        <div style="margin-top:8px; font-size:24px; color:#111827;">Zilmil Online Shop</div>
       </div>
-      <div style="font-size:24px; color:#111827;">Invoice</div>
+      <div style="font-size:48px; font-weight: bold; color:#111827;">Invoice</div>
     </div>
 
-    <div style="padding:16px 40px; color:#111827;">
+    <div style="padding:32px 40px; color:#111827;font-size: medium;">
       <div style="display:flex; flex-direction: column; justify-content:space-between;">
         <div style="margin-left:auto">
           Order ID : Z{{ order.id }}<br>
           Date: {{ date() }}
+          <div v-if="order.c_id">
+            <Barcode :value="order.c_id"/>
+          </div>
         </div>
-        <div>
+        <div style="margin-top:-50px">
           <strong>Bill To</strong><br>
           Mehadi Hasan<br>
           018284818712<br>
@@ -29,19 +32,16 @@
 
     <div style="padding:16px 40px;">
       <InvoiceTable :items="order.items" :safe-colors="true" />
-      <div style="text-align:right;">
-        <div style="margin-block:4px;">Subtotal: {{ subTotal }}</div>
-        <div style="margin-block:4px;">Shipping: {{ parseInt(order.delivery_charge) }}</div>
-        <div style="
-          width:fit-content;
-       padding:4px 8px; 
-       background-color:#b91c1c; 
-       color:#ffffff; 
-       min-width:120px;
-       text-align:right;
-       margin-left:auto
-    ">
-          Grand Total: {{ grandTotal }}
+      <div class="flex flex-row text-md justify-end">
+        <div class="flex flex-col w-30 text-right">
+          <div class="px-2">Subtotal:</div>
+          <div class="px-2">Shipping:</div>
+          <div class="px-2 py-1 bg-red-800 text-white">Grand Total:</div>
+        </div>
+        <div class="flex flex-col w-fit">
+          <div>{{ subTotal }}</div>
+          <div>{{ order.delivery_charge }}</div>
+          <div class="py-1 px-2 ps-0 border border-black bg-red-800 text-white">{{ grandTotal }}</div>
         </div>
       </div>
     </div>
@@ -54,23 +54,24 @@
       </div>
     </div>
 
-    <div style="padding:16px 40px; display:flex; justify-content:flex-end;">
+    <div style="padding:60px 40px; display:flex; font-size: medium; justify-content:flex-end;">
       <div style="border-top:1px solid #D1D5DB; padding:4px;">Authorized Signature</div>
     </div>
 
-    <div style="padding:16px 32px; display:flex; align-items: center; gap:16px; color:#111827;">
-      <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-phone"></i> 018284818712
+    <div style="background-color:#ccd8ca;">
+      <div style="padding:10px 32px; display:flex; align-items: center; gap:16px; color:#111827;">
+        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-phone"></i> 018284818712
+        </div>
+        <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-globe"></i> www.zilmil.com.bd</div>
+        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-map-marker"></i>
+          Bangshal,
+          Dhaka</div>
       </div>
-      <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-globe"></i> www.zilmil.com.bd</div>
-      <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-map-marker"></i> Bangshal,
-        Dhaka</div>
     </div>
-
-    <div style="height:4px; background-color:#4B5563;"></div>
-    <div style="height:6px; background-color:#b91c1c;"></div>
+    <div style="height:8px; background-color:#b91c1c;"></div>
     <br>
-    <div class="absolute bottom-[8px] right-[25px]">
-      <VueQrCode :value="`https://zilmil.com.bd`" :margin="0" :width="40"/>
+    <div class="absolute bottom-[10px] right-[25px]">
+      <VueQrCode color="black" type="image/jpeg" :value="`https://zilmil.com.bd`" :margin="0" :width="70" />
     </div>
   </div>
 </template>
@@ -81,15 +82,17 @@ import html2canvas from 'html2canvas-pro'
 import jsPDF from 'jspdf'
 import InvoiceTable from './InvoiceTable.vue'
 import VueQrCode from 'vue-qrcode'
+import Barcode from './Barcode.vue'
 
 const props = defineProps({
   order: {
     type: Object,
     default: () => ({
       id: 1,
+      c_id:"DX92838392",
       items: [
-        { product: { name: 'Gloves', quantity: 2, price: 200, net_price: 100 }, quantity:2 },
-        { product: { name: 'Shoes', quantity: 1, price: 220, net_price: 120 }, quantity:1 },
+        { product: { name: 'Gloves', quantity: 2, price: 200, net_price: 100 }, quantity: 2 },
+        { product: { name: 'Shoes', quantity: 1, price: 220, net_price: 120 }, quantity: 1 },
       ],
       delivery_charge: 60,
       order_note: 'This is an example note for the order.',
@@ -174,3 +177,8 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+*{border:0px solid transparent;}
+</style>
+ 

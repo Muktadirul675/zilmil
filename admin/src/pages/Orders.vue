@@ -5,6 +5,8 @@
         <i class="pi pi-shopping-cart  text-indigo-600"></i>
         Orders
       </div>
+      <input v-model="orderStore.search" @input="onSearch" type="text" placeholder="Search by name or phone"
+        class="border bg-white border-gray-300 rounded px-3 text-sm text-slate-600 font-normal py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
       <div v-if="orderStore.loading">
         <i class="pi pi-spin pi-spinner text-sm px-3 text-center text-indigo-600"></i>
       </div>
@@ -12,14 +14,14 @@
 
     <!-- Search and Filters -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-      <input v-model="orderStore.search" @input="onSearch" type="text" placeholder="Search by name or phone"
-        class="border bg-white border-gray-300 rounded px-3 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-
       <div class="flex flex-row flex-wrap gap-1">
-        <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{orderStore.filterStatus = ''; orderStore.fetchOrders()}">All</button>
+        <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{orderStore.filterStatus = ''; orderStore.fetchOrders()}">
+          All 
+    ({{orderAnStore.allTimeSummary['total']}})
+        </button>
         <template v-for="status in statusOptions" :key="status" >
           <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{orderStore.filterStatus = status; orderStore.fetchOrders()}">
-            {{ capitalize(convert_to_normal_word(status)) }}
+            {{ capitalize(convert_to_normal_word(status)) }} ({{orderAnStore.allTimeSummary[status]}})
           </button>
         </template>
       </div>
@@ -35,13 +37,13 @@
 
       <div class="flex flex-row gap-2 items-center">
         <div class="flex items-center gap-2">
-          <label for="limit" class="text-sm font-medium text-gray-700">Per page:</label>
+          <label for="limit" class="text-sm font-medium text-gray-700">Qty:</label>
           <input id="limit" type="number" min="1" v-model.number="orderStore.limit" @change="onLimitChange"
             class="w-20 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
         <button @click="toggleFilters"
           class="bg-gray-200 text-gray-800 px-4 py-2 rounded cursor-pointer hover:bg-gray-300">
-          <i class="pi pi-sliders-h mr-2" /> Filters
+          <i class="pi pi-sliders-h" />
         </button>
 
         <div v-if="orderStore.selectedOrderIds.length" class="flex gap-2 items-center">
@@ -63,13 +65,13 @@
           </select>
         </div>
 
-        <button @click="orderStore.fetchOrders"
+        <button @click="orderStore.fetchOrders && orderAnStore.fetchAllTimeSummary()"
           class="bg-indigo-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-indigo-700">
-          <i class="pi pi-refresh mr-2" /> Refresh
+          <i class="pi pi-refresh" />
         </button>
         <RouterLink to="/orders/add"
           class="bg-indigo-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-indigo-700">
-          <i class="pi pi-plus mr-2" /> Add
+          <i class="pi pi-plus" />
         </RouterLink>
       </div>
     </div>
@@ -121,6 +123,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Items</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"></th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-300">
@@ -129,7 +132,7 @@
               <td class="pl-4 py-4 w-10" v-if="orderStore.processing_orders.includes(order.id)"><i
                   class="pi pi-spin pi-cog"></i></td>
               <td class="pl-4 py-4 w-10" v-else>
-                <input  v-if="!(['delivered','partially_delivered','returned','cancelled','failed','partially_returned'].includes)(order.status)" type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
+                <input  v-if="(['pending','hold','confirmed'].includes)(order.status)" type="checkbox" :checked="orderStore.selectedOrderIds.includes(order.id)"
                   @change.stop="orderStore.toggleOrderSelection(order.id)" @click.stop />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -156,7 +159,7 @@
                 <br>
                 {{ new Date(order.updated_at).toLocaleTimeString() }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap w-[250px] text-sm font-medium text-gray-900">
                 <div class="flex flex-col gap-2">
                   <div class="flex items-center gap-2">
                     <i class="pi font-semibold pi-user"></i>
@@ -223,7 +226,9 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- {{ totalPrice(order).toFixed(2) }} -->
                 <BDT :amount="parseFloat(order.total_price)" />
-                <div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <div v-if="order.status == 'confirmed'">
                   <button @click.stop="()=>downloadInvoice(order.id)" class="btn"><i class="pi pi-download"></i></button>
                 </div>
               </td>
@@ -281,21 +286,24 @@ import TapToShowText from '@/components/ui/TapToShowText.vue'
 import { usePageWS } from '@/composables/activeWs'
 import { toast } from '@/services/toast'
 import { convert_to_normal_word } from '@/services/utils'
+import { useOrdersAnalyticsStore } from '@/stores/analytics/orders'
 import { useAuthStore } from '@/stores/auth'
 import { useOrderLockStore } from '@/stores/orderLockStore'
 import { useOrderStore } from '@/stores/orders'
 import { useHead } from '@vueuse/head'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
 useHead({
   title: 'Orders - Zilmil.com.bd'
 })
-
+const orderAnStore = useOrdersAnalyticsStore()
 const router = useRouter()
 const orderLockStore = useOrderLockStore()
 const auth = useAuthStore()
 const goToOrder = (id) => {
+  const selection = window.getSelection()
+  if(selection && selection.toString().length>0) return
   if(orderLockStore.isLocked(id).value && orderLockStore.isLockedBy(id).value && orderLockStore.isLockedBy(id).value !== auth.user.username){
     toast.info('Order is locked')
     return;
@@ -343,14 +351,14 @@ const statusOptions = [
   'pending',
   'confirmed',
   'processing',
-  'hold',
   'shipped',
   'delivered',
+  'partially_delivered',
+  'partially_returned',
   'cancelled',
   'returned',
   'failed',
-  'partially_delivered',
-  'partially_returned',
+  'hold',
 ]
 
 function statusIcon(status) {
@@ -449,8 +457,10 @@ const statusClass = (status) => {
     hold: 'bg-orange-100 text-orange-800',
     shipped: 'bg-purple-100 text-purple-800',
     delivered: 'bg-green-100 text-green-800',
+    partially_delivered: 'bg-olive-100 text-olive-800',
     cancelled: 'bg-red-100 text-red-800',
     returned: 'bg-red-100 text-red-800',
+    partially_returned: 'bg-red-100/50 text-red-800/50',
     failed: 'bg-red-100 text-red-800',
   }[status] || 'bg-gray-100 text-gray-800'
 }
@@ -484,6 +494,9 @@ const toggleExpanded = (orderId) => {
   expandedOrders.value = new Set(expandedOrders.value)
 }
 
-// Initial fetch
-orderStore.fetchOrders()
+onMounted(()=>{
+  // Initial fetch
+  orderStore.fetchOrders()
+  orderAnStore.fetchAllTimeSummary()
+})
 </script>

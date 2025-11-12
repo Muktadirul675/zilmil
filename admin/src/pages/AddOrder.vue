@@ -121,6 +121,7 @@ import { toast } from '@/services/toast'
 import FraudChecker from '@/components/FraudChecker.vue'
 import { useHead } from '@vueuse/head'
 import { isInvalidBDNumber } from '@/services/utils'
+import { useOrdersAnalyticsStore } from '../stores/analytics/orders'
 
 useHead({title:"Add Order - Zilmil.com.bd"})
 
@@ -270,6 +271,8 @@ async function submitOrder() {
 
     await api.post('/orders/', payload)
     success.value = true
+    const oa = useOrdersAnalyticsStore()
+    oa.fetchAllTimeSummary()
     router.push('/orders')
   } catch (err) {
     error.value = err.response?.data?.detail || 'Failed to create order.'

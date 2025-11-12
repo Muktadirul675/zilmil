@@ -5,6 +5,7 @@ import api from '@/services/api'
 export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
   state: () => ({
     summary: null,
+    allTimeSummary: {},
     report: [],
     originsReport: {},
     productOrdersReport: {
@@ -33,6 +34,15 @@ export const useOrdersAnalyticsStore = defineStore('ordersAnalyticsStore', {
         this.error = err.message || 'Failed to load order summary'
       } finally {
         this.loading = false
+      }
+    },
+
+    async fetchAllTimeSummary() {
+      try {
+        const res = await api.get('/analytics/orders')
+        this.allTimeSummary = res.data
+      } catch (err) {
+        this.error = err.message || 'Failed to load order summary'
       }
     },
 

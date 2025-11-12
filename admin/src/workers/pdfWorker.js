@@ -1,24 +1,23 @@
-// pdfWorker.js
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
 
 self.onmessage = async (e) => {
-  const { id, htmlContent, width, height } = e.data;
+  const { id, htmlContent } = e.data;
 
   try {
-    // Create a PDF with given width & height
-    const pdf = new jspdf.jsPDF({
+    // Fixed PDF size (A4 @ ~1750x2480 px)
+    const pdfWidth = 1750;
+    const pdfHeight = 2480;
+
+    const { jsPDF } = jspdf;
+    const pdf = new jsPDF({
       unit: 'px',
-      format: [width, height]
+      format: [pdfWidth, pdfHeight],
     });
 
-    // Since we cannot run html2canvas here, we assume the main thread
-    // sends the canvas image as base64 string instead of raw HTML
-    pdf.addImage(htmlContent, 'PNG', 0, 0, width, height);
+    // Add the image and scale it to fit the fixed page
+    pdf.addImage(htmlContent, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-    // Get the blob
     const pdfBlob = pdf.output('blob');
-
-    // Send blob back to main thread
     self.postMessage({ id, pdfBlob });
   } catch (err) {
     self.postMessage({ id, error: err.message });

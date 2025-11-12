@@ -218,10 +218,12 @@ const fetchProduct = async (slug) => {
     if (product.value) {
       trackViewContent(
         {
-          content_name: `Product: ${product.value.name}`,
-          content_type: 'product',
-          content_id: product.value.id,
-          currency: BDT,
+          items:[{
+            item_name: `Product: ${product.value.name}`,
+            item_category: product.value.categories.length ? product.value.categories[0].name : '',
+            item_id: product.value.id,
+          }],
+          currency: 'BDT',
           value: parseInt(product.value.net_price || product.value.price)
         })
     }

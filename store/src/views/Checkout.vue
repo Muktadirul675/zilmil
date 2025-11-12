@@ -131,7 +131,7 @@ import { useToast } from '@/lib/toast'
 import { useSettingsStore } from '@/stores/settings'
 import { useHead } from '@vueuse/head'
 import { formatBDT, truncate, validateBDPhoneNumber } from '@/lib/utils'
-import { trackInitiateCheckout, trackPurchase } from '@/lib/pixel'
+import { trackAddPaymentInfo, trackInitiateCheckout, trackPurchase } from '@/lib/pixel'
 
 useHead({
   title: "Checkout - Zilmil.com.bd"
@@ -154,6 +154,8 @@ const error = ref(null)
 const success = ref(false)
 const order_id = ref(null)
 
+const sendInfo = ref(true)
+
 const subtotal = computed(() => cart?.cart?.total_price || 0)
 const deliveryCharge = computed(() => location.value === 'inside' ? parseFloat(
   settings.get('delivery_charge_inside_dhaka')
@@ -172,6 +174,33 @@ function prodImage(url) {
   if (url.startsWith(BACKEND_URL)) return url;
   return `${BACKEND_URL}${url}`
 }
+
+function add_payment_info() {
+  if (!isFormValid) return;
+  if (sendInfo.value) {
+    sendInfo.value = false;
+    setTimeout(() => {
+      trackAddPaymentInfo({
+        currency: 'BDT',
+        value: total.value,
+        shipping: deliveryCharge.value,
+        items: cart.cart.items.map((item) => ({
+          item_id: item.product.id,
+          item_name: item.product.name,
+          price: parseInt(item.product.net_price || item.product.price),
+          quantity: item.quantity
+        }))
+      })
+      sendInfo.value = true;
+    }, 500)
+  }
+}
+
+effect(()=>{
+  if(name.value.trim() !== '' && address.value.trim() !== '' && validateBDPhoneNumber(phone.value)){
+    add_payment_info()
+  }
+})
 
 async function removeItem(itemId) {
   noPageLoad.value = true;
@@ -216,8 +245,10 @@ const submitOrder = async () => {
     trackPurchase({
       transaction_id: `${order_id.value}`,
       affiliation: 'Online Store',
-      first_name: name.value,
-      phone: phone.value,
+      customer_info: {
+        first_name: name.value,
+        phone: phone.value,
+      },
       value: parseInt(total.value),
       currency: 'BDT',
       shipping: deliveryCharge.value,

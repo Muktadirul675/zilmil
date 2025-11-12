@@ -5,6 +5,7 @@ import { toast } from '@/services/toast'
 import { beep } from '@/services/beep'
 import { handleError } from '@/services/errors'
 import { getWsProtocol } from '@/services/utils'
+import { useOrdersAnalyticsStore } from './analytics/orders'
 
 export const useOrderStore = defineStore('orderStore', {
   state: () => ({
@@ -128,6 +129,8 @@ export const useOrderStore = defineStore('orderStore', {
         this.orders = this.orders.filter(order => order.id !== orderId)
         this.totalCount -= 1
         this.selectedOrderIds = this.selectedOrderIds.filter(id => id !== orderId)
+        const oa = useOrdersAnalyticsStore()
+        oa.fetchAllTimeSummary()
       } catch (err) {
         this.error = err.response?.data || 'Failed to delete order'
         console.error(err)
@@ -147,6 +150,8 @@ export const useOrderStore = defineStore('orderStore', {
         this.orders = this.orders.map(order =>
           order.id === orderId ? response.data : order
         )
+        const oa = useOrdersAnalyticsStore()
+        oa.fetchAllTimeSummary()
       } catch (err) {
         handleError(err)
         this.error = err.response?.data || 'Failed to change order status'
@@ -188,6 +193,8 @@ export const useOrderStore = defineStore('orderStore', {
             this.totalCount -= 1
             break
         }
+        const oa = useOrdersAnalyticsStore()
+        oa.fetchAllTimeSummary()
       }
 
       this.socket.onclose = () => {

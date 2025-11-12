@@ -72,7 +72,7 @@
             <div>
               <FormLabel icon="tag">Status</FormLabel>
               <select
-                v-model="order.status"
+                v-model="newStatus"
                 :disabled="isDisabled"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
@@ -250,6 +250,7 @@ import { useOrderLockStore } from '@/stores/orderLockStore'
 import { useAuthStore } from '@/stores/auth'
 import { useOrderLock } from '@/composables/useOrderLock'
 import { isInvalidBDNumber } from '@/services/utils'
+import { useOrdersAnalyticsStore } from '../stores/analytics/orders'
 
 const router = useRouter()
 const route = useRoute()
@@ -277,6 +278,7 @@ const order = ref({
   confirmed_by_date: '',
   order_note: ''
 })
+const newStatus = ref(null)
 // const adminUnlocks 
 const orderLockStore = useOrderLockStore()
 const authStore = useAuthStore()
@@ -302,7 +304,7 @@ const isFetchingOrder = ref(true)
 const statusOptions = ['pending', 'confirmed', 'hold', 'shipped', 'delivered', 'cancelled', 'returned']
 const success = ref(false)
 const isDisabled = computed(()=>{
-  return isFetchingOrder.value || ['delivered','partially_delivered','returned','cancelled','failed','partially_returned'].includes(order.value.status)
+  return isFetchingOrder.value || !['pending','confirmed','hold'].includes(order.value.status)
 })
 const error = ref('')
 const loading = ref(false)
@@ -364,7 +366,7 @@ const fetchOrder = async () => {
       confirmed_by_date: data.confirmed_by_date,
       order_note: data.order_note
     }
-
+    newStatus.value = order.value.status
     fetchCities()
   } catch (err) {
     error.value = 'Failed to load order data.'
@@ -443,6 +445,7 @@ const submitOrder = async () => {
     }
     const payload = {
       ...order.value,
+      status: newStatus.value,
       items: order.value.items.map(item => ({
         product_id: item.product_id || item.product?.id,
         variant_id: item.variant_id || item.variant?.id || null,
@@ -454,6 +457,8 @@ const submitOrder = async () => {
 
     await api.patch(`/orders/${orderId}/`, payload)
     success.value = true
+    const oa = useOrdersAnalyticsStore()
+            oa.fetchAllTimeSummary()
     router.push('/orders')
   } catch (err) {
     const e = handleError(err)
