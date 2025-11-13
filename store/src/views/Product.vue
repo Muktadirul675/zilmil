@@ -222,6 +222,7 @@ const fetchProduct = async (slug) => {
             item_name: `Product: ${product.value.name}`,
             item_category: product.value.categories.length ? product.value.categories[0].name : '',
             item_id: product.value.id,
+            quantity: 1
           }],
           currency: 'BDT',
           value: parseInt(product.value.net_price || product.value.price)

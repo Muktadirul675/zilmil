@@ -19,8 +19,8 @@ onMounted(() => {
     value: parseInt(cart.cart.total_price),
     items: cart.cart.items.map((item)=>({
       item_id: item.product.id,
-      item_name: item.product.item_name,
-      price: item.product.price,
+      item_name: item.product.name,
+      price: parseInt(item.product.price),
       quantity: item.quantity
     }))
   })

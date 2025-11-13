@@ -196,10 +196,15 @@ function add_payment_info() {
   }
 }
 
-effect(()=>{
-  if(name.value.trim() !== '' && address.value.trim() !== '' && validateBDPhoneNumber(phone.value)){
-    add_payment_info()
-  }
+let debounceTimer = null
+
+watch([name, address, phone], () => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    if (isFormValid.value) {
+      add_payment_info()
+    }
+  }, 1000) // fires once 1s after last change
 })
 
 async function removeItem(itemId) {
@@ -275,11 +280,11 @@ onMounted(() => {
   window.scrollTo({ top: 0 });
   trackInitiateCheckout({
     currency: 'BDT',
-    value: total.value,
+    value: parseInt(total.value),
     items: cart.cart.items.map((item) => ({
       item_id: item.product.id,
       item_name: item.product.name,
-      price: item.product.net_price || item.product.price,
+      price: parseInt(item.product.net_price || item.product.price),
       quantity: item.quantity
     }))
   })
