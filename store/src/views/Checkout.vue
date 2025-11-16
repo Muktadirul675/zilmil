@@ -182,7 +182,7 @@ function add_payment_info() {
     setTimeout(() => {
       trackAddPaymentInfo({
         currency: 'BDT',
-        value: total.value,
+        value: subtotal.value,
         // shipping: deliveryCharge.value,
         items: cart.cart.items.map((item) => ({
           item_id: item.product.id,
@@ -280,7 +280,7 @@ onMounted(() => {
   window.scrollTo({ top: 0 });
   trackInitiateCheckout({
     currency: 'BDT',
-    value: parseInt(total.value),
+    value: parseInt(subtotal.value),
     items: cart.cart.items.map((item) => ({
       item_id: item.product.id,
       item_name: item.product.name,
