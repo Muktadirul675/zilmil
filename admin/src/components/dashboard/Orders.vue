@@ -54,6 +54,10 @@
             class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
             Yesterday
           </button>
+          <button @click="()=>daysAgo(30)"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            30d
+          </button>
           <input type="date" v-model="store.startDate"
             class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
           <input type="date" v-model="store.endDate"
@@ -162,6 +166,16 @@ async function yesterday() {
   store.endDate = dateStr
   apply()
 }
+
+function daysAgo(days) {
+  const end = new Date()
+  const start = new Date()
+  start.setDate(end.getDate() - (days-1)) // include today
+  store.startDate = formatDate(start)
+  store.endDate = formatDate(end)
+  apply()
+}
+
 function clear() {
   store.clear()
   apply()

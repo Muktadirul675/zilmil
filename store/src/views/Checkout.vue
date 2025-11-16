@@ -122,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, effect } from 'vue'
+import { ref, computed, onMounted, effect, watch } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import api from '@/lib/api'
 import BDT from '@/components/ui/BDT.vue'
@@ -183,7 +183,7 @@ function add_payment_info() {
       trackAddPaymentInfo({
         currency: 'BDT',
         value: total.value,
-        shipping: deliveryCharge.value,
+        // shipping: deliveryCharge.value,
         items: cart.cart.items.map((item) => ({
           item_id: item.product.id,
           item_name: item.product.name,

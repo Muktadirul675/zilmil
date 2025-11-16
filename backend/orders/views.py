@@ -19,7 +19,13 @@ from .utils import send_order_to_courier
 from rest_framework.exceptions import ValidationError
 from datetime import datetime
 from django.utils import timezone
-from authapp.permissions import OnlyAdminOrStaff
+from authapp.permissions import OnlyAdminOrStaff, OnlyAdmin
+# analytics/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count, Q
+from django.contrib.auth import get_user_model
+from orders.models import Order
 
 class SendToCourierView(APIView):
     permission_classes = [OnlyAdminOrStaff]
@@ -155,3 +161,39 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(result, status=status.HTTP_200_OK)
+
+User = get_user_model()
+
+
+class UserOrderStatsView(APIView):
+    permission_classes = [OnlyAdmin]
+
+    def get(self, request):
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
+
+        date_filter = Q()
+
+        if start_date:
+            date_filter &= Q(confirm_orders__confirmed_by_date__date__gte=start_date)
+
+        if end_date:
+            date_filter &= Q(confirm_orders__confirmed_by_date__date__lte=end_date)
+
+        users = User.objects.annotate(
+            confirmed_count=Count(
+                "confirm_orders",
+                filter=date_filter
+            )
+        ).order_by("-confirmed_count")
+
+        data = [
+            {
+                "id": u.id,
+                "username": u.username,
+                "confirmed_count": u.confirmed_count
+            }
+            for u in users
+        ]
+
+        return Response(data)

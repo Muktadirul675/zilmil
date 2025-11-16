@@ -71,7 +71,10 @@
     <div style="height:8px; background-color:#b91c1c;"></div>
     <br>
     <div class="absolute bottom-[10px] right-[25px]">
-      <VueQrCode color="black" type="image/jpeg" :value="`https://zilmil.com.bd`" :margin="0" :width="70" />
+      <VueQrCode :color="{
+        dark: '#000000',
+        light: '#ffffff',
+      }" type="image/jpeg" :value="`https://zilmil.com.bd`" :margin="0" :width="70" />
     </div>
   </div>
 </template>

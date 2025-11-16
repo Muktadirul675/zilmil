@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { nextTick } from 'vue'
 import Invoice from '@/components/Invoice.vue'
+import StaffReport from '@/pages/StaffReport.vue'
 
 // â Lazy-load layouts
 const DefaultLayout = () => import('@/layouts/DefaultLayout.vue')
@@ -47,6 +48,7 @@ const routes = [
       { path: 'settings', component: Settings },
       { path: 'builder', component: FeedBuilder },
       { path: 'couriers', component: ReadyForCourier },
+      { path: 'reports/staff', component: StaffReport },
       {path:'invoice',component:Invoice}
     ]
   }

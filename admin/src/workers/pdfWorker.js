@@ -4,21 +4,25 @@ self.onmessage = async (e) => {
   const { id, htmlContent } = e.data;
 
   try {
-    // Fixed PDF size (A4 @ ~1750x2480 px)
-    const pdfWidth = 1750;
-    const pdfHeight = 2480;
-
     const { jsPDF } = jspdf;
+
+    // Create A4 PDF automatically
     const pdf = new jsPDF({
-      unit: 'px',
-      format: [pdfWidth, pdfHeight],
+      unit: 'pt',
+      format: [1753, 2481],      // <-- A4 without manually giving size
+      orientation: 'portrait'
     });
 
-    // Add the image and scale it to fit the fixed page
-    pdf.addImage(htmlContent, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    // Get the exact A4 page size in px from jsPDF
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // Add your image scaled to full A4
+    pdf.addImage(htmlContent, 'PNG', 0, 0, pageWidth, pageHeight);
 
     const pdfBlob = pdf.output('blob');
     self.postMessage({ id, pdfBlob });
+
   } catch (err) {
     self.postMessage({ id, error: err.message });
   }

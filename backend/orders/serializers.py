@@ -9,6 +9,9 @@ from .utils import adjust_stock, get_stock_action, NEGATIVE_STATUSES
 from rest_framework import serializers
 from .models import ReadyForCourier
 from site_settings.utils import get_setting
+# analytics/serializers.py
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 class ReadyForCourierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -144,3 +147,12 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.save(update_fields=['total_price'])
 
         return instance
+
+User = get_user_model()
+
+class UserOrderStatsSerializer(serializers.ModelSerializer):
+    confirmed_count = serializers.IntegerField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'confirmed_count']

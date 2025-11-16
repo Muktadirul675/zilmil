@@ -25,6 +25,12 @@
         <span v-if="!minimized">Users</span>
       </RouterLink>
 
+      <RouterLink v-if="auth.isAdmin" to="/reports/staff"
+        :class="`hover:bg-gray-700 p-2 rounded flex items-center ${minimized ? '' : 'space-x-2'}`">
+        <i class="pi pi-users"></i>
+        <span v-if="!minimized">Staff Report</span>
+      </RouterLink>
+
       <RouterLink v-if="auth.isAdmin" to="/products"
         :class="`hover:bg-gray-700 p-2 rounded flex items-center ${minimized ? '' : 'space-x-2'}`">
         <i class="pi pi-box"></i>
