@@ -182,7 +182,7 @@ function add_payment_info() {
     setTimeout(() => {
       trackAddPaymentInfo({
         currency: 'BDT',
-        value: subtotal.value,
+        value: parseInt(subtotal.value),
         // shipping: deliveryCharge.value,
         items: cart.cart.items.map((item) => ({
           item_id: item.product.id,
