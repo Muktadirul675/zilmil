@@ -30,7 +30,7 @@ export function trackViewContent(contentData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
       event: 'view_item',
-      eommerce:{
+      ecommerce:{
         ...contentData
       }
     });
@@ -41,7 +41,7 @@ export function trackAddPaymentInfo(payload){
 if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
       event: 'add_payment_info',
-      eommerce:{
+      ecommerce:{
         ...payload
       }
     });
@@ -52,7 +52,7 @@ export function trackViewCart(contentData) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push({
       event: 'view_cart',
-      eommerce:{
+      ecommerce:{
         ...contentData
       }
     });
