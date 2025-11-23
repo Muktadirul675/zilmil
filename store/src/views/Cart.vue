@@ -7,8 +7,16 @@ import BDT from '@/components/ui/BDT.vue'
 import { RouterLink } from 'vue-router'
 import { useHead } from '@vueuse/head'
 import { trackViewCart } from '@/lib/pixel'
+import { computed } from 'vue'
 
 const cart = useCartStore()
+const totalQuantity = computed(()=>{
+  let sum = 0;
+  for(const i of cart.cart.items){
+    sum += i.quantity;
+  }
+  return sum;
+})
 useHead({
   title: "Cart - Zilmil.com.bd"
 })
@@ -17,6 +25,7 @@ onMounted(() => {
   trackViewCart({
     currency: "BDT",
     value: parseInt(cart.cart.total_price),
+    total_quantity: totalQuantity.value,
     items: cart.cart.items.map((item)=>({
       item_id: item.product.id,
       item_name: item.product.name,

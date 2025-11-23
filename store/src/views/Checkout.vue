@@ -163,7 +163,13 @@ const deliveryCharge = computed(() => location.value === 'inside' ? parseFloat(
   settings.get('delivery_charge_outside_dhaka')
 ))
 const total = computed(() => parseFloat(subtotal.value) + parseFloat(deliveryCharge.value))
-
+const totalQuantity = computed(() => {
+  let sum = 0;
+  for (const i of cart.cart.items) {
+    sum += i.quantity;
+  }
+  return sum;
+})
 const toast = useToast()
 
 const isFormValid = computed(() =>
@@ -183,6 +189,7 @@ function add_payment_info() {
       trackAddPaymentInfo({
         currency: 'BDT',
         value: parseInt(subtotal.value),
+        total_quantity: totalQuantity.value,
         // shipping: deliveryCharge.value,
         items: cart.cart.items.map((item) => ({
           item_id: item.product.id,
@@ -257,6 +264,7 @@ const submitOrder = async () => {
       value: parseInt(total.value),
       currency: 'BDT',
       shipping: deliveryCharge.value,
+      total_quantity: totalQuantity.value,
       items: cart.cart.items.map((item) => ({
         item_id: item.product.id,
         item_name: item.product.name,
@@ -281,6 +289,7 @@ onMounted(() => {
   trackInitiateCheckout({
     currency: 'BDT',
     value: parseInt(subtotal.value),
+    total_quantity: totalQuantity.value,
     items: cart.cart.items.map((item) => ({
       item_id: item.product.id,
       item_name: item.product.name,
