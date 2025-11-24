@@ -320,19 +320,19 @@ async function handleBuyNow() {
   buyingNow.value = true
   try {
     await handleAddToCart()
-    trackAddToCart({
-      currency: 'BDT',
-      value: parseFloat(product.value.net_price || product.value.price),
-      items: [
-        {
-          item_id: product.value.id,
-          item_name: product.value.name,
-          item_category: product.value.categories.length ? product.value.categories[0].name : '',
-          price: parseFloat(product.value.net_price || product.value.price),
-          quantity: quantity.value
-        }
-      ]
-    })
+    // trackAddToCart({
+    //   currency: 'BDT',
+    //   value: parseFloat(product.value.net_price || product.value.price),
+    //   items: [
+    //     {
+    //       item_id: product.value.id,
+    //       item_name: product.value.name,
+    //       item_category: product.value.categories.length ? product.value.categories[0].name : '',
+    //       price: parseFloat(product.value.net_price || product.value.price),
+    //       quantity: quantity.value
+    //     }
+    //   ]
+    // })
     router.push("/checkout")
   } catch (e) {
     console.error(e)

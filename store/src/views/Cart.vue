@@ -25,7 +25,7 @@ onMounted(() => {
   trackViewCart({
     currency: "BDT",
     value: parseInt(cart.cart.total_price),
-    total_quantity: totalQuantity.value,
+    total_quantity: cart.cart.total_items,
     items: cart.cart.items.map((item)=>({
       item_id: item.product.id,
       item_name: item.product.name,

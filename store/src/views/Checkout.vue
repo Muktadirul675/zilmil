@@ -189,7 +189,7 @@ function add_payment_info() {
       trackAddPaymentInfo({
         currency: 'BDT',
         value: parseInt(subtotal.value),
-        total_quantity: totalQuantity.value,
+        total_quantity: cart.cart.total_items,
         // shipping: deliveryCharge.value,
         items: cart.cart.items.map((item) => ({
           item_id: item.product.id,
@@ -264,7 +264,7 @@ const submitOrder = async () => {
       value: parseInt(total.value),
       currency: 'BDT',
       shipping: deliveryCharge.value,
-      total_quantity: totalQuantity.value,
+      total_quantity: cart.cart.total_items,
       items: cart.cart.items.map((item) => ({
         item_id: item.product.id,
         item_name: item.product.name,
@@ -286,16 +286,32 @@ const submitOrder = async () => {
 
 onMounted(() => {
   window.scrollTo({ top: 0 });
-  trackInitiateCheckout({
-    currency: 'BDT',
-    value: parseInt(subtotal.value),
-    total_quantity: totalQuantity.value,
-    items: cart.cart.items.map((item) => ({
-      item_id: item.product.id,
-      item_name: item.product.name,
-      price: parseInt(item.product.net_price || item.product.price),
-      quantity: item.quantity
-    }))
-  })
+  if (cart.cart) {
+    trackInitiateCheckout({
+      currency: 'BDT',
+      value: parseInt(subtotal.value),
+      total_quantity: cart.cart.total_items,
+      items: cart.cart.items.map((item) => ({
+        item_id: item.product.id,
+        item_name: item.product.name,
+        price: parseInt(item.product.net_price || item.product.price),
+        quantity: item.quantity
+      }))
+    })
+  } else {
+    setTimeout(() => {
+      trackInitiateCheckout({
+        currency: 'BDT',
+        value: parseInt(subtotal.value),
+        total_quantity: cart.cart.total_items,
+        items: cart.cart.items.map((item) => ({
+          item_id: item.product.id,
+          item_name: item.product.name,
+          price: parseInt(item.product.net_price || item.product.price),
+          quantity: item.quantity
+        }))
+      })
+    }, 1000)
+  }
 })
 </script>
