@@ -172,26 +172,42 @@ class UserOrderStatsView(APIView):
         start_date = request.GET.get("start_date")
         end_date = request.GET.get("end_date")
 
+        # Date filter for confirmed_by_date
         date_filter = Q()
-
         if start_date:
             date_filter &= Q(confirm_orders__confirmed_by_date__date__gte=start_date)
-
         if end_date:
             date_filter &= Q(confirm_orders__confirmed_by_date__date__lte=end_date)
 
         users = User.objects.annotate(
+            # Total confirmed orders
             confirmed_count=Count(
                 "confirm_orders",
                 filter=date_filter
-            )
+            ),
+
+            # Delivered orders (confirmed_by = user and status = delivered)
+            delivered_count=Count(
+                "confirm_orders",
+                filter=date_filter
+                & Q(confirm_orders__status="delivered")
+            ),
+
+            # Returned orders (confirmed_by = user and status = returned)
+            returned_count=Count(
+                "confirm_orders",
+                filter=date_filter
+                & Q(confirm_orders__status="returned")
+            ),
         ).order_by("-confirmed_count")
 
         data = [
             {
                 "id": u.id,
                 "username": u.username,
-                "confirmed_count": u.confirmed_count
+                "confirmed_count": u.confirmed_count,
+                "delivered_count": u.delivered_count,
+                "returned_count": u.returned_count,
             }
             for u in users
         ]

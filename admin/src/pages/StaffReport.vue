@@ -44,7 +44,7 @@
     </button>
     <button
       @click="resetToToday"
-      class="bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
+      class="bg-indigo-600 text-white px-3 py-2 rounded cursor-pointer hover:bg-indigo-700"
     >
       Today
     </button>
@@ -83,7 +83,9 @@
           <tr>
             <th class="pl-4 py-3 text-left w-10">#</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Username</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Confirmed Count</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Confirmed</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Delivered</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Returned</th>
             <!-- <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th> -->
           </tr>
         </thead>
@@ -93,6 +95,8 @@
               <td class="pl-4 py-4 w-10 text-sm text-gray-900">{{ user.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.username }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.confirmed_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.delivered_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.returned_count }}</td>
               <!-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <button
                   @click="goToUserOrders(user)"

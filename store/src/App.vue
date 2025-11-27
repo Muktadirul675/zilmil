@@ -89,12 +89,14 @@ onMounted(async () => {
       <template v-if="noticeSection">
         <Notices :section="noticeSection" />
       </template>
-      <template v-if="navbarSection">
-        <Navbar :section="navbarSection" />
-      </template>
-      <template v-if="categoriesBarSection">
-        <CategoriesBar :section="categoriesBarSection" />
-      </template>
+      <div v-if="navbarSection || categoriesBarSection" class="sticky top-0 z-22">
+        <template v-if="navbarSection">
+          <Navbar :section="navbarSection" />
+        </template>
+        <template v-if="categoriesBarSection">
+          <CategoriesBar :section="categoriesBarSection" />
+        </template>
+      </div>
 
       <RouterView v-slot="{ Component }">
         <KeepAlive include="HomeView">

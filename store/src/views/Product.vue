@@ -270,20 +270,27 @@ watch(product, (newProduct) => {
 const errorMessage = ref('')
 
 const handleAddToCart = async (buying = false) => {
+  console.log('adding to cart')
   errorMessage.value = ''
-
+  if(addingToCart.value || (buyingNow.value && !buying)) return;
+  console.log('loading ckeared')
   if (!product.value?.id || quantity.value < 1) return
-
+  console.log('prod id and quantity cleared')
+  console.log(product.value.variants, selectedVariant.value)
   // Validate color selection if variants exist
   if (product.value.variants?.length && !selectedVariant.value) {
     errorMessage.value += `${errorMessage.value === "" ? '' : '\n'}` + 'Please select a variant.'
     return
+  }else{
+    errorMessage.value = ''
   }
 
   // Validate color selection if colors exist
   if (product.value.colors?.length && !selectedColor.value) {
     errorMessage.value += `${errorMessage.value === "" ? '' : '\n'}` + 'Please select a color.'
     return
+  }else{
+    errorMessage.value = ''
   }
 
   const payload = {
@@ -312,14 +319,16 @@ const handleAddToCart = async (buying = false) => {
   } catch (e) {
     alert(e.message || 'Failed to add to cart')
   } finally {
-    if (!buying) addingToCart.value = false
+    addingToCart.value = false
   }
 }
 
 async function handleBuyNow() {
+  console.log('buying')
+  if(addingToCart.value || buyingNow.value) return
   buyingNow.value = true
   try {
-    await handleAddToCart()
+    await handleAddToCart(true)
     // trackAddToCart({
     //   currency: 'BDT',
     //   value: parseFloat(product.value.net_price || product.value.price),
@@ -333,7 +342,9 @@ async function handleBuyNow() {
     //     }
     //   ]
     // })
-    router.push("/checkout")
+    if(errorMessage.value === ''){
+      router.push("/checkout")
+    }
   } catch (e) {
     console.error(e)
   }

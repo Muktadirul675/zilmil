@@ -58,7 +58,7 @@ const showSearchBox = ref(false)
                 <span class="text-sm font-bold text-red-500">
                   {{ settings.get('whatsapp_number') }}
                 </span>
-                <span class="w-full font-semibold text-justify text-sm [text-align-last:center] [text-justify:inter-character]">
+                <span class="w-full font-semibold text-justify text-[12px] [text-align-last:center] [text-justify:inter-character]">
                   Hotline Number
                 </span>
               </div>

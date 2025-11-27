@@ -186,7 +186,7 @@ const removeStaff = async (userId) => {
                   [ <i class="pi pi-lock text-red-500"></i> <span class="text-red-500">Locked</span>  ]
                 </template>
               </h5>
-              <h6>Confirmed Orders: {{ user.total_confirmed_orders }}</h6>
+              <!-- <h6>Confirmed Orders: {{ user.total_confirmed_orders }}</h6> -->
             </td>
 
             <td class="px-6 py-4 w-fit gap-2">

@@ -8,9 +8,8 @@ self.onmessage = async (e) => {
 
     // Create A4 PDF automatically
     const pdf = new jsPDF({
-      unit: 'px',
-      format: [1753, 2481],      // <-- A4 without manually giving size
-      orientation: 'portrait'
+      unit:'pt',
+      format: [1312.5, 1860.75],
     });
 
     // Get the exact A4 page size in px from jsPDF

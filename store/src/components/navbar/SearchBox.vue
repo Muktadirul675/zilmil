@@ -1,5 +1,5 @@
 <template>
-  <div class="relative md:me-4 p-2 z-10 md:p-0 w-full md:mx-0">
+  <div ref="wrapperRef" class="relative md:me-4 p-2 z-10 md:p-0 w-full md:mx-0">
     <div class="flex items-center border rounded border-red-500 px-4 py-2 shadow-sm bg-white">
       <input type="text" v-model="query" placeholder="Search products..."
         class="w-full md:w-[300px] outline-none text-sm bg-transparent" />
@@ -30,9 +30,9 @@
       </div>
     </div>
   </div>
-  <div v-if="results.length && query" @click="propagate" class="fixed inset-0 bg-transparent z-15 md:w-[100vw] md:h-[100vh] md:-translate-x-1/2 md:ms-[50%] overlay-blocker">
+  <!-- <div v-if="results.length && query" @click="propagate" class="fixed inset-0 bg-transparent z-15 md:w-[100vw] md:h-[100vh] md:-translate-x-1/2 md:ms-[50%] overlay-blocker"> 
     
-  </div>
+  </div>-->
 </template>
 
 <script setup>
@@ -40,6 +40,8 @@ import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
 import BDT from '../ui/BDT.vue'
 import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { onBeforeUnmount } from 'vue'
 
 const emit = defineEmits(['close'])
 
@@ -49,6 +51,7 @@ const { loadMore } = searchStore
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const router = useRouter()
+const wrapperRef = ref(null)
 
 function navigate(slug) {
   emit('close')
@@ -75,6 +78,23 @@ function propagate(event) {
     underlying.click();
   }
 }
+
+function handleClickOutside(e) {
+  // if click is outside the wrapper
+  if (wrapperRef.value && !wrapperRef.value.contains(e.target)) {
+    query.value = ""       // clear search
+    results.value = []     // clear results
+    emit('close')          // close panel event
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("click", handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("click", handleClickOutside)
+})
 
 </script>
 

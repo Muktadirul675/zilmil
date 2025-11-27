@@ -47,7 +47,10 @@
               <td class="p-2 text-center">{{ courier['Total Parcels'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Delivered'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Canceled'] || 0 }}</td>
-              <td class="p-2 text-center">
+              <div class="text-red-500 text-green-500 text-yellow-500 hidden"></div>
+              <td :class="`p-2 text-center ${textColor(courier['Total Parcels'] > 0 
+                    ? Math.round((courier['Total Delivered'] / courier['Total Parcels']) * 100)
+                    : 0)}`">
                 {{ courier['Total Parcels'] > 0 
                     ? Math.round((courier['Total Delivered'] / courier['Total Parcels']) * 100)
                     : 0
@@ -129,4 +132,10 @@ const successRatio = computed(() => {
   const total = summary.value['Total Parcels'] || 0
   return total > 0 ? Math.round((delivered / total) * 100) : 0
 })
+
+const textColor = (ratio)=>{
+  if(ratio < 50) return 'text-red-500'
+  if(ratio < 80) return 'text-yellow-500'
+  return 'text-green-500'
+}
 </script>

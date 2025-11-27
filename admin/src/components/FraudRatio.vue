@@ -31,7 +31,7 @@
       </svg>
 
       <!-- Percentage in the center -->
-      <div class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-700">
+      <div :class="`absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-700 ${textColor(parseInt(ratio))}`">
         {{ ratio }}%
       </div>
     </div>
@@ -71,7 +71,11 @@ const isLoading = ref(true)
 // Pinia store
 const courierStore = useCourierStore()
 const summary = ref(null)
-
+const textColor = (ratio)=>{
+  if(ratio < 50) return 'text-red-500'
+  if(ratio < 80) return 'text-yellow-500'
+  return 'text-green-500'
+}
 // Function to load parcels from store
 const loadParcels = async (phone) => {
   if (!phone || isInvalidBDNumber(phone)) {

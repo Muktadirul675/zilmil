@@ -11,7 +11,7 @@ const { section } = defineProps({
   <div class="hidden lg:flex justify-center items-center bg-red-500 text-white" v-if="section?.categories?.length">
     <div class="w-full lg:w-[65%] flex">
       <div class="relative group border-l-[0.5px] last:border-r border-gray-300">
-        <div class="px-3 py-2 cursor-pointer hover:bg-red-600">All Categories</div>
+        <div class="px-3 py-2 cursor-pointer hover:bg-red-600 font-semibold">All Categories</div>
         <Transition name="fade">
           <div v-if="section?.args?.all_categories?.length"
             class="absolute top-full rounded left-0 bg-white text-black shadow-md z-10 flex flex-col min-w-[200px] divide-y divide-gray-300 transition-opacity duration-200 ease-out group-hover:flex opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto">
@@ -42,7 +42,7 @@ const { section } = defineProps({
       </div>
       <template v-for="(cat, index) in [...section.categories]" :key="cat.id">
         <RouterLink :to="`/category/${cat.slug}`"
-          class="px-3 py-2 cursor-pointer border-l border-gray-300 last:border-r hover:bg-red-600 transition-all"
+          class="px-3 py-2 font-semibold cursor-pointer border-l border-gray-300 last:border-r hover:bg-red-600 transition-all"
           role="button" tabindex="0">
           {{ cat.name }}
         </RouterLink>
