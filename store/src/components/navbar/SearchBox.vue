@@ -80,16 +80,21 @@ function propagate(event) {
 }
 
 function handleClickOutside(e) {
+  const clickedElement = e.target;
+
+  // if clicked element has id 'showSearchBoxIcon', do nothing
+  if (clickedElement.id === "showSearchBoxIcon") return;
+
   // if click is outside the wrapper
-  if (wrapperRef.value && !wrapperRef.value.contains(e.target)) {
-    query.value = ""       // clear search
-    results.value = []     // clear results
-    emit('close')          // close panel event
+  if (wrapperRef.value && !wrapperRef.value.contains(clickedElement)) {
+    query.value = "";       // clear search
+    results.value = [];     // clear results
+    emit('close');          // close panel event
   }
 }
 
 onMounted(() => {
-  window.addEventListener("click", handleClickOutside)
+  // window.addEventListener("click", handleClickOutside)
 })
 
 onBeforeUnmount(() => {

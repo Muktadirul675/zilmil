@@ -54,7 +54,7 @@
               <span class="text-sm mt-1">{{ color.name }}</span>
             </div>
           </div>
-
+          <p v-if="errorMessage" class="text-sm text-red-500 px-2">{{ errorMessage }}</p>
           <!-- Quantity + Add to Cart -->
           <div class="flex gap-2 w-full p-2 lg:p-0">
             <div class="flex border flex-[1.5] md:flex-1 border-gray-300 rounded-md w-full overflow-hidden">
@@ -92,7 +92,6 @@
               </template>
             </button>
           </div>
-          <p v-if="errorMessage" class="text-sm text-red-500 px-2">{{ errorMessage }}</p>
 
           <!-- Contact Options -->
           <div class="flex gap-1 flex-col p-1 lg:p-0">

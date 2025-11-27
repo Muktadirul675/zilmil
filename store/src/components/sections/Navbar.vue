@@ -64,7 +64,7 @@ const showSearchBox = ref(false)
               </div>
             </a>
             <div class="ms-auto flex items-center gap-3">
-              <div @click="showSearchBox = !showSearchBox" class="flex items-center md:hidden">
+              <div @click="showSearchBox = !showSearchBox" id="showSearchBoxIcon" class="flex items-center md:hidden">
                 <i class="pi pi-search text-xl"></i>
               </div>
               <CartIcon />

@@ -94,9 +94,9 @@
             <tr class="hover:bg-gray-50 cursor-pointer">
               <td class="pl-4 py-4 w-10 text-sm text-gray-900">{{ user.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.username }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.confirmed_count }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.delivered_count }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.returned_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.confirmed_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.delivered_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.returned_count }}</td>
               <!-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <button
                   @click="goToUserOrders(user)"
