@@ -86,6 +86,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Confirmed</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Delivered</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Returned</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Success Ratio</th>
             <!-- <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th> -->
           </tr>
         </thead>
@@ -97,6 +98,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.confirmed_count }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.delivered_count }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.returned_count }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900" :class="textColor(user.confirmed_count > 0 ? (parseFloat((user.delivered_count / user.confirmed_count)*100)).toFixed(2): 0)">{{ user.confirmed_count > 0 ? (parseFloat((user.delivered_count / user.confirmed_count)*100)).toFixed(2) : 0 }}%</td>
               <!-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <button
                   @click="goToUserOrders(user)"
@@ -194,6 +196,12 @@ function formatParams () {
   // include search as well (backend may ignore; we filter client-side)
   if (search.value) params.search = search.value
   return params
+}
+
+const textColor = (ratio)=>{
+  if(ratio < 50) return 'text-red-500'
+  if(ratio < 80) return 'text-yellow-500'
+  return 'text-green-500'
 }
 
 // Fetch data from endpoint

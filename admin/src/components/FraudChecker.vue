@@ -1,7 +1,7 @@
 <template>
   <div class="w-full my-2 p-4 bg-white shadow rounded border border-gray-200">
     <!-- Invalid Number -->
-     <!-- {{ data }} -->
+    <!-- {{ data }} -->
     <div v-if="isInvalidBDNumber(number)" class="text-red-500 mb-2">
       Invalid Number
     </div>
@@ -32,29 +32,33 @@
       <!-- Courier Table (all records including Own Records) -->
       <div class="overflow-x-auto">
         <table class="min-w-full border border-gray-300 text-sm text-gray-800">
-          <thead class="bg-gray-100">
+          <thead class="bg-blue-200">
             <tr>
               <th class="p-2 text-left">Courier</th>
               <th class="p-2 text-center">Total</th>
               <th class="p-2 text-center">Success</th>
               <th class="p-2 text-center">Cancelled</th>
-              <th class="p-2 text-center">Success Ratio</th>
+              <th class="p-2 text-center">Cancel Rate</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="(courier, key) in data" :key="key" class="hover:bg-gray-50 transition">
-              <td class="p-2">{{ key }}</td>
+          <tbody class="divide-y divide-gray-300">
+            <tr v-for="(courier, key) in data" :key="key" class="hover:bg-gray-50 transition p-3 py-2">
+              <td class="p-2"> <img :src="`/${courierImage[key] || 'logo.png'}`" class="h-[20px]" alt=""></td>
               <td class="p-2 text-center">{{ courier['Total Parcels'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Delivered'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Canceled'] || 0 }}</td>
               <div class="text-red-500 text-green-500 text-yellow-500 hidden"></div>
-              <td :class="`p-2 text-center ${textColor(courier['Total Parcels'] > 0 
-                    ? Math.round((courier['Total Delivered'] / courier['Total Parcels']) * 100)
-                    : 0)}`">
-                {{ courier['Total Parcels'] > 0 
-                    ? Math.round((courier['Total Delivered'] / courier['Total Parcels']) * 100)
+              <td :class="`p-2 flex justify-center items-center ${textColor(courier['Total Parcels'] > 0
+                ? (Math.round((courier['Total Canceled'] / courier['Total Parcels']) * 100))
+                : 0)}`">
+                <div :class="`${bgColor(courier['Total Parcels'] > 0
+                  ? (Math.round((courier['Total Canceled'] / courier['Total Parcels']) * 100))
+                  : 0)} rounded-full w-[60px] font-semibold text-center px-2 py-1.5`">
+                  {{ courier['Total Parcels'] > 0
+                    ? (Math.round((courier['Total Canceled'] / courier['Total Parcels']) * 100))
                     : 0
-                }}%
+                  }}%
+                </div>
               </td>
             </tr>
           </tbody>
@@ -112,6 +116,13 @@ const filteredCouriers = computed(() => {
   return copy
 })
 
+const courierImage = {
+  'Pathao' : 'pathao.svg',
+  'Steadfast' : 'sf.svg',
+  'Paperfly' : 'ppf.svg',
+  'RedX' : 'redx.svg',
+}
+
 // Aggregate summary of all couriers except "Own Records"
 const summary = computed(() => {
   const couriers = filteredCouriers.value
@@ -133,9 +144,17 @@ const successRatio = computed(() => {
   return total > 0 ? Math.round((delivered / total) * 100) : 0
 })
 
-const textColor = (ratio)=>{
-  if(ratio < 50) return 'text-red-500'
-  if(ratio < 80) return 'text-yellow-500'
-  return 'text-green-500'
+const failedRatio = computed(() => 100 - successRatio.value)
+
+const textColor = (ratio) => {
+  if (ratio < 20) return 'text-green-500'
+  if (ratio < 50) return 'text-yellow-500'
+  return 'text-red-500'
+}
+
+const bgColor = (ratio) => {
+  if (ratio < 20) return 'bg-green-200/90'
+  if (ratio < 50) return 'bg-yellow-200/90'
+  return 'bg-red-200/90'
 }
 </script>

@@ -11,3 +11,7 @@ button{
 .bn{
     @apply font-semibold;
 }
+
+body{
+    font-family: 'Hind Siliguri';
+}

@@ -127,46 +127,44 @@ async function dwnld() {
   if (!invoice.value) return;
 
   try {
-    // 1ï¸â£ Render invoice to canvas in main thread
-    const canvas = await html2canvas(invoice.value, {
+    // 1ï¸â£ Render element with high resolution
+    const originalCanvas = await html2canvas(invoice.value, {
       scale: 2,
       backgroundColor: null
     });
 
-    const imgData = canvas.toDataURL('image/png');
-    const pdfWidth = canvas.width;
-    const pdfHeight = canvas.height;
+    // 2ï¸â£ Resize to EXACT required size (1750 Ã 2480)
+    const targetWidth = 1750;
+    const targetHeight = 2480;
 
-    // 2ï¸â£ Send canvas image to worker
-    const worker = new Worker(new URL('@/workers/pdfWorker.js', import.meta.url));
+    const resizedCanvas = document.createElement("canvas");
+    resizedCanvas.width = targetWidth;
+    resizedCanvas.height = targetHeight;
 
-    worker.onmessage = (e) => {
-      const { pdfBlob, error } = e.data;
-      if (error) {
-        console.error('Worker error:', error);
-        return;
-      }
+    const ctx = resizedCanvas.getContext("2d");
 
-      // 3ï¸â£ Trigger download in main thread
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `order_${props.order.id}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
+    // Fill background (optional)
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-      worker.terminate(); // stop the worker after done
-    };
+    // Draw the html2canvas output inside the new canvas
+    ctx.drawImage(
+      originalCanvas,
+      0, 0, originalCanvas.width, originalCanvas.height,
+      0, 0, targetWidth, targetHeight
+    );
 
-    worker.postMessage({
-      id: props.order.id,
-      htmlContent: imgData, // canvas as base64
-      width: pdfWidth,
-      height: pdfHeight
-    });
+    // 3ï¸â£ Convert resized canvas to image
+    const imgData = resizedCanvas.toDataURL("image/png");
+
+    // 4ï¸â£ Trigger download
+    const link = document.createElement("a");
+    link.href = imgData;
+    link.download = `order_${props.order.id}.png`; // image format
+    link.click();
 
   } catch (e) {
-    console.error('Failed to generate PDF:')
+    console.error("Failed to generate image")
   }
 }
 
