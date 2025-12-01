@@ -17,11 +17,11 @@
         <div style="margin-left:auto">
           Order ID : Z{{ order.id }}<br>
           Date: {{ date() }}
-          <div v-if="order.c_id">
-            <Barcode :value="order.c_id"/>
+          <div>
+            <Barcode :value="order.c_id || 'DX92hu'"/>
           </div>
         </div>
-        <div style="margin-top:-50px">
+        <div style="margin-top: -25px;">
           <strong>Bill To</strong><br>
           Mehadi Hasan<br>
           018284818712<br>
@@ -92,7 +92,6 @@ const props = defineProps({
     type: Object,
     default: () => ({
       id: 1,
-      c_id:"DX92838392",
       items: [
         { product: { name: 'Gloves', quantity: 2, price: 200, net_price: 100 }, quantity: 2 },
         { product: { name: 'Shoes', quantity: 1, price: 220, net_price: 120 }, quantity: 1 },
