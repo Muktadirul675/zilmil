@@ -1,5 +1,7 @@
 <template>
   <div class="w-full my-2 p-4 bg-white shadow rounded border border-gray-200">
+    <div class="text-red-500 text-green-500 text-yellow-500 hidden"></div>
+
     <!-- Invalid Number -->
     <!-- {{ data }} -->
     <div v-if="isInvalidBDNumber(number)" class="text-red-500 mb-2">
@@ -47,7 +49,6 @@
               <td class="p-2 text-center">{{ courier['Total Parcels'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Delivered'] || 0 }}</td>
               <td class="p-2 text-center">{{ courier['Total Canceled'] || 0 }}</td>
-              <div class="text-red-500 text-green-500 text-yellow-500 hidden"></div>
               <td :class="`p-2 flex justify-center items-center ${textColor(courier['Total Parcels'] > 0
                 ? (Math.round((courier['Total Canceled'] / courier['Total Parcels']) * 100))
                 : 0)}`">
@@ -117,10 +118,10 @@ const filteredCouriers = computed(() => {
 })
 
 const courierImage = {
-  'Pathao' : 'pathao.svg',
-  'Steadfast' : 'sf.svg',
-  'Paperfly' : 'ppf.svg',
-  'RedX' : 'redx.svg',
+  'Pathao': 'pathao.svg',
+  'Steadfast': 'sf.svg',
+  'Paperfly': 'ppf.svg',
+  'RedX': 'redx.svg',
 }
 
 // Aggregate summary of all couriers except "Own Records"

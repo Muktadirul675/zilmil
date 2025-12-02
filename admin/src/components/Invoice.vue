@@ -18,7 +18,7 @@
           Order ID : Z{{ order.id }}<br>
           Date: {{ date() }}
           <div>
-            <Barcode :value="order.c_id || 'DX92hu'"/>
+            <Barcode :value="order.c_id || '00000000'"/>
           </div>
         </div>
         <div style="margin-top: -25px;">
@@ -122,17 +122,19 @@ function getPrice(item) {
 }
 
 const invoice = ref(null)
+
 async function dwnld() {
   if (!invoice.value) return;
 
+  console.log('dwnld')
   try {
-    // 1ï¸â£ Render element with high resolution
+    // 1ï¸â£ Render element with html2canvas (high resolution)
     const originalCanvas = await html2canvas(invoice.value, {
       scale: 2,
       backgroundColor: null
     });
 
-    // 2ï¸â£ Resize to EXACT required size (1750 Ã 2480)
+    // 2ï¸â£ Resize to EXACT required size (1750 Ã 2480 px)
     const targetWidth = 1750;
     const targetHeight = 2480;
 
@@ -141,31 +143,39 @@ async function dwnld() {
     resizedCanvas.height = targetHeight;
 
     const ctx = resizedCanvas.getContext("2d");
-
-    // Fill background (optional)
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-    // Draw the html2canvas output inside the new canvas
     ctx.drawImage(
       originalCanvas,
       0, 0, originalCanvas.width, originalCanvas.height,
       0, 0, targetWidth, targetHeight
     );
 
-    // 3ï¸â£ Convert resized canvas to image
+    // Convert to PNG
     const imgData = resizedCanvas.toDataURL("image/png");
 
-    // 4ï¸â£ Trigger download
-    const link = document.createElement("a");
-    link.href = imgData;
-    link.download = `order_${props.order.id}.png`; // image format
-    link.click();
+    // 3ï¸â£ Convert pixel size â PDF points (300 DPI)
+    // width_px / 300 * 72
+    const pdfWidth = (1750 / 300) * 72;   // â 420 pt
+    const pdfHeight = (2480 / 300) * 72;  // â 595 pt
+
+    // 4ï¸â£ Create PDF with exact size
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: [pdfWidth, pdfHeight]   // Custom exact page size
+    });
+
+    // Add image to PDF
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    // 5ï¸â£ Save PDF
+    pdf.save(`order_${props.order.id}.pdf`);
 
   } catch (e) {
-    console.error("Failed to generate image")
-  }
-}
+    console.error("Failed")
+}}
 
 defineExpose({ dwnld })
 
