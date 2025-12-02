@@ -36,12 +36,12 @@
         <div class="flex flex-col w-30 text-right">
           <div class="px-2">Subtotal:</div>
           <div class="px-2">Shipping:</div>
-          <div class="px-2 py-1 bg-red-800 text-white">Grand Total:</div>
+          <div class="px-2 py-1 bg-red-800 ">Grand Total:</div>
         </div>
         <div class="flex flex-col w-fit me-4">
           <div>{{ subTotal }}</div>
           <div>{{ parseInt(order.delivery_charge) }}</div>
-          <div class="py-1 px-2 ps-0 border border-black bg-red-800 text-white">{{ grandTotal }}</div>
+          <div class="py-1 px-2 ps-0 border border-black bg-red-800 ">{{ grandTotal }}</div>
         </div>
       </div>
     </div>
