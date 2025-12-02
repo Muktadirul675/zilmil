@@ -81,20 +81,20 @@
       <table class="min-w-full w-full divide-y divide-gray-200">
         <thead class="bg-slate-700 text-white">
           <tr>
-            <th class="pl-4 py-3 text-left w-10">#</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Username</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Confirmed</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Delivered</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Returned</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Success Ratio</th>
+            <th class="pl-4 py-3 text-center w-10">#</th>
+            <th class="px-6 py-3 text-xs font-medium uppercase text-center tracking-wider">Username</th>
+            <th class="px-6 py-3 text-xs font-medium uppercase text-center tracking-wider">Confirmed</th>
+            <th class="px-6 py-3 text-xs font-medium uppercase text-center tracking-wider">Delivered</th>
+            <th class="px-6 py-3 text-xs font-medium uppercase text-center tracking-wider">Returned</th>
+            <th class="px-6 py-3 text-xs font-medium uppercase text-center tracking-wider">Success Ratio</th>
             <!-- <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th> -->
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-300">
           <template v-for="user in paginatedUsers" :key="user.id">
             <tr class="hover:bg-gray-50 cursor-pointer">
-              <td class="pl-4 py-4 w-10 text-sm text-gray-900">{{ user.id }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.username }}</td>
+              <td class="pl-4 py-4 w-10 text-sm text-gray-900 text-center">{{ user.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.username }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.confirmed_count }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.delivered_count }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">{{ user.returned_count }}</td>
