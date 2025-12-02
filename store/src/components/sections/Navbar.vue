@@ -22,7 +22,7 @@ const showSearchBox = ref(false)
     :class="`${showSidebar ? 'translate-x-0' : '-translate-x-full'} z-22 bg-white border w-[70%] transition-all fixed inset-0 border-gray-300 rounded-tr rounded-br p-3`">
     <div class="w-full flex flex-col items-center">
       <i class="ms-auto cursor-pointer pi pi-times hover:text-red-500" @click="showSidebar = false"></i>
-      <div class="flex flex-row p-3 bg-slate-50">
+      <div class="flex flex-row p-3 justify-center bg-slate-50">
         <img src="/logo.png" alt="" class="w-[80%] h-auto">
       </div>
       <div class="text-red-500 font-semibold px-3">Zilmil.com.bd</div>
