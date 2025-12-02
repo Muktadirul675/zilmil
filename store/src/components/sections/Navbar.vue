@@ -25,7 +25,7 @@ const showSearchBox = ref(false)
       <div class="flex flex-row p-3 justify-center bg-slate-50">
         <img src="/logo.png" alt="" class="w-[80%] h-auto">
       </div>
-      <div class="text-red-500 font-semibold px-3">Zilmil.com.bd</div>
+      <div class="text-black font-semibold px-3">Zilmil.com.bd</div>
       <div class="w-full my-2 h-[1px] bg-gray-300 rounded"></div>
       <div class="p-3" v-if="section.args?.all_categories">
         <template v-for="(cat, index) in section.args.all_categories" :key="index">
