@@ -5,7 +5,7 @@
 
     <div
       style="display:flex; justify-content:space-between; align-items:center; padding:16px 40px; border-bottom:4px solid #4B5563; background-color: #ccd8ca;">
-      <div>
+      <div class="mt-2">
         <img src="/logo.png" alt="Logo" style="height:64px; display:block;">
         <div style="margin-top:8px; font-size:24px; color:#111827;">Zilmil Online Shop</div>
       </div>
@@ -38,9 +38,9 @@
           <div class="px-2">Shipping:</div>
           <div class="px-2 py-1 bg-red-800 text-white">Grand Total:</div>
         </div>
-        <div class="flex flex-col w-fit">
+        <div class="flex flex-col w-fit me-2">
           <div>{{ subTotal }}</div>
-          <div>{{ order.delivery_charge }}</div>
+          <div>{{ parseInt(order.delivery_charge) }}</div>
           <div class="py-1 px-2 ps-0 border border-black bg-red-800 text-white">{{ grandTotal }}</div>
         </div>
       </div>
@@ -60,7 +60,7 @@
 
     <div style="background-color:#ccd8ca;">
       <div style="padding:10px 32px; display:flex; align-items: center; gap:16px; color:#111827;">
-        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-phone"></i> 018284818712
+        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-phone"></i> +88101331094992
         </div>
         <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-globe"></i> www.zilmil.com.bd</div>
         <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-map-marker"></i>
