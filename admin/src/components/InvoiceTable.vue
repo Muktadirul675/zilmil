@@ -64,7 +64,7 @@ function constructName(item){
   let v = item.variant?.name;
   let c = item.color?.name;
   if(v||c){
-    s += '('
+    s += ' ('
   }
   if(v) s+=v;
   if(v && c) s+= ', ';
