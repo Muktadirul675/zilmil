@@ -16,13 +16,13 @@
           <!-- Actual items -->
           <tr v-for="(item, index) in items" :key="index" style="height:30px;">
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ index + 1 }}</td>
-            <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">{{ item.product.name }}</td>
+            <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">{{ constructName(item) }}</td>
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ item.quantity }}</td>
             <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">{{ getPrice(item) }}</td>
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ (item.quantity * getPrice(item)) }}</td>
           </tr>
 
-          <!-- Fill remaining space to keep 300px min height -->
+          <!-- Fill remaining space to keep 300px300px min height -->
           <tr
             v-if="items.length < minRows"
             v-for="n in minRows - items.length"
@@ -58,4 +58,20 @@ function getPrice(item){
 }
 
 const minRows = 10
+
+function constructName(item){
+  let s = item.product.name;
+  let v = item.variant?.name;
+  let c = item.color?.name;
+  if(v||c){
+    s += '('
+  }
+  if(v) s+=v;
+  if(v && c) s+= ', ';
+  if(c) s+= c;
+  if(v||c){
+    s += ')'
+  }
+  return s;
+}
 </script>

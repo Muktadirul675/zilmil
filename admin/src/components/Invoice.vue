@@ -14,12 +14,14 @@
 
     <div style="padding:32px 40px; color:#111827;font-size: medium;">
       <div style="display:flex; flex-direction: column; justify-content:space-between;">
-        <div style="margin-left:auto">
-          Order ID : Z{{ order.id }}<br>
-          Date: {{ date() }}
+        <div style="margin-left:auto;display:flex;flex-direction: column;align-items: center;">
           <div>
-            <Barcode :value="order.c_id || '00000000'"/>
+            Order ID : Z{{ order.id }}
           </div>
+          <div>
+            Date: {{ date() }}
+          </div>
+          <Barcode :value="order.c_id || '00000000'"/>
         </div>
         <div style="margin-top: -25px;">
           <strong>Bill To</strong><br>
@@ -39,9 +41,9 @@
           <div class="px-2 py-1 bg-red-800 ">Grand Total:</div>
         </div>
         <div class="flex flex-col w-fit me-4">
-          <div>{{ subTotal }}</div>
-          <div>{{ parseInt(order.delivery_charge) }}</div>
-          <div class="py-1 px-2 ps-0 border border-black bg-red-800 ">{{ grandTotal }}</div>
+          <div>{{ subTotal }} TK</div>
+          <div>{{ parseInt(order.delivery_charge) }} TK</div>
+          <div class="py-1 px-2 ps-0 border border-black bg-red-800 ">{{ grandTotal }} TK</div>
         </div>
       </div>
     </div>
@@ -60,10 +62,10 @@
 
     <div style="background-color:#ccd8ca;">
       <div style="padding:10px 32px; display:flex; align-items: center; gap:16px; color:#111827;">
-        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-phone"></i> +8801331094992
+        <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-phone"></i> +8801331094992
         </div>
         <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-globe"></i> www.zilmil.com.bd</div>
-        <div style="display:flex; align-items: center; gap:5px;color:#ef4444;"><i class="pi pi-map-marker"></i>
+        <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-map-marker"></i>
           Bangshal,
           Dhaka</div>
       </div>
