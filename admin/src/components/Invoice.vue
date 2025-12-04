@@ -25,9 +25,9 @@
         </div>
         <div style="margin-top: -25px;">
           <strong>Bill To</strong><br>
-          Mehadi Hasan<br>
-          018284818712<br>
-          Bangshal, Dhaka
+          {{order.full_name}}<br>
+          {{order.phone}}<br>
+          {{order.shipping_address}}
         </div>
       </div>
     </div>
@@ -38,12 +38,14 @@
         <div class="flex flex-col w-30 text-right">
           <div class="px-2">Subtotal:</div>
           <div class="px-2">Shipping:</div>
-          <div class="px-2 py-1 bg-red-800 ">Grand Total:</div>
+          <div class="px-2">Discount:</div>
+          <div class="px-2 py-1 bg-red-800 text-white">Grand Total:</div>
         </div>
         <div class="flex flex-col w-fit me-4">
           <div>{{ subTotal }} TK</div>
           <div>{{ parseInt(order.delivery_charge) }} TK</div>
-          <div class="py-1 px-2 ps-0 border border-black bg-red-800 ">{{ grandTotal }} TK</div>
+          <div>{{ parseInt(order.order_discount || 0) }} TK</div>
+          <div class="py-1 px-2 ps-0 border border-black bg-red-800 text-white">{{ grandTotal }} TK</div>
         </div>
       </div>
     </div>
@@ -111,7 +113,7 @@ const props = defineProps({
 const subTotal = computed(() =>
   props.order.items.reduce((sum, item) => sum + item.quantity * getPrice(item), 0)
 )
-const grandTotal = computed(() => subTotal.value + (parseInt(props.order.delivery_charge) || 0))
+const grandTotal = computed(() => (subTotal.value + (parseInt(props.order.delivery_charge) - (order.order_discount || 0)) || 0))
 
 function formatDate(d) {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
