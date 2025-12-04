@@ -113,7 +113,7 @@ const props = defineProps({
 const subTotal = computed(() =>
   props.order.items.reduce((sum, item) => sum + item.quantity * getPrice(item), 0)
 )
-const grandTotal = computed(() => (subTotal.value + (parseInt(props.order.delivery_charge) - (order.order_discount || 0)) || 0))
+const grandTotal = computed(() => (subTotal.value + (parseInt(props.order.delivery_charge) - (props.order.order_discount || 0)) || 0))
 
 function formatDate(d) {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
