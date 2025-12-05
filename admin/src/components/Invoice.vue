@@ -61,7 +61,7 @@
     <div style="padding:30px 40px; display:flex; font-size: medium; justify-content:flex-end;">
       <div style="border-top:1px solid #D1D5DB; padding:4px;">Authorized Signature</div>
     </div>
-
+    <div class="my-3"></div>
     <div style="background-color:#ccd8ca;">
       <div style="padding:10px 32px; display:flex; align-items: center; gap:16px; color:#111827;">
         <div style="display:flex; align-items: center; gap:5px;"><i class="pi pi-phone"></i> +8801331094992
@@ -74,7 +74,7 @@
     </div>
     <div style="height:8px; background-color:#b91c1c;"></div>
     <br>
-    <div class="absolute bottom-[10px] right-[25px]">
+    <div class="absolute bottom-[17px] right-[25px]">
       <VueQrCode :color="{
         dark: '#000000',
         light: '#ffffff',
