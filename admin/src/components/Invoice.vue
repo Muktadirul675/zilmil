@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <div style="padding:60px 40px; display:flex; font-size: medium; justify-content:flex-end;">
+    <div style="padding:30px 40px; display:flex; font-size: medium; justify-content:flex-end;">
       <div style="border-top:1px solid #D1D5DB; padding:4px;">Authorized Signature</div>
     </div>
 

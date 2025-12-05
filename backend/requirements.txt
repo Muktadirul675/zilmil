@@ -20,13 +20,16 @@ djangorestframework_simplejwt==5.5.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
-pathao-courier-api==1.0.0
+pathao-api==1.2.0
 pillow==11.3.0
+psycopg==3.3.1
+psycopg-binary==3.3.1
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
 PyJWT==2.9.0
 pyOpenSSL==25.1.0
+python-dotenv==1.2.1
 python-ipware==3.0.0
 redis==6.2.0
 requests==2.32.4

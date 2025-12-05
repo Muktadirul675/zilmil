@@ -228,7 +228,7 @@
                 <BDT :amount="parseFloat(order.total_price)" />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <div v-if="order.status == 'confirmed'">
+                <div v-if="order.status == 'confirmed' || order.status === 'processing'">
                   <button @click.stop="()=>downloadInvoice(order.id)" class="btn"><i class="pi pi-download"></i></button>
                 </div>
               </td>
