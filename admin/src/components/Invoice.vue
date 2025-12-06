@@ -23,7 +23,7 @@
           </div>
           <Barcode :value="order.c_id || '00000000'"/>
         </div>
-        <div style="margin-top: -25px;">
+        <div style="font-size:22px;margin-top: -25px;">
           <strong>Bill To</strong><br>
           {{order.full_name}}<br>
           {{order.phone}}<br>
@@ -109,7 +109,7 @@ const props = defineProps({
     required: false
   }
 })
-
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const subTotal = computed(() =>
   props.order.items.reduce((sum, item) => sum + item.quantity * getPrice(item), 0)
 )

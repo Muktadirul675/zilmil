@@ -16,7 +16,12 @@
           <!-- Actual items -->
           <tr v-for="(item, index) in items" :key="index" style="height:30px;">
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ index + 1 }}</td>
-            <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">{{ constructName(item) }}</td>
+            <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">
+              <div class="flex flex-row gap-2 items-center">
+                <img :src="makeImageUrl(item.image.image)" alt="" class="w-4 h-4 rounded">
+                {{ constructName(item) }}
+              </div>
+            </td>
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ item.quantity }}</td>
             <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">{{ getPrice(item) }}</td>
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ (item.quantity * getPrice(item)) }}</td>
@@ -73,5 +78,15 @@ function constructName(item){
     s += ')'
   }
   return s;
+}
+
+function makeImageUrl(url) {
+  if (url.startsWith('https')) {
+    return url;
+  }
+  if (url.startsWith('http')) {
+    return url.replace('http', 'https');
+  }
+  return `${BACKEND_URL}${url}`;
 }
 </script>
