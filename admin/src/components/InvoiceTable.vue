@@ -18,7 +18,7 @@
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ index + 1 }}</td>
             <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">
               <div class="flex flex-row gap-2 items-center">
-                <img :src="makeImageUrl(item.image.image)" alt="" class="w-4 h-4 rounded">
+                <img :src="makeImageUrl(item.product.image.image)" alt="" class="w-4 h-4 rounded">
                 {{ constructName(item) }}
               </div>
             </td>
@@ -63,6 +63,7 @@ function getPrice(item){
 }
 
 const minRows = 10
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 function constructName(item){
   let s = item.product.name;

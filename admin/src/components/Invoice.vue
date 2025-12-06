@@ -109,7 +109,6 @@ const props = defineProps({
     required: false
   }
 })
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const subTotal = computed(() =>
   props.order.items.reduce((sum, item) => sum + item.quantity * getPrice(item), 0)
 )
