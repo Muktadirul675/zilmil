@@ -23,7 +23,7 @@
           </div>
           <Barcode :value="order.c_id || '00000000'"/>
         </div>
-        <div style="font-size:22px;margin-top: -25px;">
+        <div style="font-size:20px;margin-top: -25px;">
           <strong>Bill To</strong><br>
           {{order.full_name}}<br>
           {{order.phone}}<br>
@@ -134,7 +134,9 @@ async function dwnld() {
     // 1ï¸â£ Render element with html2canvas (high resolution)
     const originalCanvas = await html2canvas(invoice.value, {
       scale: 2,
-      backgroundColor: null
+      backgroundColor: null,
+      allowTaint: true,
+      useCORS: true
     });
 
     // 2ï¸â£ Resize to EXACT required size (1750 Ã 2480 px)
