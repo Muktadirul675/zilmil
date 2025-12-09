@@ -17,8 +17,8 @@
           <tr v-for="(item, index) in items" :key="index" style="height:30px;">
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ index + 1 }}</td>
             <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">
-              <div class="flex flex-row gap-2 items-center">
-                <img crossorigin="anonymous" :src="makeImageUrl(item.product.image.image)" alt="" class="w-4 h-4 rounded">
+              <div class="flex flex-row gap-2 items-center justify-center">
+                <img :crossorigin="'anonymous'" :src="makeImageUrl(item.product.image.image)" alt="" class="w-6 h-6 rounded">
                 {{ constructName(item) }}
               </div>
             </td>
