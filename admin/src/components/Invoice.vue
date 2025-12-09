@@ -135,7 +135,7 @@ async function dwnld() {
     const originalCanvas = await html2canvas(invoice.value, {
       scale: 2,
       backgroundColor: null,
-      allowTaint: false,
+      allowTaint: true,
       useCORS: true
     });
 
