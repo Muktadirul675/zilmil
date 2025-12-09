@@ -194,11 +194,12 @@ class UserOrderStatsView(APIView):
             ),
 
             # Returned orders (confirmed_by = user and status = returned)
-            returned_count=Count(
+            Returned_count=Count(
                 "confirm_orders",
                 filter=date_filter
-                & Q(confirm_orders__status="returned")
+                & (Q(confirm_orders__status="returned") | Q(confirm_orders__status="partially_returned"))
             ),
+
         ).order_by("-confirmed_count")
 
         data = [

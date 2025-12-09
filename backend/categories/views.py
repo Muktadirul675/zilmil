@@ -7,13 +7,13 @@ from authapp.permissions import in_any_group
 from .models import Category
 from .serializers import CategorySerializer
 from products.serializers import ProductListSerializer
-from authapp.permissions import OnlyAdmin
+from authapp.permissions import OnlyAdmin, OnlyAdminOrReadOnly
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = None
-    permission_classes = [OnlyAdmin]
+    permission_classes = [OnlyAdminOrReadOnly]
 
     def get_object(self):
         lookup_value = self.kwargs.get('pk')  # 'pk' is used even if route is /category/<slug or id>/
