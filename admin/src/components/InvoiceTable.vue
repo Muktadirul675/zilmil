@@ -18,7 +18,7 @@
             <td class="text-lg" style="background-color:#f3f4f6; text-align:center; padding:8px;">{{ index + 1 }}</td>
             <td class="text-lg" style="background-color:#ffffff; text-align:center; padding:8px;">
               <div class="flex flex-row gap-2 items-center">
-                <img :src="makeImageUrl(item.product.image.image)" alt="" class="w-4 h-4 rounded">
+                <img crossorigin="use-credentials" :src="makeImageUrl(item.product.image.image)" alt="" class="w-4 h-4 rounded">
                 {{ constructName(item) }}
               </div>
             </td>
