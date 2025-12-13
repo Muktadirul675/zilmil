@@ -65,7 +65,7 @@
           </select>
         </div>
 
-        <button @click="orderStore.fetchOrders && orderAnStore.fetchAllTimeSummary()"
+        <button @click="refresh"
           class="bg-indigo-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-indigo-700">
           <i class="pi pi-refresh" />
         </button>
@@ -493,9 +493,18 @@ const toggleExpanded = (orderId) => {
   expandedOrders.value = new Set(expandedOrders.value)
 }
 
-onMounted(()=>{
-  // Initial fetch
+function fetchOrderPageData(){
   orderStore.fetchOrders()
-  orderAnStore.fetchAllTimeSummary()
+  if(auth && auth.isAuthenticated && auth.isAdmin){
+    orderAnStore.fetchAllTimeSummary()
+  }
+}
+
+function refresh(){
+  fetchOrderPageData()
+}
+
+onMounted(()=>{
+  fetchOrderPageData()
 })
 </script>
