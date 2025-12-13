@@ -10,7 +10,21 @@ const props = defineProps({
 const user = computed(() => props.all_users.find((u) => u.id === props.user_id))
 const active = computed(() => user.value.is_active)
 const last_active = computed(() => user.value.last_active)
+const formatDMYTime = (date) => {
+  const d = new Date(date) // auto converts UTC â local
 
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+
+  let hours = d.getHours()
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const ampm = hours >= 12 ? 'PM' : 'AM'
+
+  hours = hours % 12 || 12 // convert 0 â 12
+
+  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`
+}
 </script>
 
 <template>
@@ -26,8 +40,8 @@ const last_active = computed(() => user.value.last_active)
                 <i class="pi pi-ban"></i>
                 Inactive
             </div>
-            <div v-if="last_active" class="text-sm font-">
-                Last Active: {{ new Date(last_active).toLocaleString() }}
+            <div v-if="last_active" class="text-sm">
+                Last Active: {{ formatDMYTime(last_active) }}
             </div>
         </div>
     </div>

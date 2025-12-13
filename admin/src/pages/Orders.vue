@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold flex items-center gap-2 mb-2">
       <div class="flex items-center gap-2">
         <i class="pi pi-shopping-cart  text-indigo-600"></i>
-        Orders
+        Orders - {{ capitalize(convert_to_normal_word(currentStatus)) }}
       </div>
       <input v-model="orderStore.search" @input="onSearch" type="text" placeholder="Search by name or phone"
         class="border bg-white border-gray-300 rounded px-3 text-sm text-slate-600 font-normal py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -15,12 +15,12 @@
     <!-- Search and Filters -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
       <div class="flex flex-row flex-wrap gap-1">
-        <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{orderStore.filterStatus = ''; orderStore.fetchOrders()}">
+        <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{currentStatus = 'all';orderStore.filterStatus = ''; orderStore.fetchOrders()}">
           All 
     ({{orderAnStore.allTimeSummary['total']}})
         </button>
         <template v-for="status in statusOptions" :key="status" >
-          <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{orderStore.filterStatus = status; orderStore.fetchOrders()}">
+          <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{currentStatus=`${status}`;orderStore.filterStatus = status; orderStore.fetchOrders()}">
             {{ capitalize(convert_to_normal_word(status)) }} ({{orderAnStore.allTimeSummary[status]}})
           </button>
         </template>
@@ -150,12 +150,12 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ new Date(order.created_at).toLocaleDateString() }} 
+                {{ dateToDMY(new Date(order.created_at)) }} 
                 <br>
                 {{ new Date(order.created_at).toLocaleTimeString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ new Date(order.updated_at).toLocaleDateString() }}
+                {{ dateToDMY(new Date(order.updated_at))}}
                 <br>
                 {{ new Date(order.updated_at).toLocaleTimeString() }}
               </td>
@@ -281,11 +281,9 @@ import FraudRatio from '@/components/FraudRatio.vue'
 import Invoice from '@/components/Invoice.vue'
 import OrderPulse from '@/components/orders/OrderPulse.vue'
 import BDT from '@/components/ui/BDT.vue'
-import CircularPulse from '@/components/ui/CircularPulse.vue'
 import TapToShowText from '@/components/ui/TapToShowText.vue'
-import { usePageWS } from '@/composables/activeWs'
 import { toast } from '@/services/toast'
-import { convert_to_normal_word } from '@/services/utils'
+import { convert_to_normal_word, dateToDMY } from '@/services/utils'
 import { useOrdersAnalyticsStore } from '@/stores/analytics/orders'
 import { useAuthStore } from '@/stores/auth'
 import { useOrderLockStore } from '@/stores/orderLockStore'
@@ -301,6 +299,7 @@ const orderAnStore = useOrdersAnalyticsStore()
 const router = useRouter()
 const orderLockStore = useOrderLockStore()
 const auth = useAuthStore()
+const currentStatus = ref('pending')
 const goToOrder = (id) => {
   const selection = window.getSelection()
   if(selection && selection.toString().length>0) return

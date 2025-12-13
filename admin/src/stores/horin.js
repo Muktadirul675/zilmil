@@ -1,10 +1,10 @@
-// src/stores/courierStore.js
+// src/stores/horin.js
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 import api from '@/services/api' // your custom axios instance
 import { showDrfErrors } from '@/lib/drf'
 
-export const useCourierStore = defineStore('courier', () => {
+export const useHorinStore = defineStore('horin', () => {
   // Object refs to store data per phone number
   const couriers = reactive({})
   const parcels = reactive({})

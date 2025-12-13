@@ -22,16 +22,19 @@ let timer = null
 function updateClock() {
   const now = new Date()
 
-  // Format date â YYYY/MM/DD
-  currentDate.value = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(
-    now.getDate()
-  ).padStart(2, '0')}`
+  // Date â DD-MM-YYYY
+  currentDate.value = `${String(now.getDate()).padStart(2, '0')}/${String(
+    now.getMonth() + 1
+  ).padStart(2, '0')}/${now.getFullYear()}`
 
-  // Format time â HH:MM:SS
-  currentTime.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(
-    2,
-    '0'
-  )}:${String(now.getSeconds()).padStart(2, '0')}`
+  // Time â HH:MM:SS AM/PM (12-hour)
+  let hours = now.getHours()
+  const ampm = hours >= 12 ? 'PM' : 'AM'
+  hours = hours % 12 || 12
+
+  currentTime.value = `${String(hours).padStart(2, '0')}:${String(
+    now.getMinutes()
+  ).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} ${ampm}`
 }
 
 onMounted(() => {

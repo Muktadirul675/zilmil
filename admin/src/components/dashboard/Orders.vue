@@ -60,7 +60,7 @@
           </button>
           <input type="date" v-model="store.startDate"
             class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-          <input type="date" v-model="store.endDate"
+            <input type="date" v-model="store.endDate"
             class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
           <button @click="apply"
             class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
@@ -125,6 +125,7 @@ import {
 } from '@heroicons/vue/24/solid'
 import PieChart from '../charts/PieChart.vue'
 import BarChart from '../charts/BarChart.vue'
+import { dateToDMY } from '@/services/utils'
 
 const store = useOrdersAnalyticsStore()
 

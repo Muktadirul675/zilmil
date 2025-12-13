@@ -71,7 +71,7 @@
 
 <script setup>
 import { ref, computed, watch, toRef } from 'vue'
-import { useCourierStore } from '@/stores/courier'
+import { useHorinStore } from '@/stores/horin'
 import { isInvalidBDNumber } from '@/services/utils'
 
 const props = defineProps({
@@ -80,7 +80,7 @@ const props = defineProps({
 
 const number = toRef(props, 'number')
 const isLoading = ref(true)
-const store = useCourierStore()
+const store = useHorinStore()
 const data = ref({})
 
 // Load data from store

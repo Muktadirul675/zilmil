@@ -104,59 +104,6 @@
               />
             </div>
 
-            <SearchSelect
-              label="District"
-              icon="map-marker"
-              :items="cities"
-              itemKey="city_id"
-              itemLabel="city_name"
-              v-model="order.city_id"
-              @change="fetchZones"
-              :disabled="isDisabled"
-            />
-
-            <div v-if="fetchingCities" class="text-slate-800">
-              <i class="pi pi-spin pi-spinner me-2"></i>
-              Fetching districts
-            </div>
-
-            <div class="flex flex-row items-center justify-start gap-1">
-              <div class="flex-1">
-                <SearchSelect
-                  v-if="zones.length"
-                  label="Zone"
-                  icon="globe"
-                  :items="zones"
-                  itemKey="zone_id"
-                  itemLabel="zone_name"
-                  v-model="order.zone_id"
-                  @change="fetchAreas"
-                  :disabled="isDisabled || !order.city_id"
-                />
-                <div v-if="fetchingZones" class="text-slate-800">
-                  <i class="pi pi-spin pi-spinner me-2"></i>
-                  Fetching zones
-                </div>
-              </div>
-
-              <div class="flex-1">
-                <SearchSelect
-                  v-if="areas.length"
-                  label="Area"
-                  icon="location-arrow"
-                  :items="areas"
-                  itemKey="area_id"
-                  itemLabel="area_name"
-                  v-model="order.area_id"
-                  :disabled="isDisabled || !order.zone_id"
-                />
-                <div v-if="fetchingAreas" class="text-slate-800">
-                  <i class="pi pi-spin pi-spinner me-2"></i>
-                  Fetching areas
-                </div>
-              </div>
-            </div>
-
             <div class="flex flex-row flex-wrap gap-2 items-start">
               <div class="flex-1">
                 <FormInput

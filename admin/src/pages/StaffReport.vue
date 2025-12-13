@@ -60,7 +60,7 @@
       @click="setLast30Days"
       class="bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
     >
-      Last 30 Days
+      30d
     </button>
     <button
       @click="clearDates"
@@ -165,6 +165,7 @@ import { useRouter } from 'vue-router'
 import { toast } from '@/services/toast'
 import api from '@/services/api'
 import { useHead } from '@vueuse/head'
+import { useAuthStore } from '@/stores/auth'
 
 useHead({ title: 'Confirmed Orders - Zilmil.com.bd' })
 
@@ -206,8 +207,10 @@ const textColor = (ratio)=>{
 
 // Fetch data from endpoint
 async function fetchData () {
+  if(!(auth && auth.isAuthenticated && auth.isAdmin)) return;
   loading.value = true
   error.value = null
+  const auth = useAuthStore()
   try {
     const resp = await api.get('/orders/confirms/users', { params: formatParams() })
     // Expect array like:

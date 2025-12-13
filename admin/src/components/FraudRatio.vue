@@ -55,7 +55,7 @@
 
 <script setup>
 import { ref, computed, watch, toRef } from 'vue'
-import { useCourierStore } from '@/stores/courier'
+import { useHorinStore } from '@/stores/horin'
 import { isInvalidBDNumber } from '@/services/utils'
 
 const props = defineProps({
@@ -69,7 +69,7 @@ const number = toRef(props, 'number')
 const isLoading = ref(true)
 
 // Pinia store
-const courierStore = useCourierStore()
+const courierStore = useHorinStore()
 const summary = ref(null)
 const textColor = (ratio)=>{
   if(ratio < 50) return 'text-red-500'

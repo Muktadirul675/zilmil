@@ -45,31 +45,6 @@
               <textarea rows="2" v-model="order.order_note" placeholder="Note"
                 class="w-full border border-gray-300 bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
             </div>
-
-            <SearchSelect label="District" icon="map-marker" :items="cities" itemKey="city_id" itemLabel="city_name"
-              v-model="order.city_id" @change="fetchZones" />
-            <div v-if="fetchingCities" class="text-slate-800">
-              <i class="pi pi-spin pi-spinner me-2"></i>
-              Fetching Districts
-            </div>
-            <div class="flex flex-row items-center justify-start gap-1">
-              <div class="flex-1">
-                <SearchSelect v-if="zones.length" label="Zone" icon="globe" :items="zones" itemKey="zone_id"
-                  itemLabel="zone_name" v-model="order.zone_id" @change="fetchAreas" :disabled="!order.city_id" />
-                <div v-if="fetchingZones" class="text-slate-800">
-                  <i class="pi pi-spin pi-spinner me-2"></i>
-                  Fetching zones
-                </div>
-              </div>
-              <div class="flex-1">
-                <SearchSelect v-if="areas.length" label="Area" icon="location-arrow" :items="areas" itemKey="area_id"
-                  itemLabel="area_name" v-model="order.area_id" :disabled="!order.zone_id" />
-                <div v-if="fetchingAreas" class="text-slate-800">
-                  <i class="pi pi-spin pi-spinner me-2"></i>
-                  Fetching areas
-                </div>
-              </div>
-            </div>
             <div class="flex flex-row flex-wrap gap-2 items-start">
               <div class="flex-1">
                 <FormInput label="Discount" icon="percentage" v-model="order.order_discount" type="number" />
@@ -256,7 +231,7 @@ async function submitOrder() {
 
   try {
     if (!order.value.order_discount) {
-      order.value.order_discount = parseFloat('0')
+      order.value.order_discount = parseInt(0)
     }
     const payload = {
       ...order.value,
