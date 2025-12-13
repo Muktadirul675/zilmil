@@ -19,7 +19,7 @@ from activities.utils import log_activity
 from site_settings.utils import get_setting
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from authapp.permissions import OnlyAdminOrReadOnly, OnlyAdmin
+from authapp.permissions import OnlyAdminOrReadOnly, OnlyAdmin, OnlyAdminOrStaff
 
 class StockAddView(APIView):
     permission_classes = [OnlyAdmin]
@@ -151,7 +151,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
         return Response({'detail': 'Product soft-deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'], permission_classes=[OnlyAdmin])
+    @action(detail=False, methods=['get'], permission_classes=[OnlyAdminOrStaff])
     def all(self, request):
         """Return all products (admin view)."""
         products = Product.objects.all()
