@@ -495,9 +495,10 @@ const toggleExpanded = (orderId) => {
 
 function fetchOrderPageData(){
   orderStore.fetchOrders()
-  if(auth && auth.isAuthenticated && auth.isAdmin){
-    orderAnStore.fetchAllTimeSummary()
-  }
+  orderAnStore.fetchAllTimeSummary()
+  // if(auth && auth.isAuthenticated && auth.isAdmin){
+  //   orderAnStore.fetchAllTimeSummary()
+  // }
 }
 
 function refresh(){

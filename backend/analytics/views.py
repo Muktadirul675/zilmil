@@ -32,7 +32,7 @@ from django.db.models.functions import Coalesce
 from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from authapp.permissions import OnlyAdmin
+from authapp.permissions import OnlyAdmin, OnlyAdminOrStaff
 
 class ProductOrderReport(APIView):
     permission_classes = [OnlyAdmin]
@@ -183,7 +183,7 @@ ORDER_STATUSES = [
 ]
 
 class OrderStatsView(APIView):
-    permission_classes = [OnlyAdmin]
+    permission_classes = [OnlyAdminOrStaff]
     def get(self, request):
         start_date = request.query_params.get("start")
         end_date = request.query_params.get("end")
