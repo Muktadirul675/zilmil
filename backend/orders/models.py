@@ -3,8 +3,34 @@ from products.models import Product, Variant, Color
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 import re
+from django.utils import timezone
 
 User = get_user_model()
+ORDER_PREFIX = 'Z'
+
+def create36base(num: int):
+    chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if num == 0:
+        return chars[0]
+        
+    result = ""
+    n = abs(num)
+    while n > 0:
+        n, remainder = divmod(n, 36)
+        result = chars[remainder] + result
+        
+    return result
+
+def getTimeStamp(time=None):
+    # It is best practice not to use timezone.now() as a default argument
+    # because it only evaluates once when the server starts.
+    if time is None:
+        time = timezone.now()
+        
+    return time.strftime("%d%m%y")
+
+def createOrderId(id, date):
+    return f"{ORDER_PREFIX}{getTimeStamp()}{create36base(id)}"
 
 ORDER_STATUS_CHOICES = [
     ('pending', 'Pending'),
@@ -22,7 +48,8 @@ ORDER_STATUS_CHOICES = [
 ]
 
 class Order(models.Model):
-    session_id = models.CharField(max_length=40, db_index=True)
+    z_id = models.CharField(max_length=20, db_index=True,null=True, blank=True)
+    session_id = models.CharField(max_length=40)
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
     shipping_address = models.TextField()
@@ -83,7 +110,9 @@ class Order(models.Model):
 
         # Calculate total price
         self.total_price = self.calculate_total_price()
-        super().save(update_fields=['total_price', 'phone'])
+        if not self.z_id:
+            self.z_id = createOrderId(self.id,self.created_at)
+        super().save(update_fields=['total_price', 'phone','z_id'])
 
     def __str__(self):
         return f"Order #{self.id} - {self.full_name}"

@@ -15,12 +15,12 @@
     <!-- Search and Filters -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
       <div class="flex flex-row flex-wrap gap-1">
-        <button :class="`rounded border border-gray-300 px-2 py-1.5`" @click="()=>{currentStatus = 'all';orderStore.filterStatus = ''; orderStore.fetchOrders()}">
+        <button :class="`bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300`" @click="()=>{currentStatus = 'all';orderStore.filterStatus = ''; orderStore.fetchOrders()}">
           All 
     ({{orderAnStore.allTimeSummary['total']}})
         </button>
         <template v-for="status in statusOptions" :key="status" >
-          <button :class="`rounded border border-gray-300 px-2 py-1.5 ${statusClass(status)}`" @click="()=>{currentStatus=`${status}`;orderStore.filterStatus = status; orderStore.fetchOrders()}">
+          <button :class="`bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300 ${currentStatus === status && 'bg-indigo-600 text-white hover:bg-indigo-700'}`" @click="()=>{currentStatus=`${status}`;orderStore.filterStatus = status; orderStore.fetchOrders()}">
             {{ capitalize(convert_to_normal_word(status)) }} ({{orderAnStore.allTimeSummary[status]}})
           </button>
         </template>
@@ -138,7 +138,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <div class="flex flex-col gap-1">
                   <div>
-                    #{{ order.id }}<br/>
+                    #{{ order.z_id }}<br/>
                     <div class="absolute left-[-9999px]">
                       <Invoice :inject-invoice-ref="injectInvoiceRef" :order="order"/>
                     </div>

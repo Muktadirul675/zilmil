@@ -3,9 +3,11 @@ from orders.models import Order
 from decimal import Decimal
 
 def create_sale_from_order(order):
+    print('CREATING SALE')
     if Sale.objects.filter(order=order).exists():
         return  # Avoid duplicate
     amount_got = order.collected_amount - order.delivery_charge
+    print(f"AMOUNT GOT: {amount_got}")
     if amount_got > 0:
         total_revenue = Decimal('0')
         total_cost = Decimal('0')
@@ -28,6 +30,7 @@ def create_sale_from_order(order):
             ordered_price=order.total_price - order.delivery_charge,
             profit=profit
         )
+        print("SALES CREATED")
         
 def mark_sale_as_refunded(order: Order):
     try:

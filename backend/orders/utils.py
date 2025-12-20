@@ -7,6 +7,7 @@ from courier.pathao_client import get_pathao_client
 from django.conf import settings
 import random
 from site_settings.utils import get_setting
+from django.utils import timezone
 
 NEGATIVE_STATUSES = ['cancelled', 'returned', 'failed']
 CONFIRM_STATUS = 'confirmed'
@@ -60,7 +61,7 @@ def send_order_to_courier(order_id):
                     description += f'| {item.color.name}'
                 description += f"X {item.quantity}\n"
             courier_response = client.create_order(
-                order_id=str(order.id),
+                order_id=str(order.z_id),
                 recipient_name=order.full_name,
                 recipient_phone=order.phone,
                 recipient_address=order.shipping_address,

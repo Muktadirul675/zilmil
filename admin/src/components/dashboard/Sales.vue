@@ -24,46 +24,29 @@
       <!-- Right: Filters + Chart -->
       <div class="md:w-4/5 bg-white rounded-xl border border-gray-300 p-6 shadow-sm">
         <!-- Filters -->
-        <div class="flex flex-wrap gap-4 mb-6 items-end">
+        <div class="flex flex-wrap gap-4 items-center">
           <button @click="today"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 't' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             Today
           </button>
           <button @click="yesterday"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 'y' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             Yesterday
           </button>
-
           <button @click="()=>daysAgo(30)"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === '30d' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             30d
           </button>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Start Date</label>
-            <input type="date" v-model="store.startDate"
-              class="border border-gray-300 rounded-md px-3 py-2 text-sm w-full" />
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">End Date</label>
+          <input type="date" v-model="store.startDate"
+            class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
             <input type="date" v-model="store.endDate"
-              class="border border-gray-300 rounded-md px-3 py-2 text-sm w-full" />
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Metric</label>
-            <select v-model="yField" class="border border-gray-300 rounded-md px-3 py-2 text-sm w-full">
-              <option value="sales">Sales (BDT)</option>
-              <option value="profit">Profit (BDT)</option>
-              <option value="refunds">Refunds (count)</option>
-            </select>
-          </div>
-          <div class="self-end gap-2">
-            <button @click="apply"
-              class="px-4 py-2 me-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition">
-              Apply
-            </button>
-            <button v-if="store.startDate || store.endDate" @click="clear"
-              class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">Clear</button>
-          </div>
+            class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          <button @click="apply"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            Apply
+          </button>
+          <button v-if="store.startDate || store.endDate" @click="clear"
+            class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition">Clear</button>
         </div>
 
         <!-- Chart -->
@@ -88,12 +71,16 @@ import BDT from '../ui/BDT.vue'
 
 const store = useSalesAnalyticsStore()
 const yField = ref('sales')
+const query = ref('')
+const highlight = ref('')
 
 async function apply() {
   await Promise.all([
     store.fetchSummary(),
     store.fetchSalesReport()
   ])
+  highlight.value = query.value
+  query.value = ''
 }
 
 onMounted(() => {
@@ -111,6 +98,7 @@ async function today() {
   store.startDate = dateStr
   store.endDate = dateStr
   apply()
+  query.value = 't'
 }
 
 async function yesterday() {
@@ -122,6 +110,7 @@ async function yesterday() {
   store.startDate = dateStr
   store.endDate = dateStr
   apply()
+  query.value = 'y'
 }
 
 function daysAgo(days) {
@@ -131,10 +120,12 @@ function daysAgo(days) {
   store.startDate = formatDate(start)
   store.endDate = formatDate(end)
   apply()
+  query.value = '30d'
 }
 function clear() {
   store.clear()
   apply()
+  query.value = ''
 }
 
 const labels = computed(() => store.report.map(r => r.day))

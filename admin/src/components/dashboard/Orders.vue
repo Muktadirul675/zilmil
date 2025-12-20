@@ -47,15 +47,15 @@
         <!-- Filters -->
         <div class="flex flex-wrap gap-4 items-center">
           <button @click="today"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 't' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             Today
           </button>
           <button @click="yesterday"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 'y' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             Yesterday
           </button>
           <button @click="()=>daysAgo(30)"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === '30d' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
             30d
           </button>
           <input type="date" v-model="store.startDate"
@@ -67,7 +67,7 @@
             Apply
           </button>
           <button v-if="store.startDate || store.endDate" @click="clear"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">Clear</button>
+            class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition">Clear</button>
         </div>
 
         <!-- Chart -->
@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useOrdersAnalyticsStore } from '@/stores/analytics/orders'
 import LineChart from '@/components/charts/LineChart.vue'
 
@@ -130,6 +130,8 @@ import { dateToDMY } from '@/services/utils'
 const store = useOrdersAnalyticsStore()
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const query = ref('')
+const highlight = ref('')
 
 async function apply() {
   try {
@@ -139,6 +141,8 @@ async function apply() {
       store.fetchOriginsReport(),
       store.fetchProductOrdersReport()
     ])
+    highlight.value = query.value
+    query.value = ''
   } catch (err) {
     console.error('Failed to fetch analytics:', err)
   }
@@ -154,6 +158,7 @@ async function today() {
 
   store.startDate = dateStr
   store.endDate = dateStr
+  query.value = 't'
   apply()
 }
 
@@ -165,6 +170,7 @@ async function yesterday() {
 
   store.startDate = dateStr
   store.endDate = dateStr
+  query.value = 'y'
   apply()
 }
 
@@ -174,11 +180,13 @@ function daysAgo(days) {
   start.setDate(end.getDate() - (days-1)) // include today
   store.startDate = formatDate(start)
   store.endDate = formatDate(end)
+  query.value = '30d'
   apply()
 }
 
 function clear() {
   store.clear()
+  query.value = ''
   apply()
 }
 

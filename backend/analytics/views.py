@@ -100,9 +100,9 @@ class ProductPerformanceView(APIView):
         sales = Sale.objects.filter(refunded=False)
 
         if start:
-            sales = sales.filter(created_at_date__gte=start)
+            sales = sales.filter(created_at__gte=start)
         if end:
-            sales = sales.filter(created_at_date__lte=end)
+            sales = sales.filter(created_at__lte=end)
 
         total_sales_amount = float(sales.aggregate(total=Sum('ordered_price'))['total'] or 0)
         order_ids = sales.values_list('order_id', flat=True)

@@ -1,30 +1,29 @@
 <template>
-    <section class="w-full max-w-[90vw] mx-auto py-8">
+    <section class="w-full max-w-[90vw] mx-auto py-8 mb-6">
         <!-- Filters -->
         <div class="flex flex-wrap gap-4 items-center mb-6">
-            <button @click="today"
-                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
-                Today
-            </button>
-            <button @click="yesterday"
-                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
-                Yesterday
-            </button>
-
-            <button @click="()=>daysAgo(30)"
-                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
-                30d
-            </button>
-            <input type="date" v-model="store.startDate"
-                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:outline-none" />
+          <button @click="today"
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 't' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
+            Today
+          </button>
+          <button @click="yesterday"
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === 'y' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
+            Yesterday
+          </button>
+          <button @click="()=>daysAgo(30)"
+            :class="`px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition ${highlight === '30d' && 'bg-indigo-600 hover:bg-indigo-700 text-white'}`">
+            30d
+          </button>
+          <input type="date" v-model="store.startDate"
+            class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
             <input type="date" v-model="store.endDate"
-                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:outline-none" />
-            <button @click="apply"
-                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
-                Apply
-            </button>
-            <button v-if="store.startDate || store.endDate" @click="clear"
-                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">Clear</button>
+            class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          <button @click="apply"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition">
+            Apply
+          </button>
+          <button v-if="store.startDate || store.endDate" @click="clear"
+            class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md text-sm font-semibold transition">Clear</button>
         </div>
 
         <!-- Main Grid Layout -->
@@ -81,13 +80,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useProductAnalyticsStore } from '@/stores/analytics/products'
 import BarChart from '@/components/charts/BarChart.vue'
 import BDT from '../ui/BDT.vue'
 
 const store = useProductAnalyticsStore()
-
+const query = ref('')
+const highlight = ref('')
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 async function apply(){
@@ -95,6 +95,8 @@ async function apply(){
         store.fetchReport(),
         store.fetchPerformance()
     ])
+    highlight.value = query.value
+    query.value = ''
 }
 
 onMounted(() => {
@@ -112,6 +114,7 @@ async function today() {
   store.startDate = dateStr
   store.endDate = dateStr
   apply()
+  query.value = 't'
 }
 
 async function yesterday() {
@@ -123,6 +126,7 @@ async function yesterday() {
   store.startDate = dateStr
   store.endDate = dateStr
   apply()
+  query.value = 'y'
 }
 
 function daysAgo(days) {
@@ -132,11 +136,13 @@ function daysAgo(days) {
   store.startDate = formatDate(start)
   store.endDate = formatDate(end)
   apply()
+  query.value = '30d'
 }
 
 function clear() {
   store.clear()
   apply()
+  query.value =''
 }
 
 const labels = computed(() => store.report.map(r => r.product))

@@ -1,0 +1,6 @@
+{
+    "consignment_id":"157",
+    "merchant_order_id":"157",
+    "event":"order.delivered",
+    "collected_amount" : "1630"
+}

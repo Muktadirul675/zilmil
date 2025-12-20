@@ -62,7 +62,7 @@ class CourierWebhookView(APIView):
         event_key = event.replace('order.', '').strip()
 
         try:
-            order = Order.objects.get(id=int(merchant_order_id))
+            order = Order.objects.get(z_id=int(merchant_order_id))
         except Order.DoesNotExist:
             return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -234,9 +234,9 @@ class CourierSummary(APIView):
         if not number:
             return Response({'number':'Number is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # cached_val = cache.get(f'courier-summary:{number}')
-        # if cached_val is not None:
-        #     return Response(cached_val, status=status.HTTP_200_OK)
+        cached_val = cache.get(f'courier-summary:{number}')
+        if cached_val is not None:
+            return Response(cached_val, status=status.HTTP_200_OK)
 
         key = os.getenv('HORIN_API')
         own_records = get_own_order_records(number)
@@ -286,9 +286,9 @@ class ParcelSummary(APIView):
         if not number:
             return Response({'number':'Number is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # cached_val = cache.get(f'parcel-summary:{number}')
-        # if cached_val is not None:
-        #     return Response(cached_val, status=status.HTTP_200_OK)
+        cached_val = cache.get(f'parcel-summary:{number}')
+        if cached_val is not None:
+            return Response(cached_val, status=status.HTTP_200_OK)
 
         key = os.getenv('HORIN_API')
 

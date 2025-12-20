@@ -44,7 +44,7 @@
     </button>
     <button
       @click="resetToToday"
-      class="bg-indigo-600 text-white px-3 py-2 rounded cursor-pointer hover:bg-indigo-700"
+      :class="`bg-gray-200 text-black px-3 py-2 rounded cursor-pointer hover:bg-gray-300 ${highlight === 't' && 'bg-indigo-600 text-white hover:bg-indigo-700'}`"
     >
       Today
     </button>
@@ -52,13 +52,13 @@
     <!-- New buttons -->
     <button
       @click="setYesterday"
-      class="bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
+      :class="`bg-gray-200 text-black px-3 py-2 rounded cursor-pointer hover:bg-gray-300 ${highlight === 'y' && 'bg-indigo-600 text-white hover:bg-indigo-700'}`"
     >
       Yesterday
     </button>
     <button
       @click="setLast30Days"
-      class="bg-gray-200 text-gray-800 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
+      :class="`bg-gray-200 text-black px-3 py-2 rounded cursor-pointer hover:bg-gray-300 ${highlight === '30d' && 'bg-indigo-600 text-white hover:bg-indigo-700'}`"
     >
       30d
     </button>
@@ -176,6 +176,7 @@ const users = ref([]) // raw API response
 const loading = ref(false)
 const error = ref(null)
 const search = ref('')
+const auth = useAuthStore()
 
 // Pagination state (simple client-side)
 const limit = ref(10)
@@ -183,10 +184,12 @@ const currentPage = ref(1)
 
 const startDate = ref(getToday())
 const endDate = ref(getToday())
-
+const query = ref('')
+const highlight = ref('')
 // Helpers
 function getToday () {
   const d = new Date()
+  // query.value = 'today'
   return d.toISOString().slice(0, 10) // yyyy-mm-dd
 }
 
@@ -210,7 +213,6 @@ async function fetchData () {
   if(!(auth && auth.isAuthenticated && auth.isAdmin)) return;
   loading.value = true
   error.value = null
-  const auth = useAuthStore()
   try {
     const resp = await api.get('/orders/confirms/users', { params: formatParams() })
     // Expect array like:
@@ -218,6 +220,8 @@ async function fetchData () {
     users.value = Array.isArray(resp.data) ? resp.data : []
     // Reset pagination to first page when data changes
     currentPage.value = 1
+    highlight.value = query.value
+    query.value = ''
   } catch (err) {
     console.error(err)
     error.value = err?.response?.data?.detail || err.message || 'Failed to fetch data'
@@ -253,6 +257,7 @@ function setYesterday() {
   const y = d.toISOString().slice(0, 10)
   startDate.value = y
   endDate.value = y
+  query.value = 'y'
   fetchData()
 }
 
@@ -263,6 +268,7 @@ function setLast30Days() {
   start.setDate(end.getDate() - 29) // include today
   startDate.value = start.toISOString().slice(0, 10)
   endDate.value = end.toISOString().slice(0, 10)
+  query.value = '30d'
   fetchData()
 }
 
@@ -270,6 +276,7 @@ function setLast30Days() {
 function clearDates() {
   startDate.value = ''
   endDate.value = ''
+  query.value =''
   fetchData()
 }
 
@@ -277,6 +284,7 @@ function clearDates() {
 function resetToToday () {
   startDate.value = getToday()
   endDate.value = getToday()
+  query.value = 't'
   fetchData()
 }
 
