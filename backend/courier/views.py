@@ -62,7 +62,7 @@ class CourierWebhookView(APIView):
         event_key = event.replace('order.', '').strip()
 
         try:
-            order = Order.objects.get(z_id=int(merchant_order_id))
+            order = Order.objects.get(z_id=merchant_order_id)
         except Order.DoesNotExist:
             return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
