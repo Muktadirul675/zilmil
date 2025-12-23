@@ -34,20 +34,27 @@ class VisitOriginsView(APIView):
 class ActiveUsersView(APIView):
     permission_classes = []
     authentication_classes = []
-    
+
     def get(self, request):
         ip = get_client_ip(request)
-        key = f"active_user:{ip}"
-        cache.set(key, int(time.time()), timeout=180)
 
+        # Track by IP
+        ip_key = f"active_user:{ip}"
+        cache.set(ip_key, int(time.time()), timeout=180)
+
+        # Track by user (only if logged in)
+        if request.user.is_authenticated:
+            user_key = f"user:last-active:{request.user.id}"
+            cache.set(user_key, int(time.time()), timeout=180)
+
+        # Count active IPs
         keys = cache.keys("active_user:*")
         active_count = len(keys)
 
         return Response({
             "ip": ip,
-            "active_users": active_count
+            "active_users": active_count,
         })
-
 
 class VisitView(APIView):
     authentication_classes = []
